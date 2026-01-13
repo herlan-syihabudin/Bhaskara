@@ -11,27 +11,44 @@ export default function Header() {
         background: "#ffffff",
       }}
     >
-      <strong style={{ fontSize: 18 }}>
+      {/* LOGO / BRAND */}
+      <a
+        href="/"
+        style={{
+          fontSize: 18,
+          fontWeight: 700,
+          textDecoration: "none",
+          color: "#111827",
+        }}
+      >
         Bhaskara Buana Mulya
-      </strong>
+      </a>
 
+      {/* NAVIGATION */}
       <nav style={{ display: "flex", gap: 32, fontSize: 14 }}>
-        <a href="#" style={{ textDecoration: "none", color: "#111827" }}>
+        <a href="/about" style={navStyle}>
           About
         </a>
-        <a href="#" style={{ textDecoration: "none", color: "#111827" }}>
+        <a href="/services" style={navStyle}>
           Services
         </a>
-        <a href="#" style={{ textDecoration: "none", color: "#111827" }}>
+        <a href="/projects" style={navStyle}>
           Projects
         </a>
-        <a href="#" style={{ textDecoration: "none", color: "#111827" }}>
+        <a href="/capabilities" style={navStyle}>
           Capabilities
         </a>
-        <a href="#" style={{ textDecoration: "none", color: "#111827" }}>
+        <a href="/contact" style={navStyle}>
           Contact
         </a>
       </nav>
     </header>
   );
 }
+
+/* ===== shared nav style ===== */
+const navStyle = {
+  textDecoration: "none",
+  color: "#111827",
+  fontWeight: 500,
+};
