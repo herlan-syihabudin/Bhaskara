@@ -5,12 +5,15 @@ import { projectBudget } from "@/lib/dummy/projectBudget";
 
 export default function BudgetPage() {
   const data = projectBudget;
+
   return (
     <section className="container-bbm py-12 space-y-12">
       <div>
-        <h1 className="text-3xl">{data.projectName}</h1>
+        <h1 className="text-3xl font-semibold">
+          {data.projectName}
+        </h1>
         <p className="text-sm text-gray-500">
-          Nilai Kontrak: Rp {data.nilaiKontrak.toLocaleString()}
+          Nilai Kontrak: Rp {data.nilaiKontrak.toLocaleString("id-ID")}
         </p>
       </div>
 
