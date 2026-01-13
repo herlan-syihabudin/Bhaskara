@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 /* ===============================
+   BBM BRAND VARIABLES
+================================ */
+:root {
+  --bbm-green: #1F7A5C;
+  --bbm-green-dark: #16624A;
+  --bbm-yellow: #F4C430;
+  --bbm-dark: #111827;
+  --bbm-gray: #374151;
+  --bbm-light: #F9FAFB;
+}
+
+/* ===============================
    GLOBAL BASE
 ================================ */
 html {
@@ -38,18 +50,50 @@ p {
 @layer components {
   /* Navigation */
   .nav-link {
-    @apply text-gray-700 hover:text-gray-900 transition;
+    @apply relative text-gray-700 hover:text-gray-900 transition;
+  }
+
+  .nav-link::after {
+    content: "";
+    @apply absolute left-0 -bottom-1 h-px w-0 transition-all;
+    background-color: var(--bbm-green);
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
   }
 
   /* Buttons */
   .btn-outline {
-    @apply px-4 py-2 border border-gray-900 text-gray-900
-           hover:bg-gray-900 hover:text-white transition;
+    @apply px-4 py-2 border text-gray-900 transition;
+    border-color: var(--bbm-green);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--bbm-green);
+    color: #ffffff;
   }
 
   .btn-primary {
-    @apply px-4 py-2 bg-gray-900 text-white
-           hover:bg-black transition;
+    @apply px-4 py-2 text-white transition;
+    background-color: var(--bbm-green);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--bbm-green-dark);
+  }
+
+  /* Form */
+  .form-input {
+    @apply w-full px-4 py-3 rounded-xl border
+           text-sm text-gray-900 transition;
+    border-color: #d1d5db;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--bbm-green);
+    box-shadow: 0 0 0 2px rgba(31, 122, 92, 0.25);
   }
 }
 
@@ -64,31 +108,29 @@ p {
 
 /* Section badge */
 .badge {
-  @apply inline-block text-xs tracking-[0.35em] text-gray-500 uppercase;
+  @apply inline-block text-xs tracking-[0.35em] uppercase;
+  color: var(--bbm-green);
+}
+
+/* Accent text (yellow) */
+.accent-yellow {
+  color: var(--bbm-yellow);
 }
 
 /* Card system */
 .card {
-  @apply bg-white border border-gray-200 rounded-2xl transition
-         hover:border-gray-300;
-}
-.nav-link {
-  @apply relative text-gray-700 hover:text-gray-900 transition;
+  @apply bg-white border rounded-2xl transition;
+  border-color: #e5e7eb;
 }
 
-.nav-link::after {
-  content: "";
-  @apply absolute left-0 -bottom-1 h-px w-0 bg-gray-900 transition-all;
+.card:hover {
+  border-color: var(--bbm-green);
 }
 
-.nav-link:hover::after {
-  @apply w-full;
-}
-@layer components {
-  .form-input {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-300
-           text-sm text-gray-900
-           focus:outline-none focus:ring-2 focus:ring-gray-900
-           focus:border-gray-900 transition;
-  }
+/* Bullet accent (yellow) */
+.bullet-accent {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--bbm-yellow);
 }
