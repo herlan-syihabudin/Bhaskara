@@ -32,12 +32,8 @@ export default function CostByCategory({
             return (
               <tr key={row.name} className="border-b last:border-none">
                 <td className="py-3">{row.name}</td>
-                <td className="py-3">
-                  Rp {row.po.toLocaleString("id-ID")}
-                </td>
-                <td className="py-3">
-                  Rp {row.real.toLocaleString("id-ID")}
-                </td>
+                <td className="py-3">Rp {row.po.toLocaleString("id-ID")}</td>
+                <td className="py-3">Rp {row.real.toLocaleString("id-ID")}</td>
                 <td className="py-3 font-medium">
                   Rp {sisa.toLocaleString("id-ID")}
                 </td>
