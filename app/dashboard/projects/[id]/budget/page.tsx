@@ -5,7 +5,6 @@ import { projectBudget } from "@/lib/dummy/projectBudget";
 
 export default function BudgetPage() {
   const data = projectBudget;
-
   return (
     <section className="container-bbm py-12 space-y-12">
       <div>
