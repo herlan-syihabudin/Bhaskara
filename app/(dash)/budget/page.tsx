@@ -1,3 +1,4 @@
+// /app/(dash)/budget/page.tsx
 import KpiCard from "@/components/dashboard/KpiCard";
 import CostByCategory from "@/components/dashboard/CostByCategory";
 import CostByVendor from "@/components/dashboard/CostByVendor";
@@ -12,7 +13,6 @@ export default function BudgetPage() {
 
   return (
     <section className="container-bbm py-12 space-y-12">
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-semibold">{data.projectName}</h1>
         <p className="text-sm text-gray-500">
@@ -20,7 +20,6 @@ export default function BudgetPage() {
         </p>
       </div>
 
-      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard title="Total PO" value={data.totalPO} />
 
@@ -45,7 +44,6 @@ export default function BudgetPage() {
         />
       </div>
 
-      {/* TABLES */}
       <div className="grid md:grid-cols-2 gap-8">
         <CostByCategory data={data.byCategory} />
         <CostByVendor data={data.byVendor} />
