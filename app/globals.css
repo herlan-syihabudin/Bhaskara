@@ -63,3 +63,17 @@ p {
 .card {
   @apply bg-white border border-gray-200 rounded-2xl transition;
 }
+/* === NAV LINK === */
+.nav-link {
+  @apply text-gray-700 hover:text-gray-900 transition;
+}
+
+/* === BUTTONS === */
+.btn-outline {
+  @apply px-4 py-2 border border-gray-900 text-gray-900
+         hover:bg-gray-900 hover:text-white transition;
+}
+
+.btn-primary {
+  @apply px-4 py-2 bg-gray-900 text-white hover:bg-black transition;
+}
