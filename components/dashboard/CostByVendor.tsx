@@ -28,12 +28,8 @@ export default function CostByVendor({
           {data.map((row) => (
             <tr key={row.name} className="border-b last:border-none">
               <td className="py-3">{row.name}</td>
-              <td className="py-3">
-                Rp {row.po.toLocaleString("id-ID")}
-              </td>
-              <td className="py-3">
-                Rp {row.real.toLocaleString("id-ID")}
-              </td>
+              <td className="py-3">Rp {row.po.toLocaleString("id-ID")}</td>
+              <td className="py-3">Rp {row.real.toLocaleString("id-ID")}</td>
             </tr>
           ))}
         </tbody>
