@@ -72,3 +72,15 @@ p {
   @apply bg-white border border-gray-200 rounded-2xl transition
          hover:border-gray-300;
 }
+.nav-link {
+  @apply relative text-gray-700 hover:text-gray-900 transition;
+}
+
+.nav-link::after {
+  content: "";
+  @apply absolute left-0 -bottom-1 h-px w-0 bg-gray-900 transition-all;
+}
+
+.nav-link:hover::after {
+  @apply w-full;
+}
