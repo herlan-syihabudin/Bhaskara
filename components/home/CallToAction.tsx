@@ -1,46 +1,36 @@
 export default function CallToAction() {
   return (
-    <section
-      style={{
-        padding: "96px 48px",
-        background: "#111827",
-        color: "#ffffff",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 32,
-          flexWrap: "wrap",
-        }}
-      >
-        <div style={{ maxWidth: 640 }}>
-          <h2 style={{ fontSize: 36, lineHeight: 1.2 }}>
-            Let’s build with clarity, safety, and execution excellence.
-          </h2>
-          <p style={{ marginTop: 16, color: "#d1d5db", fontSize: 16 }}>
-            Talk to our team about your next project. We bring engineering rigor,
-            disciplined execution, and accountable delivery.
-          </p>
-        </div>
+    <section className="bg-gray-900 text-white">
+      <div className="container-bbm py-28">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+          
+          {/* COPY */}
+          <div className="max-w-2xl">
+            <h2 className="text-white">
+              Let’s build with clarity,
+              <span className="block">
+                safety, and execution excellence
+              </span>
+            </h2>
 
-        <a
-          href="#"
-          style={{
-            padding: "16px 32px",
-            background: "#ffffff",
-            color: "#111827",
-            textDecoration: "none",
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          Contact Our Team
-        </a>
+            <p className="mt-6 text-gray-300">
+              Talk to our team about your next project. We bring engineering
+              rigor, disciplined execution, and accountable delivery from
+              mobilization to handover.
+            </p>
+          </div>
+
+          {/* CTA */}
+          <a
+            href="/contact"
+            className="inline-flex items-center justify-center
+                       px-8 py-4 bg-white text-gray-900
+                       text-sm font-semibold
+                       hover:bg-gray-100 transition"
+          >
+            Contact Our Team
+          </a>
+        </div>
       </div>
     </section>
   );
