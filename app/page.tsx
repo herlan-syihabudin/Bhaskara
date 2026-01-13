@@ -1,7 +1,7 @@
-import WhatWeDo from "../components/home/WhatWeDo";
-import TrustBar from "../components/home/TrustBar";
-import FeaturedProjects from "../components/home/FeaturedProjects";
-import CallToAction from "../components/home/CallToAction";
+import WhatWeDo from "@/components/home/WhatWeDo";
+import TrustBar from "@/components/home/TrustBar";
+import FeaturedProjects from "@/components/home/FeaturedProjects";
+import CallToAction from "@/components/home/CallToAction";
 
 export default function HomePage() {
   return (
