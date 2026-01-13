@@ -8,9 +8,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "preserve",
+
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
