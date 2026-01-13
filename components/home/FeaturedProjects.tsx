@@ -2,88 +2,65 @@ const projects = [
   {
     title: "Industrial Facility Expansion",
     category: "Civil & Structural",
-    desc: "Foundation, steel structure, and concrete works for industrial expansion.",
+    desc: "Foundation, steel structure, and concrete works delivered for industrial expansion with strict schedule control.",
   },
   {
     title: "Commercial Office Fit-Out",
-    category: "Interior",
-    desc: "End-to-end interior fit-out with MEP integration and schedule control.",
+    category: "Interior & MEP",
+    desc: "End-to-end interior fit-out integrated with MEP systems and disciplined execution management.",
   },
   {
     title: "Power & Electrical Upgrade",
     category: "MEP Engineering",
-    desc: "Electrical system upgrade with safety-first commissioning process.",
+    desc: "Electrical system upgrade executed with safety-first commissioning and regulatory compliance.",
   },
 ];
 
 export default function FeaturedProjects() {
   return (
-    <section style={{ padding: "72px 48px", background: "#f9fafb" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <p
-          style={{
-            fontSize: 12,
-            letterSpacing: "0.2em",
-            color: "#6b7280",
-            marginBottom: 12,
-          }}
-        >
-          SELECTED PROJECTS
-        </p>
+    <section className="bg-gray-50">
+      <div className="container-bbm py-28">
+        {/* HEADER */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <span className="badge">SELECTED PROJECTS</span>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            gap: 24,
-            flexWrap: "wrap",
-          }}
-        >
-          <h2 style={{ fontSize: 32, lineHeight: 1.2, color: "#111827" }}>
-            Delivering results across sectors.
-          </h2>
+            <h2 className="mt-4">
+              Delivering results across
+              <span className="block">industrial and commercial sectors</span>
+            </h2>
+          </div>
 
           <a
-            href="#"
-            style={{
-              fontSize: 14,
-              textDecoration: "none",
-              color: "#111827",
-              borderBottom: "1px solid #111827",
-            }}
+            href="/projects"
+            className="text-sm font-medium text-gray-900 border-b border-gray-900 w-fit"
           >
             View all projects →
           </a>
         </div>
 
-        <div
-          style={{
-            marginTop: 28,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: 16,
-          }}
-        >
+        {/* PROJECT GRID */}
+        <div className="mt-20 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((p) => (
             <div
               key={p.title}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: 16,
-                padding: 20,
-                background: "#ffffff",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
+              className="card p-8 flex flex-col"
             >
-              <span style={{ fontSize: 12, color: "#6b7280" }}>{p.category}</span>
-              <strong style={{ fontSize: 18, color: "#111827" }}>{p.title}</strong>
-              <p style={{ color: "#374151", lineHeight: 1.6 }}>{p.desc}</p>
-              <span style={{ marginTop: "auto", fontSize: 13, color: "#111827" }}>
-                View case study →
+              <span className="text-xs tracking-widest text-gray-500 uppercase">
+                {p.category}
               </span>
+
+              <h3 className="mt-3 text-lg">
+                {p.title}
+              </h3>
+
+              <p className="mt-4 text-sm leading-relaxed">
+                {p.desc}
+              </p>
+
+              <div className="mt-auto pt-6 text-sm font-medium text-gray-900">
+                View case study →
+              </div>
             </div>
           ))}
         </div>
