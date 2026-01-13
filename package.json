@@ -7,13 +7,13 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "devDependencies": {
-  "@types/react": "^18.2.45",
-  "@types/react-dom": "^18.2.18",
-  "@types/node": "^20.11.0",
-  "typescript": "^5.3.3"
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.0",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",
