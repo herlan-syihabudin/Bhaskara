@@ -1,50 +1,64 @@
 const items = [
   {
     title: "General Contracting",
-    desc: "End-to-end project delivery with disciplined planning, control, and execution.",
+    desc: "End-to-end project delivery with disciplined planning, cost control, and execution excellence.",
   },
   {
     title: "MEP Engineering",
-    desc: "Electrical, mechanical, plumbing systems built for performance and safety.",
+    desc: "Electrical, mechanical, and plumbing systems engineered for performance, reliability, and safety.",
   },
   {
     title: "Steel & Civil Works",
-    desc: "Structural steel, foundations, concrete works, and site infrastructure.",
+    desc: "Structural steel, foundations, concrete works, and integrated site infrastructure.",
   },
   {
     title: "Interior Fit-Out",
-    desc: "Durable and functional interior solutions for commercial & industrial spaces.",
+    desc: "Durable, functional, and efficient interior solutions for commercial and industrial spaces.",
   },
 ];
 
 export default function WhatWeDo() {
   return (
     <section className="bg-white">
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="container-bbm py-24">
+        {/* SECTION HEADER */}
         <div className="max-w-2xl">
-          <p className="text-xs tracking-[0.25em] text-gray-500">
-            WHAT WE DO
-          </p>
-          <h2 className="mt-3 text-3xl">
-            Integrated services built to global standards.
+          <span className="badge">WHAT WE DO</span>
+
+          <h2 className="mt-4">
+            Integrated services built to
+            <span className="block text-gray-900">
+              global engineering standards
+            </span>
           </h2>
-          <p className="mt-4 text-gray-600">
+
+          <p className="mt-5">
             We combine engineering rigor, site discipline, and strong governance
-            to deliver safe, predictable outcomes.
+            to deliver safe, predictable, and high-quality outcomes across all
+            project phases.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* SERVICES GRID */}
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((x) => (
             <div
               key={x.title}
-              className="border border-gray-200 rounded-2xl p-6 bg-white"
+              className="card p-8 group hover:border-gray-300"
             >
-              <div className="text-sm text-gray-500">Service</div>
-              <h3 className="mt-2 text-lg">{x.title}</h3>
-              <p className="mt-3 text-gray-600 text-sm leading-relaxed">
+              <span className="badge">Service</span>
+
+              <h3 className="mt-4 text-lg text-gray-900">
+                {x.title}
+              </h3>
+
+              <p className="mt-4 text-sm leading-relaxed">
                 {x.desc}
               </p>
+
+              <div className="mt-6 text-sm font-medium text-gray-900 opacity-0 group-hover:opacity-100 transition">
+                Learn more →
+              </div>
             </div>
           ))}
         </div>
