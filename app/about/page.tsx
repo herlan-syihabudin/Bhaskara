@@ -1,29 +1,87 @@
 export default function AboutPage() {
   return (
-    <section style={{ padding: "96px 48px" }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <p style={{ fontSize: 12, letterSpacing: "0.2em", color: "#6b7280" }}>
-          ABOUT US
-        </p>
+    <section className="bg-white">
+      <div className="container-bbm py-28">
+        {/* HEADER */}
+        <div className="max-w-3xl">
+          <span className="badge">ABOUT US</span>
 
-        <h1 style={{ fontSize: 40, marginTop: 16 }}>
-          PT Bhaskara Buana Mulya
-        </h1>
+          <h1 className="mt-6">
+            PT Bhaskara Buana Mulya
+          </h1>
 
-        <p style={{ marginTop: 24, fontSize: 18, lineHeight: 1.7 }}>
-          PT Bhaskara Buana Mulya is an engineering-driven general contractor
-          delivering civil, structural, MEP, and interior works with a strong
-          focus on safety, quality, and disciplined execution.
-        </p>
+          <p className="mt-8 text-lg">
+            PT Bhaskara Buana Mulya is an engineering-driven general contractor
+            delivering civil, structural, MEP, and interior works with a strong
+            focus on safety, quality, and disciplined execution across
+            industrial and commercial projects.
+          </p>
+        </div>
 
-        <div style={{ marginTop: 48 }}>
-          <h2 style={{ fontSize: 24 }}>Our Principles</h2>
-          <ul style={{ marginTop: 16, lineHeight: 1.8 }}>
-            <li>Safety-first culture on every project</li>
-            <li>Engineering-led planning & execution</li>
-            <li>Quality assurance & documentation</li>
-            <li>Accountable delivery and transparency</li>
-          </ul>
+        {/* POSITIONING */}
+        <div className="mt-20 max-w-4xl border-t border-gray-200 pt-12">
+          <h2>
+            Engineering-led execution, not just construction
+          </h2>
+
+          <p className="mt-6">
+            We operate with the belief that successful project delivery is
+            achieved through structured engineering planning, qualified site
+            supervision, and disciplined execution rather than ad-hoc decisions
+            on site. Every project is managed with clear scope definition,
+            approved method statements, and measurable performance controls.
+          </p>
+        </div>
+
+        {/* PRINCIPLES */}
+        <div className="mt-20">
+          <h2>
+            Our Operating Principles
+          </h2>
+
+          <div className="mt-10 grid gap-8 md:grid-cols-2 max-w-4xl">
+            <div className="card p-8">
+              <h3>Safety First</h3>
+              <p className="mt-3 text-sm">
+                Safety is embedded into our planning and execution processes.
+                We enforce HSE standards across all project phases and site
+                activities without compromise.
+              </p>
+            </div>
+
+            <div className="card p-8">
+              <h3>Engineering Discipline</h3>
+              <p className="mt-3 text-sm">
+                Our projects are led by engineering analysis, detailed planning,
+                and approved method statements to ensure predictable outcomes.
+              </p>
+            </div>
+
+            <div className="card p-8">
+              <h3>Quality Assurance</h3>
+              <p className="mt-3 text-sm">
+                We implement quality control procedures, inspection records,
+                and documentation to maintain workmanship and compliance.
+              </p>
+            </div>
+
+            <div className="card p-8">
+              <h3>Accountable Delivery</h3>
+              <p className="mt-3 text-sm">
+                We commit to transparent communication, progress reporting,
+                and accountability from mobilization through final handover.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CLOSING STATEMENT */}
+        <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
+          <p className="text-sm text-gray-500">
+            Our focus is not only on completing projects, but on delivering
+            outcomes that are safe, reliable, and aligned with our clients’
+            operational and business objectives.
+          </p>
         </div>
       </div>
     </section>
