@@ -2,7 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== GLOBAL CORPORATE BASE ===== */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
+  @apply bg-white text-gray-900 antialiased;
+}
+
+h1, h2, h3 {
+  @apply font-semibold tracking-tight;
+}
+
+section {
+  @apply w-full;
 }
