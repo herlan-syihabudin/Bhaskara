@@ -1,19 +1,10 @@
-type Vendor = {
-  name: string;
-  po: number;
-  real: number;
-};
+// /components/dashboard/CostByVendor.tsx
+type Vendor = { name: string; po: number; real: number };
 
-export default function CostByVendor({
-  data,
-}: {
-  data: Vendor[];
-}) {
+export default function CostByVendor({ data }: { data: Vendor[] }) {
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Biaya per Vendor
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900">Biaya per Vendor</h3>
 
       <table className="w-full mt-4 text-sm">
         <thead>
