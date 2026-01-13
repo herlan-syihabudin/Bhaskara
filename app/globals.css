@@ -13,18 +13,35 @@ body {
   @apply bg-white text-gray-900 antialiased;
 }
 
-h1, h2, h3 {
-  @apply font-semibold tracking-tight;
+/* ===============================
+   TYPOGRAPHY SYSTEM
+================================ */
+h1 {
+  @apply text-4xl md:text-5xl font-semibold tracking-tight text-gray-900 leading-tight;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl font-semibold tracking-tight text-gray-900;
+}
+
+h3 {
+  @apply text-xl font-semibold tracking-tight text-gray-900;
+}
+
+p {
+  @apply text-gray-600 leading-relaxed;
 }
 
 /* ===============================
    COMPONENT UTILITIES
 ================================ */
 @layer components {
+  /* Navigation */
   .nav-link {
     @apply text-gray-700 hover:text-gray-900 transition;
   }
 
+  /* Buttons */
   .btn-outline {
     @apply px-4 py-2 border border-gray-900 text-gray-900
            hover:bg-gray-900 hover:text-white transition;
@@ -35,6 +52,7 @@ h1, h2, h3 {
            hover:bg-black transition;
   }
 }
+
 /* ===============================
    BBM DESIGN SYSTEM
 ================================ */
@@ -49,31 +67,8 @@ h1, h2, h3 {
   @apply inline-block text-xs tracking-[0.35em] text-gray-500 uppercase;
 }
 
-/* Headings */
-h2 {
-  @apply text-3xl md:text-4xl font-semibold tracking-tight text-gray-900;
-}
-
-/* Paragraph default */
-p {
-  @apply text-gray-600 leading-relaxed;
-}
-
 /* Card system */
 .card {
-  @apply bg-white border border-gray-200 rounded-2xl transition;
-}
-/* === NAV LINK === */
-.nav-link {
-  @apply text-gray-700 hover:text-gray-900 transition;
-}
-
-/* === BUTTONS === */
-.btn-outline {
-  @apply px-4 py-2 border border-gray-900 text-gray-900
-         hover:bg-gray-900 hover:text-white transition;
-}
-
-.btn-primary {
-  @apply px-4 py-2 bg-gray-900 text-white hover:bg-black transition;
+  @apply bg-white border border-gray-200 rounded-2xl transition
+         hover:border-gray-300;
 }
