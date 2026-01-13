@@ -1,26 +1,23 @@
 export default function Footer() {
   return (
-    <footer
-      style={{
-        padding: "48px",
-        borderTop: "1px solid #e5e7eb",
-        background: "#fafafa",
-        fontSize: 14,
-        color: "#374151",
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <strong>PT Bhaskara Buana Mulya</strong>
+    <footer className="bg-gray-50 border-t border-gray-200">
+      <div className="container-bbm py-16">
+        <div className="max-w-2xl">
+          <strong className="text-gray-900">
+            PT Bhaskara Buana Mulya
+          </strong>
 
-        <p style={{ marginTop: 12, maxWidth: 520 }}>
-          Engineering-driven general contractor delivering civil,
-          structural, MEP, and interior solutions with a strong
-          commitment to safety, quality, and execution excellence.
-        </p>
+          <p className="mt-4 text-sm">
+            Engineering-driven general contractor delivering civil,
+            structural, MEP, and interior solutions with a strong
+            commitment to safety, quality, and execution excellence.
+          </p>
 
-        <p style={{ marginTop: 24, fontSize: 12, color: "#6b7280" }}>
-          © {new Date().getFullYear()} PT Bhaskara Buana Mulya. All rights reserved.
-        </p>
+          <p className="mt-10 text-xs text-gray-500">
+            © {new Date().getFullYear()} PT Bhaskara Buana Mulya.
+            All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   );
