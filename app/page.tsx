@@ -1,5 +1,7 @@
 import WhatWeDo from "@/components/home/WhatWeDo";
 import TrustBar from "@/components/home/TrustBar";
+import FeaturedProjects from "@/components/home/FeaturedProjects";
+import CallToAction from "@/components/home/CallToAction";
 
 export default function HomePage() {
   return (
@@ -82,6 +84,12 @@ export default function HomePage() {
 
       {/* TRUST BAR */}
       <TrustBar />
+
+            {/* FEATURED PROJECTS */}
+      <FeaturedProjects />
+
+      {/* CTA */}
+      <CallToAction />
     </>
   );
 }
