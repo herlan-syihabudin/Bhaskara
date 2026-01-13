@@ -35,3 +35,31 @@ h1, h2, h3 {
            hover:bg-black transition;
   }
 }
+/* ===============================
+   BBM DESIGN SYSTEM
+================================ */
+
+/* Container */
+.container-bbm {
+  @apply max-w-7xl mx-auto px-6;
+}
+
+/* Section badge */
+.badge {
+  @apply inline-block text-xs tracking-[0.35em] text-gray-500 uppercase;
+}
+
+/* Headings */
+h2 {
+  @apply text-3xl md:text-4xl font-semibold tracking-tight text-gray-900;
+}
+
+/* Paragraph default */
+p {
+  @apply text-gray-600 leading-relaxed;
+}
+
+/* Card system */
+.card {
+  @apply bg-white border border-gray-200 rounded-2xl transition;
+}
