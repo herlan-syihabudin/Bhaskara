@@ -1,38 +1,43 @@
 const stats = [
-  { k: "Safety", v: "HSE-first culture on every site." },
-  { k: "Quality", v: "Workmanship and documentation control." },
-  { k: "Delivery", v: "Schedule discipline & progress tracking." },
-  { k: "Engineering", v: "MEP & execution driven by method statements." },
+  {
+    k: "Safety",
+    v: "HSE-first culture enforced across all project sites.",
+  },
+  {
+    k: "Quality",
+    v: "Strict workmanship standards with documentation control.",
+  },
+  {
+    k: "Delivery",
+    v: "Schedule discipline supported by progress tracking.",
+  },
+  {
+    k: "Engineering",
+    v: "MEP and execution driven by approved method statements.",
+  },
 ];
 
 export default function TrustBar() {
   return (
-    <section style={{ padding: "0 48px 72px", background: "#ffffff" }}>
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          border: "1px solid #e5e7eb",
-          borderRadius: 20,
-          padding: 18,
-          background: "#fafafa",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 12,
-          }}
-        >
-          {stats.map((s) => (
-            <div key={s.k} style={{ padding: 14, background: "#ffffff", borderRadius: 16 }}>
-              <div style={{ fontSize: 13, color: "#6b7280" }}>{s.k}</div>
-              <div style={{ marginTop: 6, fontSize: 14, color: "#111827", fontWeight: 600 }}>
-                {s.v}
+    <section className="bg-white">
+      <div className="container-bbm pb-24">
+        <div className="border border-gray-200 rounded-2xl bg-gray-50 p-6 md:p-8">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((s) => (
+              <div
+                key={s.k}
+                className="bg-white rounded-xl p-6"
+              >
+                <div className="text-xs tracking-widest text-gray-500 uppercase">
+                  {s.k}
+                </div>
+
+                <div className="mt-3 text-sm font-medium text-gray-900 leading-relaxed">
+                  {s.v}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
