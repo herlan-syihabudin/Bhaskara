@@ -1,54 +1,62 @@
 const items = [
   {
     title: "General Contracting",
-    desc: "End-to-end project delivery with disciplined planning, cost control, and execution excellence.",
+    desc: "End-to-end project delivery with disciplined planning, cost control, and execution excellence across industrial and commercial projects.",
+    core: true,
   },
   {
     title: "MEP Engineering",
-    desc: "Electrical, mechanical, and plumbing systems engineered for performance, reliability, and safety.",
+    desc: "Electrical, mechanical, and plumbing systems engineered for performance, reliability, safety, and regulatory compliance.",
+    core: true,
   },
   {
     title: "Steel & Civil Works",
-    desc: "Structural steel, foundations, concrete works, and integrated site infrastructure.",
+    desc: "Structural steel, foundations, concrete works, and integrated site infrastructure delivered with engineering precision.",
+    core: false,
   },
   {
     title: "Interior Fit-Out",
-    desc: "Durable, functional, and efficient interior solutions for commercial and industrial spaces.",
+    desc: "Durable, functional, and efficient interior solutions for operational, commercial, and industrial environments.",
+    core: false,
   },
 ];
 
 export default function WhatWeDo() {
   return (
     <section className="bg-white">
-      <div className="container-bbm py-24">
+      <div className="container-bbm py-28">
         {/* SECTION HEADER */}
         <div className="max-w-2xl">
           <span className="badge">WHAT WE DO</span>
 
           <h2 className="mt-4">
-            Integrated services built to
-            <span className="block text-gray-900">
-              global engineering standards
-            </span>
+            Integrated services delivered with
+            <span className="block">engineering discipline</span>
           </h2>
 
           <p className="mt-5">
-            We combine engineering rigor, site discipline, and strong governance
-            to deliver safe, predictable, and high-quality outcomes across all
-            project phases.
+            We combine technical expertise, structured project management,
+            and site execution rigor to deliver predictable, safe,
+            and high-quality outcomes.
           </p>
         </div>
 
         {/* SERVICES GRID */}
-        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-20 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((x) => (
             <div
               key={x.title}
-              className="card p-8 group hover:border-gray-300"
+              className={`card p-8 group ${
+                x.core ? "border-gray-300" : ""
+              }`}
             >
-              <span className="badge">Service</span>
+              {x.core && (
+                <span className="badge mb-3 block">
+                  CORE SERVICE
+                </span>
+              )}
 
-              <h3 className="mt-4 text-lg text-gray-900">
+              <h3 className="mt-2 text-lg">
                 {x.title}
               </h3>
 
@@ -57,10 +65,19 @@ export default function WhatWeDo() {
               </p>
 
               <div className="mt-6 text-sm font-medium text-gray-900 opacity-0 group-hover:opacity-100 transition">
-                Learn more →
+                View capability →
               </div>
             </div>
           ))}
+        </div>
+
+        {/* DELIVERY STATEMENT */}
+        <div className="mt-20 max-w-3xl border-t border-gray-200 pt-10">
+          <p className="text-sm text-gray-500">
+            All services are delivered through structured project controls,
+            qualified supervision, safety-first execution, and transparent
+            coordination from mobilization to final handover.
+          </p>
         </div>
       </div>
     </section>
