@@ -2,132 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ================================
-   GLOBAL CORPORATE BASE
-   PT BHASKARA BUANA MULYA
+/* ===============================
+   GLOBAL BASE
 ================================ */
-
-/* ----- ROOT ----- */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-white text-gray-900 antialiased font-sans;
+  @apply bg-white text-gray-900 antialiased;
 }
 
-/* ----- TYPOGRAPHY ----- */
-h1 {
-  @apply text-4xl md:text-5xl font-semibold tracking-tight;
+h1, h2, h3 {
+  @apply font-semibold tracking-tight;
 }
 
-h2 {
-  @apply text-3xl md:text-4xl font-semibold tracking-tight;
-}
+/* ===============================
+   COMPONENT UTILITIES
+================================ */
+@layer components {
+  .nav-link {
+    @apply text-gray-700 hover:text-gray-900 transition;
+  }
 
-h3 {
-  @apply text-xl md:text-2xl font-semibold tracking-tight;
-}
+  .btn-outline {
+    @apply px-4 py-2 border border-gray-900 text-gray-900
+           hover:bg-gray-900 hover:text-white transition;
+  }
 
-h4 {
-  @apply text-lg font-semibold;
-}
-
-p {
-  @apply text-base leading-relaxed text-gray-600;
-}
-
-small {
-  @apply text-sm text-gray-500;
-}
-
-/* ----- LINKS ----- */
-a {
-  @apply text-gray-900 transition-colors duration-200;
-}
-
-a:hover {
-  @apply text-black;
-}
-
-/* ----- SECTION BASE ----- */
-section {
-  @apply w-full;
-}
-
-/* ----- CONTAINER STANDARD ----- */
-.container-bbm {
-  @apply max-w-7xl mx-auto px-6;
-}
-
-/* ----- BUTTONS ----- */
-.btn-primary {
-  @apply inline-flex items-center justify-center
-         px-6 py-3
-         bg-gray-900 text-white text-sm font-medium
-         hover:bg-black
-         transition-all duration-200;
-}
-
-.btn-outline {
-  @apply inline-flex items-center justify-center
-         px-6 py-3
-         border border-gray-900 text-gray-900 text-sm font-medium
-         hover:bg-gray-900 hover:text-white
-         transition-all duration-200;
-}
-
-/* ----- CARDS ----- */
-.card {
-  @apply bg-white border border-gray-200 rounded-lg
-         shadow-sm hover:shadow-md
-         transition-shadow duration-300;
-}
-
-/* ----- BADGES / TAGS ----- */
-.badge {
-  @apply inline-block text-xs tracking-wide uppercase
-         text-gray-500;
-}
-
-/* ----- NAVIGATION ----- */
-.nav-link {
-  @apply text-sm text-gray-700 hover:text-black
-         transition-colors duration-200;
-}
-
-/* ----- FOOTER ----- */
-.footer-text {
-  @apply text-sm text-gray-500;
-}
-
-/* ----- UTILITIES ----- */
-.divider {
-  @apply w-full h-px bg-gray-200;
-}
-
-/* ----- FORMS (FUTURE RFQ) ----- */
-input,
-textarea,
-select {
-  @apply w-full border border-gray-300 px-4 py-2
-         text-sm text-gray-900
-         focus:outline-none focus:ring-1 focus:ring-gray-900;
-}
-
-label {
-  @apply text-sm font-medium text-gray-700;
-}
-
-/* ----- ANIMATION HELPERS ----- */
-.fade-in {
-  @apply opacity-0 translate-y-4;
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .btn-primary {
+    @apply px-4 py-2 bg-gray-900 text-white
+           hover:bg-black transition;
   }
 }
