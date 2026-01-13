@@ -1,54 +1,34 @@
 export default function Header() {
   return (
-    <header
-      style={{
-        height: 72,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 48px",
-        borderBottom: "1px solid #e5e7eb",
-        background: "#ffffff",
-      }}
-    >
-      {/* LOGO / BRAND */}
-      <a
-        href="/"
-        style={{
-          fontSize: 18,
-          fontWeight: 700,
-          textDecoration: "none",
-          color: "#111827",
-        }}
-      >
-        Bhaskara Buana Mulya
-      </a>
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto h-[72px] px-6 flex items-center justify-between">
+        {/* Brand */}
+        <a href="/" className="text-lg font-bold text-gray-900">
+          Bhaskara Buana Mulya
+        </a>
 
-      {/* NAVIGATION */}
-      <nav style={{ display: "flex", gap: 32, fontSize: 14 }}>
-        <a href="/about" style={navStyle}>
-          About
-        </a>
-        <a href="/services" style={navStyle}>
-          Services
-        </a>
-        <a href="/projects" style={navStyle}>
-          Projects
-        </a>
-        <a href="/capabilities" style={navStyle}>
-          Capabilities
-        </a>
-        <a href="/contact" style={navStyle}>
-          Contact
-        </a>
-      </nav>
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-8 text-sm">
+          <a href="/about" className="text-gray-700 hover:text-gray-900">
+            About
+          </a>
+          <a href="/services" className="text-gray-700 hover:text-gray-900">
+            Services
+          </a>
+          <a href="/projects" className="text-gray-700 hover:text-gray-900">
+            Projects
+          </a>
+          <a href="/capabilities" className="text-gray-700 hover:text-gray-900">
+            Capabilities
+          </a>
+          <a
+            href="/contact"
+            className="ml-2 px-4 py-2 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition"
+          >
+            Contact
+          </a>
+        </nav>
+      </div>
     </header>
   );
 }
-
-/* ===== shared nav style ===== */
-const navStyle = {
-  textDecoration: "none",
-  color: "#111827",
-  fontWeight: 500,
-};
