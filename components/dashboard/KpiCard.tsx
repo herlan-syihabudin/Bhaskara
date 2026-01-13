@@ -3,7 +3,7 @@ import type { BudgetStatus } from "@/lib/budgetEngine";
 
 type Props = {
   title: string;
-  value?: number | string;
+  value: number | string;
   subtitle?: string;
   type?: "money" | "text" | "status";
   statusValue?: BudgetStatus;
@@ -24,7 +24,7 @@ export default function KpiCard({
     <div className="card p-6">
       <p className="text-sm text-gray-500">{title}</p>
 
-      <div className="mt-2 min-h-[36px] flex items-center">
+      <div className="mt-2">
         {type === "status" && statusValue ? (
           <StatusBadge status={statusValue} />
         ) : (
