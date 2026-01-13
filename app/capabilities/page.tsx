@@ -1,84 +1,107 @@
 export default function CapabilitiesPage() {
   return (
-    <section style={{ padding: "96px 48px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <p style={{ fontSize: 12, letterSpacing: "0.2em", color: "#6b7280" }}>
-          CAPABILITIES
-        </p>
+    <section className="bg-white">
+      <div className="container-bbm py-28">
+        {/* HEADER */}
+        <div className="max-w-3xl">
+          <span className="badge">CAPABILITIES</span>
 
-        <h1 style={{ fontSize: 40, marginTop: 16 }}>
-          Engineering, Safety, and Execution Excellence
-        </h1>
+          <h1 className="mt-6">
+            Engineering, safety, and
+            <span className="block">execution excellence</span>
+          </h1>
 
-        <p style={{ marginTop: 20, fontSize: 18, lineHeight: 1.7, maxWidth: 800 }}>
-          PT Bhaskara Buana Mulya delivers projects through disciplined engineering,
-          structured project management, and a safety-first culture supported by
-          robust quality systems.
-        </p>
+          <p className="mt-8 text-lg">
+            PT Bhaskara Buana Mulya delivers projects through disciplined
+            engineering, structured project management, and a safety-first
+            culture supported by robust quality and control systems.
+          </p>
+        </div>
 
-        {/* ENGINEERING */}
-        <Section
-          title="Engineering Capability"
-          items={[
-            "MEP system design review & coordination",
-            "Method statements & construction sequencing",
-            "Shop drawing coordination",
-            "Value engineering and constructability review",
-          ]}
-        />
+        {/* CAPABILITY SECTIONS */}
+        <div className="mt-24 grid gap-16 max-w-5xl">
+          <CapabilitySection
+            title="Engineering Capability"
+            desc="Engineering discipline is embedded into our planning and execution processes to ensure constructability, safety, and predictable outcomes."
+            items={[
+              "MEP system design review and coordination",
+              "Method statements and construction sequencing",
+              "Shop drawing coordination and technical submittals",
+              "Value engineering and constructability review",
+            ]}
+          />
 
-        {/* PROJECT MANAGEMENT */}
-        <Section
-          title="Project Management"
-          items={[
-            "Integrated project planning & scheduling",
-            "Cost control and progress monitoring",
-            "Risk identification and mitigation",
-            "Client communication and reporting",
-          ]}
-        />
+          <CapabilitySection
+            title="Project Management"
+            desc="Projects are managed through structured planning, monitoring, and control to maintain schedule, cost, and quality objectives."
+            items={[
+              "Integrated project planning and scheduling",
+              "Cost control and progress monitoring",
+              "Risk identification and mitigation planning",
+              "Client communication and progress reporting",
+            ]}
+          />
 
-        {/* HSE */}
-        <Section
-          title="Health, Safety & Environment (HSE)"
-          items={[
-            "Safety induction and toolbox meetings",
-            "Job Safety Analysis (JSA)",
-            "Permit-to-work system",
-            "Incident prevention and reporting",
-          ]}
-        />
+          <CapabilitySection
+            title="Health, Safety & Environment (HSE)"
+            desc="Safety is a non-negotiable value enforced across all project activities through proactive planning and site supervision."
+            items={[
+              "Safety induction and regular toolbox meetings",
+              "Job Safety Analysis (JSA) implementation",
+              "Permit-to-work system and site controls",
+              "Incident prevention, reporting, and corrective actions",
+            ]}
+          />
 
-        {/* QUALITY */}
-        <Section
-          title="Quality Assurance & Control"
-          items={[
-            "Inspection & Test Plan (ITP)",
-            "Material and workmanship inspection",
-            "Documentation and handover dossiers",
-            "Continuous improvement process",
-          ]}
-        />
+          <CapabilitySection
+            title="Quality Assurance & Control"
+            desc="Quality is ensured through systematic inspection, documentation, and continuous improvement processes."
+            items={[
+              "Inspection and Test Plans (ITP)",
+              "Material and workmanship inspection",
+              "Documentation and handover dossiers",
+              "Continuous improvement and corrective actions",
+            ]}
+          />
+        </div>
+
+        {/* CLOSING */}
+        <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
+          <p className="text-sm text-gray-500">
+            Our capabilities are continuously developed to align with project
+            complexity, regulatory requirements, and our clients’ operational
+            objectives.
+          </p>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ===== reusable section ===== */
-function Section({
+/* ===== REUSABLE SECTION ===== */
+function CapabilitySection({
   title,
+  desc,
   items,
 }: {
   title: string;
+  desc: string;
   items: string[];
 }) {
   return (
-    <div style={{ marginTop: 56 }}>
-      <h2 style={{ fontSize: 26 }}>{title}</h2>
+    <div className="card p-10">
+      <h2>{title}</h2>
 
-      <ul style={{ marginTop: 16, lineHeight: 2 }}>
+      <p className="mt-4 max-w-3xl">
+        {desc}
+      </p>
+
+      <ul className="mt-8 grid gap-3 md:grid-cols-2 text-sm">
         {items.map((item) => (
-          <li key={item}>{item}</li>
+          <li key={item} className="flex gap-2">
+            <span className="text-gray-400">—</span>
+            <span>{item}</span>
+          </li>
         ))}
       </ul>
     </div>
