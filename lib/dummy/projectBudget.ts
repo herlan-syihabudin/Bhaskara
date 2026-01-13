@@ -1,10 +1,18 @@
+import { getBudgetStatus } from "@/lib/budgetEngine";
+
 export const projectBudget = {
   projectName: "Proyek Gudang Cikarang",
   nilaiKontrak: 2500000000,
   totalPO: 1200000000,
   biayaReal: 820000000,
-  sisaBudget: 1680000000,
-  status: "AMAN",
+
+  get sisaBudget() {
+    return this.nilaiKontrak - this.biayaReal;
+  },
+
+  get status() {
+    return getBudgetStatus(this.nilaiKontrak, this.biayaReal);
+  },
 
   byCategory: [
     { name: "Material", po: 600000000, real: 420000000 },
