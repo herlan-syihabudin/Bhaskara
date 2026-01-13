@@ -1,3 +1,4 @@
+// /components/dashboard/CostByCategory.tsx
 import { rowToneFromRemainingPct } from "@/lib/budgetEngine";
 
 type Category = { name: string; po: number; real: number };
@@ -30,9 +31,7 @@ export default function CostByCategory({ data }: { data: Category[] }) {
                 <td className="py-3">Rp {row.po.toLocaleString("id-ID")}</td>
                 <td className="py-3">Rp {row.real.toLocaleString("id-ID")}</td>
                 <td className="py-3 font-medium">Rp {sisa.toLocaleString("id-ID")}</td>
-                <td className={`py-3 text-right font-semibold ${tone}`}>
-                  {sisaPct.toFixed(1)}%
-                </td>
+                <td className={`py-3 text-right font-semibold ${tone}`}>{sisaPct.toFixed(1)}%</td>
               </tr>
             );
           })}
