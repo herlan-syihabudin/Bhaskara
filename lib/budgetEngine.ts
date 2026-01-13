@@ -1,44 +1,27 @@
-/* ===============================
-   TYPES
-================================ */
 export type BudgetStatus = "AMAN" | "WARNING" | "BAHAYA";
 
-/* ===============================
-   CONSTANTS (RULE ENGINE)
-   gampang diubah nanti
-================================ */
-const WARNING_USED_PCT = 75; // >=75% mulai waspada
-const DANGER_USED_PCT = 90;  // >=90% bahaya
-
-/* ===============================
-   HELPERS
-================================ */
-export function pct(part: number, total: number): number {
+/**
+ * hitung persentase
+ * contoh: pct(820jt, 2.5M) = 32.8
+ */
+export function pct(part: number, total: number) {
   if (!total || total <= 0) return 0;
   return (part / total) * 100;
 }
 
-/* ===============================
-   STATUS ENGINE
-================================ */
-export function statusFromUsedPct(usedPct: number): BudgetStatus {
-  if (usedPct >= DANGER_USED_PCT) return "BAHAYA";
-  if (usedPct >= WARNING_USED_PCT) return "WARNING";
+/**
+ * status berdasarkan % biaya TERPAKAI
+ */
+export function statusFromUsedPct(p: number): BudgetStatus {
+  if (p >= 90) return "BAHAYA";
+  if (p >= 75) return "WARNING";
   return "AMAN";
 }
 
-export function statusFromBudget(
-  nilaiKontrak: number,
-  biayaReal: number
-): BudgetStatus {
-  const used = pct(biayaReal, nilaiKontrak);
-  return statusFromUsedPct(used);
-}
-
-/* ===============================
-   UI HELPERS
-================================ */
-export function statusColor(status: BudgetStatus): string {
+/**
+ * warna badge status
+ */
+export function statusColor(status: BudgetStatus) {
   switch (status) {
     case "AMAN":
       return "bg-emerald-50 text-emerald-800 border-emerald-200";
@@ -49,7 +32,10 @@ export function statusColor(status: BudgetStatus): string {
   }
 }
 
-export function rowToneFromRemainingPct(remainingPct: number): string {
+/**
+ * warna baris tabel dari % SISA
+ */
+export function rowToneFromRemainingPct(remainingPct: number) {
   if (remainingPct <= 10) return "text-rose-700";
   if (remainingPct <= 25) return "text-amber-700";
   return "text-gray-900";
