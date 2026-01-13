@@ -1,3 +1,4 @@
+// /components/dashboard/KpiCard.tsx
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import type { BudgetStatus } from "@/lib/budgetEngine";
 
@@ -29,16 +30,12 @@ export default function KpiCard({
           <StatusBadge status={statusValue} />
         ) : (
           <p className="text-2xl font-semibold text-gray-900">
-            {typeof value === "number" && type === "money"
-              ? formatIDR(value)
-              : value}
+            {typeof value === "number" && type === "money" ? formatIDR(value) : value}
           </p>
         )}
       </div>
 
-      {subtitle && (
-        <p className="mt-2 text-xs text-gray-500">{subtitle}</p>
-      )}
+      {subtitle ? <p className="mt-2 text-xs text-gray-500">{subtitle}</p> : null}
     </div>
   );
 }
