@@ -1,3 +1,4 @@
+// /lib/dummy/projectBudget.ts
 import { statusFromBudget } from "@/lib/budgetEngine";
 
 export const projectBudget = {
@@ -6,6 +7,8 @@ export const projectBudget = {
   totalPO: 1200000000,
   biayaReal: 820000000,
   sisaBudget: 1680000000,
+
+  // status auto dari biayaReal vs nilaiKontrak
   status: statusFromBudget(2500000000, 820000000),
 
   byCategory: [
