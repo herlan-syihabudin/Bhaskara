@@ -39,6 +39,12 @@ export default function WhatWeDo() {
             and site execution rigor to deliver predictable, safe,
             and high-quality outcomes.
           </p>
+
+          {/* ➕ Trust clarification (TAMBAHAN) */}
+          <p className="mt-3 text-sm text-gray-500 max-w-xl">
+            Our scope covers planning, coordination, execution, and handover,
+            aligned with approved drawings, method statements, and project controls.
+          </p>
         </div>
 
         {/* SERVICES GRID */}
@@ -46,8 +52,8 @@ export default function WhatWeDo() {
           {items.map((x) => (
             <div
               key={x.title}
-              className={`card p-8 group ${
-                x.core ? "border-gray-300" : ""
+              className={`card p-8 group transition ${
+                x.core ? "border-gray-300 shadow-sm" : ""
               }`}
             >
               {x.core && (
@@ -64,6 +70,7 @@ export default function WhatWeDo() {
                 {x.desc}
               </p>
 
+              {/* ➕ Micro affordance (TAMBAHAN) */}
               <div className="mt-6 text-sm font-medium text-gray-900 opacity-0 group-hover:opacity-100 transition">
                 View capability →
               </div>
@@ -76,7 +83,8 @@ export default function WhatWeDo() {
           <p className="text-sm text-gray-500">
             All services are delivered through structured project controls,
             qualified supervision, safety-first execution, and transparent
-            coordination from mobilization to final handover.
+            coordination from mobilization to final handover,
+            ensuring compliance with specifications, schedules, and quality standards.
           </p>
         </div>
       </div>
