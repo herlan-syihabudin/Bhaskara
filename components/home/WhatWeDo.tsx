@@ -5,78 +5,44 @@ const items = [
   },
   {
     title: "MEP Engineering",
-    desc: "Electrical, mechanical, plumbing systems built for performance, safety, and maintainability.",
+    desc: "Electrical, mechanical, plumbing systems built for performance and safety.",
   },
   {
     title: "Steel & Civil Works",
-    desc: "Structural steel, foundations, concrete works, and site infrastructure with quality assurance.",
+    desc: "Structural steel, foundations, concrete works, and site infrastructure.",
   },
   {
     title: "Interior Fit-Out",
-    desc: "Functional, durable, and refined interior delivery for commercial & industrial spaces.",
+    desc: "Durable and functional interior solutions for commercial & industrial spaces.",
   },
 ];
 
 export default function WhatWeDo() {
   return (
-    <section style={{ padding: "72px 48px", background: "#ffffff" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
-          <div style={{ maxWidth: 560 }}>
-            <p style={{ fontSize: 12, letterSpacing: "0.2em", color: "#6b7280", margin: 0 }}>
-              WHAT WE DO
-            </p>
-            <h2 style={{ fontSize: 32, lineHeight: 1.2, color: "#111827", marginTop: 12 }}>
-              Integrated services, built to global standards.
-            </h2>
-            <p style={{ marginTop: 14, color: "#374151", fontSize: 16, lineHeight: 1.6 }}>
-              We combine engineering rigor, site discipline, and strong governance to deliver safe,
-              predictable outcomes—on time and on spec.
-            </p>
-          </div>
-
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
-            {["HSE-first", "Quality System", "Cost Control", "Schedule Discipline"].map((t) => (
-              <span
-                key={t}
-                style={{
-                  fontSize: 12,
-                  padding: "8px 12px",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 999,
-                  color: "#111827",
-                  background: "#fafafa",
-                }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
+    <section className="bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="max-w-2xl">
+          <p className="text-xs tracking-[0.25em] text-gray-500">
+            WHAT WE DO
+          </p>
+          <h2 className="mt-3 text-3xl">
+            Integrated services built to global standards.
+          </h2>
+          <p className="mt-4 text-gray-600">
+            We combine engineering rigor, site discipline, and strong governance
+            to deliver safe, predictable outcomes.
+          </p>
         </div>
 
-        <div
-          style={{
-            marginTop: 28,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((x) => (
             <div
               key={x.title}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: 16,
-                padding: 20,
-                background: "#ffffff",
-              }}
+              className="border border-gray-200 rounded-2xl p-6 bg-white"
             >
-              <div style={{ fontSize: 14, color: "#6b7280" }}>Service</div>
-              <div style={{ marginTop: 8, fontSize: 18, fontWeight: 600, color: "#111827" }}>
-                {x.title}
-              </div>
-              <p style={{ marginTop: 10, color: "#374151", lineHeight: 1.6 }}>
+              <div className="text-sm text-gray-500">Service</div>
+              <h3 className="mt-2 text-lg">{x.title}</h3>
+              <p className="mt-3 text-gray-600 text-sm leading-relaxed">
                 {x.desc}
               </p>
             </div>
