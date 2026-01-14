@@ -9,19 +9,22 @@ export default function HomePage() {
     <>
       <section className="relative bg-gradient-to-b from-white to-gray-50 border-b border-gray-200">
   <div className="container-bbm py-32 grid lg:grid-cols-12 gap-16 items-center">
-    
-    {/* LEFT CONTENT */}
+
+    {/* ================= LEFT CONTENT ================= */}
     <div className="lg:col-span-7">
+
+      {/* Pillar */}
       <p className="text-xs tracking-[0.35em] text-gray-500 mb-4">
         ENGINEERING • SAFETY • EXECUTION
       </p>
 
-      {/* ➕ Positioning clarifier (TAMBAHAN) */}
+      {/* Positioning clarifier */}
       <p className="text-sm text-gray-600 mb-6 max-w-xl">
         Engineering-driven general contractor for industrial, commercial,
         and infrastructure projects.
       </p>
 
+      {/* Headline */}
       <h1 className="max-w-3xl">
         Engineering-driven contractor delivering
         <span className="block mt-2">
@@ -29,20 +32,22 @@ export default function HomePage() {
         </span>
       </h1>
 
+      {/* Core value */}
       <p className="mt-8 text-lg max-w-2xl">
         PT Bhaskara Buana Mulya provides integrated general contracting,
         civil & steel construction, MEP engineering, and interior fit-out
         with disciplined execution and safety-first culture.
       </p>
 
-      {/* ➕ Trust sentence (TAMBAHAN) */}
+      {/* Trust statement */}
       <p className="mt-4 text-sm text-gray-600 max-w-2xl">
-        We execute every project through structured planning, method
-        statements, and site supervision to ensure compliance with
-        approved specifications, schedules, and safety standards.
+        We execute every project through structured planning, approved method
+        statements, and qualified site supervision to ensure compliance with
+        specifications, schedules, and safety standards.
       </p>
 
-      <div className="mt-12 flex gap-4">
+      {/* CTA */}
+      <div className="mt-12 flex flex-wrap gap-4">
         <a href="/contact" className="btn-primary px-8 py-4">
           Request Proposal
         </a>
@@ -52,16 +57,16 @@ export default function HomePage() {
         </a>
       </div>
 
-      {/* ➕ CTA micro context */}
+      {/* CTA micro context */}
       <p className="mt-3 text-xs text-gray-500">
         Discuss your project scope, timeline, and technical requirements with our team.
       </p>
     </div>
 
-    {/* RIGHT STATS */}
+    {/* ================= RIGHT STATS ================= */}
     <div className="lg:col-span-5">
       <div className="bg-white border border-gray-200 rounded-2xl p-8 grid grid-cols-2 gap-8">
-        
+
         <div>
           <p className="text-sm text-gray-500">Experience</p>
           <p className="mt-2 text-3xl font-semibold text-gray-900">10+</p>
