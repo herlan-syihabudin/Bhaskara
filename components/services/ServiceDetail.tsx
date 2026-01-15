@@ -59,6 +59,13 @@ export default function ServiceDetail() {
             engineering coordination, and site execution aligned
             with safety, quality, and schedule objectives.
           </p>
+
+          {/* ➕ execution anchor */}
+          <p className="mt-3 text-sm text-gray-500 max-w-xl">
+            Our delivery approach emphasizes repeatable processes,
+            documented controls, and accountable supervision across
+            all scopes of work.
+          </p>
         </div>
 
         {/* DETAIL BLOCKS */}
@@ -77,6 +84,12 @@ export default function ServiceDetail() {
                 <p className="mt-4 max-w-xl">
                   {d.desc}
                 </p>
+
+                {/* ➕ assurance micro copy */}
+                <p className="mt-4 text-sm text-gray-500 max-w-xl">
+                  Executed under defined scope, approved drawings,
+                  and coordinated supervision.
+                </p>
               </div>
 
               {/* RIGHT */}
@@ -90,6 +103,15 @@ export default function ServiceDetail() {
               </ul>
             </div>
           ))}
+        </div>
+
+        {/* CLOSING ASSURANCE */}
+        <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
+          <p className="text-sm text-gray-500">
+            By applying the same disciplined delivery framework across
+            all services, we ensure consistency, risk control, and
+            predictable outcomes throughout the project lifecycle.
+          </p>
         </div>
       </div>
     </section>
