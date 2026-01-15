@@ -1,8 +1,7 @@
-// /app/(dash)/budget/page.tsx
 import KpiCard from "@/components/dashboard/KpiCard";
 import CostByCategory from "@/components/dashboard/CostByCategory";
 import CostByVendor from "@/components/dashboard/CostByVendor";
-import { getProjectById, projects } from "@/lib/dummy/projectBudget";
+import { getProjectDetailById, projectDetails } from "@/lib/dummy/projectDetail";
 import { pct, statusFromUsedPct } from "@/lib/budgetEngine";
 
 export default function BudgetPage({
@@ -11,11 +10,10 @@ export default function BudgetPage({
   searchParams?: { id?: string };
 }) {
   const id = searchParams?.id;
-  const data = (id ? getProjectById(id) : null) ?? projects[0];
+  const data = (id ? getProjectDetailById(id) : null) ?? projectDetails[0];
 
   const spentPct = pct(data.biayaReal, data.nilaiKontrak);
   const autoStatus = statusFromUsedPct(spentPct);
-
   const sisaBudget = data.nilaiKontrak - data.biayaReal;
 
   return (
@@ -44,13 +42,12 @@ export default function BudgetPage({
           value={autoStatus}
           type="status"
           statusValue={autoStatus}
-          subtitle="Otomatis dari % biaya"
         />
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <CostByCategory data={data.byCategory ?? []} />
-        <CostByVendor data={data.byVendor ?? []} />
+        <CostByCategory data={data.byCategory} />
+        <CostByVendor data={data.byVendor} />
       </div>
     </section>
   );
