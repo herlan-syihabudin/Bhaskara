@@ -1,8 +1,6 @@
+// /lib/dummy/projectBudget.ts
 import { statusFromBudget } from "@/lib/budgetEngine";
 
-/* =========================
-   TYPE
-========================= */
 export type ProjectBudget = {
   id: string;
   projectName: string;
@@ -15,9 +13,6 @@ export type ProjectBudget = {
   byVendor: { name: string; po: number; real: number }[];
 };
 
-/* =========================
-   DATA (MULTI PROJECT)
-========================= */
 export const projects: ProjectBudget[] = [
   {
     id: "cikarang",
@@ -50,9 +45,9 @@ export const projects: ProjectBudget[] = [
   },
 ];
 
-/* =========================
-   HELPERS (ERP STYLE)
-========================= */
+// ✅ alias biar import { projectBudgets } tetap jalan
+export const projectBudgets = projects;
+
 export function getProjectById(id: string) {
   return projects.find((p) => p.id === id);
 }
