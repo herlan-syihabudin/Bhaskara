@@ -1,5 +1,3 @@
-// /app/(dash)/dashboard/page.tsx
-
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 import { projects } from "@/lib/data/projects";
