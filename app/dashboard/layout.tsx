@@ -1,50 +1,55 @@
 // app/dashboard/layout.tsx
 import Link from "next/link";
+import { ReactNode } from "react";
+import Sidebar from "./sidebar";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r">
-        <div className="px-6 py-5 border-b">
-          <p className="text-sm tracking-widest text-gray-400">ERP</p>
-          <h2 className="text-lg font-semibold">Bhaskara</h2>
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex min-h-screen">
+        {/* SIDEBAR */}
+        <Sidebar />
+
+        {/* MAIN AREA */}
+        <div className="flex-1 min-w-0">
+          {/* TOPBAR */}
+          <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
+            <div className="px-6 lg:px-8 h-16 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl border bg-white flex items-center justify-center text-xs font-semibold text-gray-700">
+                  BBM
+                </div>
+                <div className="leading-tight">
+                  <p className="text-xs tracking-[0.35em] text-gray-400 uppercase">
+                    ERP Dashboard
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    Bhaskara Buana Mulya
+                  </p>
+                </div>
+              </div>
+
+              {/* quick actions placeholder */}
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/"
+                  className="text-sm px-3 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Back to Site
+                </Link>
+              </div>
+            </div>
+          </header>
+
+          {/* PAGE CONTENT */}
+          <main className="px-6 lg:px-8 py-8">{children}</main>
+
+          {/* FOOTER (optional, halus) */}
+          <footer className="px-6 lg:px-8 py-6 text-xs text-gray-400">
+            © {new Date().getFullYear()} PT Bhaskara Buana Mulya — Internal ERP
+          </footer>
         </div>
-
-        <nav className="p-4 space-y-1 text-sm">
-          <SidebarLink href="/dashboard/owner" label="Owner Dashboard" />
-          <SidebarLink href="/dashboard/pm" label="Project Manager" />
-          <SidebarLink href="/dashboard/finance" label="Finance" />
-          <SidebarLink href="/dashboard/purchasing" label="Purchasing" />
-          <SidebarLink href="/dashboard/logistik" label="Logistik" />
-        </nav>
-      </aside>
-
-      {/* CONTENT */}
-      <main className="flex-1 p-8">
-        {children}
-      </main>
+      </div>
     </div>
-  );
-}
-
-function SidebarLink({
-  href,
-  label,
-}: {
-  href: string;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition"
-    >
-      {label}
-    </Link>
   );
 }
