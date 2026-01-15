@@ -1,5 +1,5 @@
 // /app/(dash)/dashboard/page.tsx
-import { projectBudgets, getBudgetSummary } from "@/lib/dummy/projectBudget";
+import { projects, getBudgetSummary } from "@/lib/dummy/projectBudget";
 import { ProjectBudget } from "@/lib/dummy/projectBudget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
