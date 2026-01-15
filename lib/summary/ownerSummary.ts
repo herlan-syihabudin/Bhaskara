@@ -1,5 +1,6 @@
 import { projects } from "@/lib/data/projects";
-import { statusFromBudget, BudgetStatus } from "@/lib/engine/budgetEngine";
+import { statusFromBudget } from "@/lib/engine/budget";
+import type { BudgetStatus } from "@/lib/engine/budget";
 
 export function getOwnerSummary(): {
   totalProyek: number;
