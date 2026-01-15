@@ -1,11 +1,18 @@
-// app/dashboard/finance/page.tsx
-export default function FinanceDashboard() {
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import KpiPlaceholder from "@/components/dashboard/KpiPlaceholder";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+
+export default function FinancePage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Finance Dashboard</h1>
-      <p className="text-sm text-gray-500 mt-2">
-        Cashflow, invoice, dan pembayaran
-      </p>
-    </div>
+    <>
+      <DashboardHeader
+        title="Finance Dashboard"
+        subtitle="Pengelolaan cashflow, invoice, dan pembayaran"
+      />
+
+      <KpiPlaceholder />
+
+      <SectionPlaceholder title="Ringkasan Keuangan" />
+    </>
   );
 }
