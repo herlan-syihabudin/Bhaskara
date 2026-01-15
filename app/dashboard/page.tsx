@@ -1,35 +1,26 @@
+import { projects } from "@/lib/data/projects";
+import { statusFromBudget } from "@/lib/engine/budget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
-import { projects } from "@/lib/data/projects";
-import { getOwnerSummary } from "@/lib/summary/ownerSummary";
 
 export default function OwnerDashboardPage() {
-  const summary = getOwnerSummary();
+  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
+  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
+  const totalSisa = totalKontrak - totalBiaya;
+  const status = statusFromBudget(totalKontrak, totalBiaya);
 
   return (
-    <section className="container-bbm py-12 space-y-12">
-      {/* HEADER */}
-      <div className="max-w-2xl">
-        <p className="text-xs tracking-[0.35em] text-gray-400 uppercase mb-2">
-          OWNER DASHBOARD
-        </p>
+    <section className="space-y-10">
+      <h1 className="text-2xl font-semibold">Owner Dashboard</h1>
 
-        <h1 className="text-3xl font-semibold">Dashboard Proyek</h1>
-
-        <p className="mt-2 text-sm text-gray-500">
-          Ringkasan seluruh proyek berjalan beserta kondisi biaya dan kontrak.
-        </p>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <KpiCard title="Total Proyek" value={projects.length} type="text" />
+        <KpiCard title="Total Kontrak" value={totalKontrak} />
+        <KpiCard title="Total Biaya" value={totalBiaya} />
+        <KpiCard title="Total Sisa" value={totalSisa} />
+        <KpiCard title="Status" type="status" value={status} statusValue={status} />
       </div>
 
-      {/* KPI */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard title="Total Proyek" value={summary.totalProyek} type="text" />
-        <KpiCard title="Total Kontrak" value={summary.totalKontrak} />
-        <KpiCard title="Total Biaya" value={summary.totalBiaya} />
-        <KpiCard title="Total Sisa" value={summary.totalSisa} />
-      </div>
-
-      {/* TABLE */}
       <ProjectTable projects={projects} />
     </section>
   );
