@@ -1,4 +1,5 @@
 import type { BudgetStatus } from "@/lib/engine/budget";
+import { statusColor } from "@/lib/engine/budget";
 
 export default function StatusBadge({ status }: { status: BudgetStatus }) {
   return (
