@@ -165,3 +165,19 @@ p {
     transition-delay: 0.4s;
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary,
+.btn-outline {
+  @apply rounded-xl font-medium;
+}
