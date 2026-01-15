@@ -25,7 +25,8 @@ export default function WhatWeDo() {
   return (
     <section className="bg-white">
       <div className="container-bbm py-28">
-        {/* SECTION HEADER */}
+
+        {/* ================= HEADER ================= */}
         <div className="max-w-2xl">
           <span className="badge">WHAT WE DO</span>
 
@@ -40,21 +41,23 @@ export default function WhatWeDo() {
             and high-quality outcomes.
           </p>
 
-          {/* ➕ Trust clarification (TAMBAHAN) */}
+          {/* Trust clarification (TAMBAHAN — positioning clarity) */}
           <p className="mt-3 text-sm text-gray-500 max-w-xl">
             Our scope covers planning, coordination, execution, and handover,
-            aligned with approved drawings, method statements, and project controls.
+            aligned with approved drawings, method statements, and project controls
+            to ensure consistency from mobilization to completion.
           </p>
         </div>
 
-        {/* SERVICES GRID */}
+        {/* ================= SERVICES GRID ================= */}
         <div className="mt-20 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((x) => (
             <div
               key={x.title}
-              className={`card p-8 group transition ${
-                x.core ? "border-gray-300 shadow-sm" : ""
-              }`}
+              className={`card p-8 group transition-all
+                hover:-translate-y-0.5 hover:shadow-md
+                ${x.core ? "border-gray-300 shadow-sm" : ""}
+              `}
             >
               {x.core && (
                 <span className="badge mb-3 block">
@@ -70,7 +73,7 @@ export default function WhatWeDo() {
                 {x.desc}
               </p>
 
-              {/* ➕ Micro affordance (TAMBAHAN) */}
+              {/* Micro affordance (UX clarity, bukan CTA keras) */}
               <div className="mt-6 text-sm font-medium text-gray-900 opacity-0 group-hover:opacity-100 transition">
                 View capability →
               </div>
@@ -78,15 +81,17 @@ export default function WhatWeDo() {
           ))}
         </div>
 
-        {/* DELIVERY STATEMENT */}
+        {/* ================= DELIVERY STATEMENT ================= */}
         <div className="mt-20 max-w-3xl border-t border-gray-200 pt-10">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 leading-relaxed">
             All services are delivered through structured project controls,
             qualified supervision, safety-first execution, and transparent
-            coordination from mobilization to final handover,
-            ensuring compliance with specifications, schedules, and quality standards.
+            coordination from mobilization to final handover —
+            ensuring compliance with specifications, schedules, and
+            quality standards agreed with our clients.
           </p>
         </div>
+
       </div>
     </section>
   );
