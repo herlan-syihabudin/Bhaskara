@@ -1,11 +1,18 @@
-// app/dashboard/purchasing/page.tsx
-export default function PurchasingDashboard() {
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import KpiPlaceholder from "@/components/dashboard/KpiPlaceholder";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+
+export default function PurchasingPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Purchasing</h1>
-      <p className="text-sm text-gray-500 mt-2">
-        PO, vendor, dan approval pembelian
-      </p>
-    </div>
+    <>
+      <DashboardHeader
+        title="Purchasing"
+        subtitle="Pengadaan barang, vendor, dan PO"
+      />
+
+      <KpiPlaceholder />
+
+      <SectionPlaceholder title="Status Purchase Order" />
+    </>
   );
 }
