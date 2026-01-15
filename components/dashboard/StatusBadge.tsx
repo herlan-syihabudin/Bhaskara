@@ -1,5 +1,4 @@
-// /components/dashboard/StatusBadge.tsx
-import { BudgetStatus, statusColor } from "@/lib/budgetEngine";
+import type { BudgetStatus } from "@/lib/engine/budget";
 
 export default function StatusBadge({ status }: { status: BudgetStatus }) {
   return (
