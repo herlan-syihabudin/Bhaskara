@@ -13,23 +13,37 @@ export default function CallToAction() {
               </span>
             </h2>
 
-            <p className="mt-6 text-gray-300">
+            <p className="mt-6 text-gray-300 leading-relaxed">
               Talk to our team about your next project. We bring engineering
               rigor, disciplined execution, and accountable delivery from
-              mobilization to handover.
+              mobilization through final handover.
+            </p>
+
+            {/* ➕ Expectation clarity (TAMBAHAN HALUS) */}
+            <p className="mt-4 text-sm text-gray-400 max-w-xl">
+              Initial discussions focus on project scope, technical requirements,
+              schedule alignment, and execution approach.
             </p>
           </div>
 
           {/* CTA */}
-          <a
-            href="/contact"
-            className="inline-flex items-center justify-center
-                       px-8 py-4 bg-white text-gray-900
-                       text-sm font-semibold
-                       hover:bg-gray-100 transition"
-          >
-            Contact Our Team
-          </a>
+          <div className="flex flex-col gap-3">
+            <a
+              href="/contact"
+              className="inline-flex items-center justify-center
+                         px-8 py-4 bg-white text-gray-900
+                         text-sm font-semibold rounded-xl
+                         hover:bg-gray-100 transition
+                         hover:-translate-y-0.5"
+            >
+              Contact Our Team
+            </a>
+
+            {/* ➕ Micro trust (TAMBAHAN) */}
+            <p className="text-xs text-gray-400 text-center">
+              Response handled by engineering & project team
+            </p>
+          </div>
         </div>
       </div>
     </section>
