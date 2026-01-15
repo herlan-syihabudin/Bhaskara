@@ -1,12 +1,18 @@
 // /components/dashboard/CostByCategory.tsx
-import { rowToneFromRemainingPct } from "@/lib/budgetEngine";
+import { rowToneFromRemainingPct } from "@/lib/engine/budget";
 
-type Category = { name: string; po: number; real: number };
+type Category = {
+  name: string;
+  po: number;
+  real: number;
+};
 
 export default function CostByCategory({ data }: { data: Category[] }) {
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-semibold text-gray-900">Biaya per Kategori</h3>
+      <h3 className="text-lg font-semibold text-gray-900">
+        Biaya per Kategori
+      </h3>
 
       <table className="w-full mt-4 text-sm">
         <thead>
@@ -28,10 +34,20 @@ export default function CostByCategory({ data }: { data: Category[] }) {
             return (
               <tr key={row.name} className="border-b last:border-none">
                 <td className="py-3">{row.name}</td>
-                <td className="py-3">Rp {row.po.toLocaleString("id-ID")}</td>
-                <td className="py-3">Rp {row.real.toLocaleString("id-ID")}</td>
-                <td className="py-3 font-medium">Rp {sisa.toLocaleString("id-ID")}</td>
-                <td className={`py-3 text-right font-semibold ${tone}`}>{sisaPct.toFixed(1)}%</td>
+                <td className="py-3">
+                  Rp {row.po.toLocaleString("id-ID")}
+                </td>
+                <td className="py-3">
+                  Rp {row.real.toLocaleString("id-ID")}
+                </td>
+                <td className="py-3 font-medium">
+                  Rp {sisa.toLocaleString("id-ID")}
+                </td>
+                <td
+                  className={`py-3 text-right font-semibold ${tone}`}
+                >
+                  {sisaPct.toFixed(1)}%
+                </td>
               </tr>
             );
           })}
