@@ -2,6 +2,7 @@ export default function AboutPage() {
   return (
     <section className="bg-white">
       <div className="container-bbm py-28">
+
         {/* HEADER */}
         <div className="max-w-3xl">
           <span className="badge">ABOUT US</span>
@@ -15,6 +16,13 @@ export default function AboutPage() {
             delivering civil, structural, MEP, and interior works with a strong
             focus on safety, quality, and disciplined execution across
             industrial and commercial projects.
+          </p>
+
+          {/* ➕ CONTEXT ANCHOR (TAMBAHAN HALUS) */}
+          <p className="mt-4 text-sm text-gray-600 max-w-2xl">
+            Our role extends beyond construction activities, encompassing
+            engineering coordination, site supervision, and structured
+            project controls throughout the project lifecycle.
           </p>
         </div>
 
@@ -30,6 +38,13 @@ export default function AboutPage() {
             supervision, and disciplined execution rather than ad-hoc decisions
             on site. Every project is managed with clear scope definition,
             approved method statements, and measurable performance controls.
+          </p>
+
+          {/* ➕ OPERATIONAL CLARIFIER */}
+          <p className="mt-4 text-sm text-gray-600">
+            This approach allows us to manage risk, control quality, and
+            maintain schedule predictability from mobilization through
+            final handover.
           </p>
         </div>
 
@@ -81,6 +96,12 @@ export default function AboutPage() {
             Our focus is not only on completing projects, but on delivering
             outcomes that are safe, reliable, and aligned with our clients’
             operational and business objectives.
+          </p>
+
+          {/* ➕ STRATEGIC CLOSE */}
+          <p className="mt-4 text-xs text-gray-500">
+            This commitment underpins our long-term relationships with
+            clients across industrial, commercial, and infrastructure sectors.
           </p>
         </div>
       </div>
