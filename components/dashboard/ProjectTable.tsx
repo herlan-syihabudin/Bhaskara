@@ -1,10 +1,10 @@
 import ProjectRow from "./ProjectRow";
-import { ProjectBudget } from "@/lib/dummy/projectBudget";
+import type { Project } from "@/lib/data/projects";
 
 export default function ProjectTable({
   projects,
 }: {
-  projects: ProjectBudget[];
+  projects: Project[];
 }) {
   return (
     <div className="card p-6">
