@@ -1,4 +1,4 @@
-import { projects } from "@/lib/dummy/projectBudget";
+import { projects } from "@/lib/data/projects";
 
 export function getOwnerSummary() {
   const totalProyek = projects.length;
@@ -10,6 +10,11 @@ export function getOwnerSummary() {
     totalKontrak,
     totalBiaya,
     totalSisa: totalKontrak - totalBiaya,
-    status: totalBiaya / totalKontrak > 0.9 ? "BAHAYA" : "AMAN",
+    status:
+      totalBiaya / totalKontrak > 0.9
+        ? "BAHAYA"
+        : totalBiaya / totalKontrak > 0.75
+        ? "WARNING"
+        : "AMAN",
   };
 }
