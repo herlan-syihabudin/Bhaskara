@@ -1,11 +1,18 @@
-// app/dashboard/logistik/page.tsx
-export default function LogistikDashboard() {
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import KpiPlaceholder from "@/components/dashboard/KpiPlaceholder";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+
+export default function LogistikPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Logistik</h1>
-      <p className="text-sm text-gray-500 mt-2">
-        Barang masuk, keluar, dan distribusi
-      </p>
-    </div>
+    <>
+      <DashboardHeader
+        title="Logistik"
+        subtitle="Barang masuk, keluar, dan distribusi"
+      />
+
+      <KpiPlaceholder />
+
+      <SectionPlaceholder title="Pergerakan Barang" />
+    </>
   );
 }
