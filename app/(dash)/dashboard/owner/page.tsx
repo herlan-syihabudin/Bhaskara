@@ -1,19 +1,27 @@
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KpiCard from "@/components/dashboard/KpiCard";
-import { getOwnerSummary } from "@/lib/dummy/projects";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+import { getOwnerSummary } from "@/lib/summary/ownerSummary";
 
 export default function OwnerPage() {
-  const summary = getOwnerSummary();
+  const s = getOwnerSummary();
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-6">Owner Dashboard</h1>
+      <DashboardHeader
+        title="Owner Dashboard"
+        subtitle="Ringkasan kondisi proyek & keuangan perusahaan"
+      />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard title="Total Proyek" value={summary.totalProyek} type="text" />
-        <KpiCard title="Total Kontrak" value={summary.totalKontrak} />
-        <KpiCard title="Total Biaya" value={summary.totalBiaya} />
-        <KpiCard title="Total Sisa" value={summary.totalSisa} />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+        <KpiCard title="Total Proyek" value={s.totalProyek} type="text" />
+        <KpiCard title="Total Kontrak" value={s.totalKontrak} />
+        <KpiCard title="Total Biaya" value={s.totalBiaya} />
+        <KpiCard title="Total Sisa" value={s.totalSisa} />
+        <KpiCard title="Status" type="status" statusValue={s.status} value={s.status} />
       </div>
+
+      <SectionPlaceholder title="Ringkasan Proyek Strategis" />
     </>
   );
 }
