@@ -1,9 +1,38 @@
-import { projectBudgets, getBudgetSummary } from "@/lib/dummy/projectBudget";
+import { projects } from "@/lib/dummy/projectBudget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
+/* ===============================
+   SUMMARY CALCULATOR (OWNER)
+================================ */
+function getSummary(projects: typeof projects) {
+  const totalProyek = projects.length;
+
+  const totalKontrak = projects.reduce(
+    (sum, p) => sum + p.nilaiKontrak,
+    0
+  );
+
+  const totalBiaya = projects.reduce(
+    (sum, p) => sum + p.biayaReal,
+    0
+  );
+
+  const totalSisa = projects.reduce(
+    (sum, p) => sum + p.sisaBudget,
+    0
+  );
+
+  return {
+    totalProyek,
+    totalKontrak,
+    totalBiaya,
+    totalSisa,
+  };
+}
+
 export default function OwnerDashboardPage() {
-  const summary = getBudgetSummary();
+  const summary = getSummary(projects);
 
   return (
     <section className="container-bbm py-12 space-y-12">
@@ -52,18 +81,16 @@ export default function OwnerDashboardPage() {
 
       {/* ================= PROJECT LIST ================= */}
       <div className="space-y-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Daftar Proyek
-            </h2>
-            <p className="text-sm text-gray-500">
-              Klik proyek untuk melihat detail anggaran dan realisasi
-            </p>
-          </div>
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Daftar Proyek
+          </h2>
+          <p className="text-sm text-gray-500">
+            Klik proyek untuk melihat detail anggaran dan realisasi
+          </p>
         </div>
 
-        <ProjectTable projects={projectBudgets} />
+        <ProjectTable projects={projects} />
       </div>
     </section>
   );
