@@ -1,3 +1,4 @@
+// components/dashboard/ProjectRow.tsx
 import Link from "next/link";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import type { Project } from "@/lib/data/projects";
