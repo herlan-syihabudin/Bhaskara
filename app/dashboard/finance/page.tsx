@@ -1,50 +1,39 @@
-import { projects } from "@/lib/data/projects";
-import { statusFromBudget } from "@/lib/engine/budget";
+// app/dashboard/finance/page.tsx
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { projects } from "@/lib/data/projects";
+import { statusFromBudget } from "@/lib/engine/budget";
 
 export default function FinanceDashboardPage() {
   const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
   const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
   const totalSisa = totalKontrak - totalBiaya;
+
   const status = statusFromBudget(totalKontrak, totalBiaya);
 
   return (
-    <section className="space-y-10">
-      {/* HEADER */}
-      <div>
-        <p className="text-xs tracking-[0.35em] text-gray-400 uppercase">
-          FINANCE
-        </p>
-        <h1 className="text-2xl font-semibold mt-1">
-          Finance Dashboard
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Ringkasan kondisi keuangan seluruh proyek
-        </p>
-      </div>
+    <section className="container-bbm py-12 space-y-12">
+      <DashboardHeader
+        title="Finance Dashboard"
+        subtitle="Kontrol biaya, kontrak, dan kondisi keuangan proyek"
+      />
 
       {/* KPI */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <KpiCard title="Total Proyek" value={projects.length} type="text" />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard title="Total Kontrak" value={totalKontrak} />
-        <KpiCard title="Total Biaya" value={totalBiaya} />
-        <KpiCard title="Total Sisa" value={totalSisa} />
+        <KpiCard title="Total Biaya Keluar" value={totalBiaya} />
+        <KpiCard title="Total Sisa Budget" value={totalSisa} />
         <KpiCard
-          title="Status Risiko"
+          title="Status Keuangan"
           type="status"
-          value={status}
           statusValue={status}
+          value={status}
         />
       </div>
 
-      {/* PROJECT TABLE */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">
-          Ringkasan Proyek
-        </h2>
-        <ProjectTable projects={projects} />
-      </div>
+      {/* TABLE */}
+      <ProjectTable projects={projects} />
     </section>
   );
 }
