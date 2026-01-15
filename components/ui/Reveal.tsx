@@ -2,13 +2,17 @@
 
 import { useEffect, useRef } from "react";
 
+type RevealProps = {
+  children: React.ReactNode;
+  className?: string;
+  once?: boolean;
+};
+
 export default function Reveal({
   children,
   className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+  once = true,
+}: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export default function Reveal({
       ([entry]) => {
         if (entry.isIntersecting) {
           el.classList.add("show");
-          obs.disconnect();
+          if (once) obs.disconnect();
         }
       },
       { threshold: 0.15 }
@@ -27,7 +31,7 @@ export default function Reveal({
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [once]);
 
   return (
     <div ref={ref} className={`reveal ${className}`}>
