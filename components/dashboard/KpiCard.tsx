@@ -2,40 +2,47 @@
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import type { BudgetStatus } from "@/lib/budgetEngine";
 
-type Props = {
+type BaseProps = {
   title: string;
-  value: number | string;
   subtitle?: string;
-  type?: "money" | "text" | "status";
-  statusValue?: BudgetStatus;
 };
+
+type MoneyOrTextProps = BaseProps & {
+  type?: "money" | "text";
+  value: number | string;
+};
+
+type StatusProps = BaseProps & {
+  type: "status";
+  statusValue: BudgetStatus;
+};
+
+type Props = MoneyOrTextProps | StatusProps;
 
 function formatIDR(n: number) {
   return `Rp ${n.toLocaleString("id-ID")}`;
 }
 
-export default function KpiCard({
-  title,
-  value,
-  subtitle,
-  type = "money",
-  statusValue,
-}: Props) {
+export default function KpiCard(props: Props) {
   return (
     <div className="card p-6">
-      <p className="text-sm text-gray-500">{title}</p>
+      <p className="text-sm text-gray-500">{props.title}</p>
 
       <div className="mt-2">
-        {type === "status" && statusValue ? (
-          <StatusBadge status={statusValue} />
+        {props.type === "status" ? (
+          <StatusBadge status={props.statusValue} />
         ) : (
           <p className="text-2xl font-semibold text-gray-900">
-            {typeof value === "number" && type === "money" ? formatIDR(value) : value}
+            {typeof props.value === "number" && props.type !== "text"
+              ? formatIDR(props.value)
+              : props.value}
           </p>
         )}
       </div>
 
-      {subtitle ? <p className="mt-2 text-xs text-gray-500">{subtitle}</p> : null}
+      {props.subtitle && (
+        <p className="mt-2 text-xs text-gray-500">{props.subtitle}</p>
+      )}
     </div>
   );
 }
