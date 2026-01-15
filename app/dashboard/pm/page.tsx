@@ -1,11 +1,18 @@
-// app/dashboard/pm/page.tsx
-export default function PMDashboard() {
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import KpiPlaceholder from "@/components/dashboard/KpiPlaceholder";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+
+export default function PMPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Project Manager</h1>
-      <p className="text-sm text-gray-500 mt-2">
-        Monitoring progres & realisasi proyek
-      </p>
-    </div>
+    <>
+      <DashboardHeader
+        title="Project Manager"
+        subtitle="Monitoring progres proyek & isu lapangan"
+      />
+
+      <KpiPlaceholder />
+
+      <SectionPlaceholder title="Daftar Proyek Aktif" />
+    </>
   );
 }
