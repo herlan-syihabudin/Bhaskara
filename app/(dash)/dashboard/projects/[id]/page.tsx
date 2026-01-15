@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProjectById } from "@/lib/dummy/projects";
+import { getProjectById } from "@/lib/data/projects";
 import KpiCard from "@/components/dashboard/KpiCard";
 
 export default function ProjectDetailPage({
