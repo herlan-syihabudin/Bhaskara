@@ -1,27 +1,12 @@
 // /app/(dash)/dashboard/page.tsx
-import { projects } from "@/lib/dummy/projectBudget";
-import type { ProjectBudget } from "@/lib/dummy/projectBudget";
+
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
-
-/* ===============================
-   SUMMARY CALCULATOR (OWNER)
-================================ */
-function getSummary(projects: ProjectBudget[]) {
-  const totalProyek = projects.length;
-  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
-
-  return {
-    totalProyek,
-    totalKontrak,
-    totalBiaya,
-    totalSisa: totalKontrak - totalBiaya,
-  };
-}
+import { projects } from "@/lib/data/projects";
+import { getOwnerSummary } from "@/lib/summary/ownerSummary";
 
 export default function OwnerDashboardPage() {
-  const summary = getSummary(projects);
+  const summary = getOwnerSummary();
 
   return (
     <section className="container-bbm py-12 space-y-12">
