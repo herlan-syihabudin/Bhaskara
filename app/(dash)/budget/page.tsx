@@ -4,6 +4,7 @@ import CostByCategory from "@/components/dashboard/CostByCategory";
 import CostByVendor from "@/components/dashboard/CostByVendor";
 import { projectBudget } from "@/lib/dummy/projectBudget";
 import { pct, statusFromUsedPct } from "@/lib/budgetEngine";
+import ProjectSelector from "@/components/dashboard/ProjectSelector";
 
 export default function BudgetPage() {
   const data = projectBudget;
@@ -48,6 +49,10 @@ export default function BudgetPage() {
         <CostByCategory data={data.byCategory} />
         <CostByVendor data={data.byVendor} />
       </div>
+
+      <div className="mb-6">
+  <ProjectSelector />
+</div>
     </section>
   );
 }
