@@ -1,27 +1,28 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KpiCard from "@/components/dashboard/KpiCard";
-import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+import ProjectTable from "@/components/dashboard/ProjectTable";
+import { projects } from "@/lib/data/projects";
 import { getOwnerSummary } from "@/lib/summary/ownerSummary";
 
 export default function OwnerPage() {
-  const s = getOwnerSummary();
+  const summary = getOwnerSummary();
 
   return (
-    <>
+    <section className="container-bbm py-12 space-y-12">
       <DashboardHeader
         title="Owner Dashboard"
-        subtitle="Ringkasan kondisi proyek & keuangan perusahaan"
+        subtitle="Ringkasan seluruh proyek & kondisi biaya"
       />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
-        <KpiCard title="Total Proyek" value={s.totalProyek} type="text" />
-        <KpiCard title="Total Kontrak" value={s.totalKontrak} />
-        <KpiCard title="Total Biaya" value={s.totalBiaya} />
-        <KpiCard title="Total Sisa" value={s.totalSisa} />
-        <KpiCard title="Status" type="status" statusValue={s.status} value={s.status} />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <KpiCard title="Total Proyek" value={summary.totalProyek} type="text" />
+        <KpiCard title="Total Kontrak" value={summary.totalKontrak} />
+        <KpiCard title="Total Biaya" value={summary.totalBiaya} />
+        <KpiCard title="Total Sisa" value={summary.totalSisa} />
+        <KpiCard title="Status" value={summary.status} type="status" statusValue={summary.status} />
       </div>
 
-      <SectionPlaceholder title="Ringkasan Proyek Strategis" />
-    </>
+      <ProjectTable projects={projects} />
+    </section>
   );
 }
