@@ -5,7 +5,7 @@ export type Project = {
   biayaReal: number;
 };
 
-export const PROJECTS: Project[] = [
+export const projects: Project[] = [
   {
     id: "cikarang",
     name: "Proyek Gudang Cikarang",
@@ -20,20 +20,6 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-// helpers
 export function getProjectById(id: string) {
-  return PROJECTS.find(p => p.id === id);
-}
-
-export function getOwnerSummary() {
-  const totalProyek = PROJECTS.length;
-  const totalKontrak = PROJECTS.reduce((a,b)=>a+b.nilaiKontrak,0);
-  const totalBiaya = PROJECTS.reduce((a,b)=>a+b.biayaReal,0);
-
-  return {
-    totalProyek,
-    totalKontrak,
-    totalBiaya,
-    totalSisa: totalKontrak - totalBiaya,
-  };
+  return projects.find(p => p.id === id);
 }
