@@ -1,42 +1,31 @@
-import { projects } from "@/lib/dummy/projectBudget";
+// /app/(dash)/dashboard/page.tsx
+import { projectBudgets, getBudgetSummary } from "@/lib/dummy/projectBudget";
+import { ProjectBudget } from "@/lib/dummy/projectBudget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
 /* ===============================
    SUMMARY CALCULATOR (OWNER)
 ================================ */
-function getSummary(projects: typeof projects) {
+function getSummary(projects: ProjectBudget[]) {
   const totalProyek = projects.length;
-
-  const totalKontrak = projects.reduce(
-    (sum, p) => sum + p.nilaiKontrak,
-    0
-  );
-
-  const totalBiaya = projects.reduce(
-    (sum, p) => sum + p.biayaReal,
-    0
-  );
-
-  const totalSisa = projects.reduce(
-    (sum, p) => sum + p.sisaBudget,
-    0
-  );
+  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
+  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
 
   return {
     totalProyek,
     totalKontrak,
     totalBiaya,
-    totalSisa,
+    totalSisa: totalKontrak - totalBiaya,
   };
 }
 
 export default function OwnerDashboardPage() {
-  const summary = getSummary(projects);
+  const summary = getSummary(projectBudgets);
 
   return (
     <section className="container-bbm py-12 space-y-12">
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="max-w-2xl">
         <p className="text-xs tracking-[0.35em] text-gray-400 uppercase mb-2">
           OWNER DASHBOARD
@@ -51,47 +40,16 @@ export default function OwnerDashboardPage() {
         </p>
       </div>
 
-      {/* ================= KPI SUMMARY ================= */}
+      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard
-          title="Total Proyek"
-          value={summary.totalProyek}
-          type="text"
-          subtitle="Proyek aktif berjalan"
-        />
-
-        <KpiCard
-          title="Total Kontrak"
-          value={summary.totalKontrak}
-          subtitle="Akumulasi nilai kontrak"
-        />
-
-        <KpiCard
-          title="Total Biaya"
-          value={summary.totalBiaya}
-          subtitle="Realisasi biaya berjalan"
-        />
-
-        <KpiCard
-          title="Total Sisa"
-          value={summary.totalSisa}
-          subtitle="Sisa exposure seluruh proyek"
-        />
+        <KpiCard title="Total Proyek" value={summary.totalProyek} type="text" />
+        <KpiCard title="Total Kontrak" value={summary.totalKontrak} />
+        <KpiCard title="Total Biaya" value={summary.totalBiaya} />
+        <KpiCard title="Total Sisa" value={summary.totalSisa} />
       </div>
 
-      {/* ================= PROJECT LIST ================= */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Daftar Proyek
-          </h2>
-          <p className="text-sm text-gray-500">
-            Klik proyek untuk melihat detail anggaran dan realisasi
-          </p>
-        </div>
-
-        <ProjectTable projects={projects} />
-      </div>
+      {/* TABLE */}
+      <ProjectTable projects={projectBudgets} />
     </section>
   );
 }
