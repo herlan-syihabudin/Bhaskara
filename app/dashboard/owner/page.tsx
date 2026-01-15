@@ -1,11 +1,18 @@
-// app/dashboard/owner/page.tsx
-export default function OwnerDashboard() {
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import KpiPlaceholder from "@/components/dashboard/KpiPlaceholder";
+import SectionPlaceholder from "@/components/dashboard/SectionPlaceholder";
+
+export default function OwnerPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold">Owner Dashboard</h1>
-      <p className="text-sm text-gray-500 mt-2">
-        Ringkasan seluruh proyek & keuangan perusahaan
-      </p>
-    </div>
+    <>
+      <DashboardHeader
+        title="Owner Dashboard"
+        subtitle="Ringkasan seluruh proyek & keuangan perusahaan"
+      />
+
+      <KpiPlaceholder />
+
+      <SectionPlaceholder title="Ringkasan Proyek" />
+    </>
   );
 }
