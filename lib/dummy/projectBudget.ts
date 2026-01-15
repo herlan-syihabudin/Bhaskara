@@ -1,5 +1,22 @@
 import { statusFromBudget } from "@/lib/budgetEngine";
 
+/* ===============================
+   TYPE DEFINITIONS (ERP READY)
+================================ */
+export type BudgetStatus = "AMAN" | "WARNING" | "BAHAYA";
+
+export type CategoryCost = {
+  name: string;
+  po: number;
+  real: number;
+};
+
+export type VendorCost = {
+  name: string;
+  po: number;
+  real: number;
+};
+
 export type ProjectBudget = {
   id: string;
   projectName: string;
@@ -7,19 +24,14 @@ export type ProjectBudget = {
   totalPO: number;
   biayaReal: number;
   sisaBudget: number;
-  status: "AMAN" | "WARNING" | "BAHAYA";
-  byCategory: {
-    name: string;
-    po: number;
-    real: number;
-  }[];
-  byVendor: {
-    name: string;
-    po: number;
-    real: number;
-  }[];
+  status: BudgetStatus;
+  byCategory: CategoryCost[];
+  byVendor: VendorCost[];
 };
 
+/* ===============================
+   MULTI PROJECT DATA (DUMMY)
+================================ */
 export const projectBudgets: ProjectBudget[] = [
   {
     id: "cikarang",
@@ -52,14 +64,56 @@ export const projectBudgets: ProjectBudget[] = [
     status: statusFromBudget(1800000000, 1450000000),
 
     byCategory: [
-      { name: "Material", po: 800000000, real: 760000000 },
-      { name: "Jasa", po: 500000000, real: 490000000 },
-      { name: "Alat", po: 200000000, real: 200000000 },
+      { name: "Material", po: 800000000, real: 780000000 },
+      { name: "Jasa", po: 500000000, real: 480000000 },
+      { name: "Alat", po: 200000000, real: 190000000 },
     ],
 
     byVendor: [
-      { name: "PT Baja Utama", po: 600000000, real: 580000000 },
-      { name: "CV Mekanikal Prima", po: 400000000, real: 390000000 },
+      { name: "PT Baja Prima", po: 600000000, real: 590000000 },
+      { name: "CV Mekanikal Jaya", po: 400000000, real: 395000000 },
     ],
   },
 ];
+
+/* ===============================
+   HELPERS
+================================ */
+
+/** ambil 1 project berdasarkan id */
+export function getProjectBudgetById(id: string): ProjectBudget {
+  const project = projectBudgets.find((p) => p.id === id);
+  if (!project) {
+    throw new Error(`Project with id "${id}" not found`);
+  }
+  return project;
+}
+
+/** summary untuk owner dashboard */
+export function getBudgetSummary() {
+  const totalKontrak = projectBudgets.reduce(
+    (acc, p) => acc + p.nilaiKontrak,
+    0
+  );
+  const totalBiaya = projectBudgets.reduce(
+    (acc, p) => acc + p.biayaReal,
+    0
+  );
+  const totalSisa = projectBudgets.reduce(
+    (acc, p) => acc + p.sisaBudget,
+    0
+  );
+
+  return {
+    totalProyek: projectBudgets.length,
+    totalKontrak,
+    totalBiaya,
+    totalSisa,
+  };
+}
+
+/* ===============================
+   BACKWARD COMPATIBILITY
+   (BIAR PAGE LAMA TETAP AMAN)
+================================ */
+export const projectBudget = projectBudgets[0];
