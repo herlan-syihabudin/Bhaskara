@@ -19,7 +19,11 @@ export default function OwnerPage() {
         <KpiCard title="Total Kontrak" value={summary.totalKontrak} />
         <KpiCard title="Total Biaya" value={summary.totalBiaya} />
         <KpiCard title="Total Sisa" value={summary.totalSisa} />
-        <KpiCard title="Status" value={summary.status} type="status" statusValue={summary.status} />
+        <KpiCard
+  title="Status"
+  type="status"
+  statusValue={summary.status}
+/>
       </div>
 
       <ProjectTable projects={projects} />
