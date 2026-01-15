@@ -1,6 +1,6 @@
 // /app/(dash)/dashboard/page.tsx
-import { projects, getBudgetSummary } from "@/lib/dummy/projectBudget";
-import { ProjectBudget } from "@/lib/dummy/projectBudget";
+import { projects } from "@/lib/dummy/projectBudget";
+import type { ProjectBudget } from "@/lib/dummy/projectBudget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
@@ -21,7 +21,7 @@ function getSummary(projects: ProjectBudget[]) {
 }
 
 export default function OwnerDashboardPage() {
-  const summary = getSummary(projectBudgets);
+  const summary = getSummary(projects);
 
   return (
     <section className="container-bbm py-12 space-y-12">
@@ -31,9 +31,7 @@ export default function OwnerDashboardPage() {
           OWNER DASHBOARD
         </p>
 
-        <h1 className="text-3xl font-semibold">
-          Dashboard Proyek
-        </h1>
+        <h1 className="text-3xl font-semibold">Dashboard Proyek</h1>
 
         <p className="mt-2 text-sm text-gray-500">
           Ringkasan seluruh proyek berjalan beserta kondisi biaya dan kontrak.
@@ -49,7 +47,7 @@ export default function OwnerDashboardPage() {
       </div>
 
       {/* TABLE */}
-      <ProjectTable projects={projectBudgets} />
+      <ProjectTable projects={projects} />
     </section>
   );
 }
