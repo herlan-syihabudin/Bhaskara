@@ -1,23 +1,38 @@
 // /components/dashboard/ProjectRow.tsx
 import Link from "next/link";
 import StatusBadge from "@/components/dashboard/StatusBadge";
-import { ProjectBudget } from "@/lib/dummy/projectBudget";
+import type { ProjectBudget } from "@/lib/dummy/projectBudget";
+import { statusFromBudget } from "@/lib/budgetEngine";
 
 export default function ProjectRow({ project }: { project: ProjectBudget }) {
+  const sisaBudget = project.nilaiKontrak - project.biayaReal;
+  const status = statusFromBudget(project.nilaiKontrak, project.biayaReal);
+
   return (
     <tr className="border-b last:border-none hover:bg-gray-50 transition">
       <td className="py-3 font-medium text-gray-900">
-        <Link href={`/budget?id=${project.id}`} className="hover:underline">
+        <Link
+          href={`/dashboard/projects/${project.id}`}
+          className="hover:underline"
+        >
           {project.projectName}
         </Link>
       </td>
 
-      <td className="py-3">Rp {project.nilaiKontrak.toLocaleString("id-ID")}</td>
-      <td className="py-3">Rp {project.biayaReal.toLocaleString("id-ID")}</td>
-      <td className="py-3 font-medium">Rp {project.sisaBudget.toLocaleString("id-ID")}</td>
+      <td className="py-3">
+        Rp {project.nilaiKontrak.toLocaleString("id-ID")}
+      </td>
 
       <td className="py-3">
-        <StatusBadge status={project.status} />
+        Rp {project.biayaReal.toLocaleString("id-ID")}
+      </td>
+
+      <td className="py-3 font-medium">
+        Rp {sisaBudget.toLocaleString("id-ID")}
+      </td>
+
+      <td className="py-3">
+        <StatusBadge status={status} />
       </td>
     </tr>
   );
