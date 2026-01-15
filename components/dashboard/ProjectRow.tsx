@@ -1,10 +1,9 @@
-// /components/dashboard/ProjectRow.tsx
 import Link from "next/link";
 import StatusBadge from "@/components/dashboard/StatusBadge";
-import type { ProjectBudget } from "@/lib/dummy/projectBudget";
-import { statusFromBudget } from "@/lib/budgetEngine";
+import type { Project } from "@/lib/data/projects";
+import { statusFromBudget } from "@/lib/engine/budget";
 
-export default function ProjectRow({ project }: { project: ProjectBudget }) {
+export default function ProjectRow({ project }: { project: Project }) {
   const sisaBudget = project.nilaiKontrak - project.biayaReal;
   const status = statusFromBudget(project.nilaiKontrak, project.biayaReal);
 
@@ -15,7 +14,7 @@ export default function ProjectRow({ project }: { project: ProjectBudget }) {
           href={`/dashboard/projects/${project.id}`}
           className="hover:underline"
         >
-          {project.projectName}
+          {project.name}
         </Link>
       </td>
 
