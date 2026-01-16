@@ -5,51 +5,37 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { addMaterialRequest } from "@/lib/data/materialRequests";
 
-/* ======================
-   TYPES
-====================== */
 type ItemInput = {
-  name: string;
+  material: string;
   qty: number;
   unit: string;
-  estimasiHarga: number;
+  harga: number;
 };
 
-/* ======================
-   CONST
-====================== */
 const UNIT_OPTIONS = [
   "pcs",
   "unit",
   "bh",
   "m",
-  "m²",
-  "m³",
+  "m2",
+  "m3",
   "kg",
-  "sak",
-  "set",
+  "liter",
 ];
 
-/* ======================
-   PAGE
-====================== */
 export default function RequestMaterialPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
 
-  const now = new Date();
-  const tanggalJam = now.toLocaleString("id-ID");
-
-  const [projectName, setProjectName] = useState(params.id);
   const [requester, setRequester] = useState("");
+  const [tanggal, setTanggal] = useState(
+    new Date().toISOString().slice(0, 16)
+  );
 
   const [items, setItems] = useState<ItemInput[]>([
-    { name: "", qty: 1, unit: "pcs", estimasiHarga: 0 },
+    { material: "", qty: 1, unit: "pcs", harga: 0 },
   ]);
 
-  /* ======================
-     HELPERS
-  ====================== */
   function updateItem<K extends keyof ItemInput>(
     index: number,
     field: K,
@@ -63,7 +49,7 @@ export default function RequestMaterialPage() {
   function addItem() {
     setItems([
       ...items,
-      { name: "", qty: 1, unit: "pcs", estimasiHarga: 0 },
+      { material: "", qty: 1, unit: "pcs", harga: 0 },
     ]);
   }
 
@@ -72,178 +58,177 @@ export default function RequestMaterialPage() {
   }
 
   const validItems = items.filter(
-    (i) => i.name.trim() !== "" && i.qty > 0
+    (i) => i.material.trim() && i.qty > 0
   );
 
   const totalEstimasi = validItems.reduce(
-    (acc, i) => acc + i.qty * i.estimasiHarga,
+    (a, i) => a + i.qty * i.harga,
     0
   );
 
   function submitRequest() {
-    if (!projectName.trim()) {
-      alert("Nama proyek wajib diisi");
-      return;
-    }
-
     if (!requester.trim()) {
       alert("Nama requester wajib diisi");
       return;
     }
-
     if (validItems.length === 0) {
-      alert("Minimal 1 item material");
+      alert("Minimal 1 material valid");
       return;
     }
 
-    addMaterialRequest(projectName, validItems);
+    addMaterialRequest(params.id, validItems);
 
-    alert("Material Request berhasil dikirim ke Purchasing");
+    alert("Material Request dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
   }
 
-  /* ======================
-     UI
-  ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
-      {/* HEADER */}
-      <div>
-        <p className="text-xs tracking-[0.3em] text-gray-400 uppercase">
-          MATERIAL REQUEST
-        </p>
-        <h1 className="text-2xl font-semibold mt-1">
-          Request Material Proyek
-        </h1>
-      </div>
+      <h1 className="text-2xl font-semibold">Request Material Proyek</h1>
 
-      {/* INFO */}
-      <div className="card p-6 grid grid-cols-3 gap-6 text-sm">
+      {/* META */}
+      <div className="card p-6 grid grid-cols-3 gap-4">
         <div>
-          <label className="text-gray-500">Nama Proyek</label>
+          <label className="text-xs text-gray-500">Nama Proyek</label>
+          <input className="input" value={params.id} disabled />
+        </div>
+
+        <div>
+          <label className="text-xs text-gray-500">Tanggal & Jam</label>
           <input
-            className="input mt-1"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
+            type="datetime-local"
+            className="input"
+            value={tanggal}
+            onChange={(e) => setTanggal(e.target.value)}
           />
         </div>
 
         <div>
-          <p className="text-gray-500">Tanggal & Jam</p>
-          <p className="font-medium mt-1">{tanggalJam}</p>
-        </div>
-
-        <div>
-          <label className="text-gray-500">Nama Requester</label>
+          <label className="text-xs text-gray-500">Nama Requester</label>
           <input
-            className="input mt-1"
-            placeholder="Nama petugas lapangan"
+            className="input"
             value={requester}
             onChange={(e) => setRequester(e.target.value)}
+            placeholder="Nama petugas lapangan"
           />
         </div>
       </div>
 
       {/* TABLE */}
       <div className="card p-6 space-y-4">
-        <div className="grid grid-cols-12 gap-4 text-xs text-gray-500 border-b pb-2">
-          <div className="col-span-1">No</div>
-          <div className="col-span-3">Material</div>
-          <div className="col-span-2">Qty</div>
-          <div className="col-span-2">Unit</div>
-          <div className="col-span-2">Harga / Unit</div>
-          <div className="col-span-2">Total</div>
-        </div>
+        <table className="w-full text-sm">
+          <thead className="border-b text-gray-500">
+            <tr>
+              <th>No</th>
+              <th>Material</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Harga / Unit</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
 
-        {items.map((item, i) => (
-          <div key={i} className="grid grid-cols-12 gap-4 items-center">
-            <div className="col-span-1">{i + 1}</div>
+          <tbody>
+            {items.map((item, i) => (
+              <tr key={i} className="border-b">
+                <td>{i + 1}</td>
 
-            <div className="col-span-3">
-              <input
-                className="input"
-                value={item.name}
-                onChange={(e) =>
-                  updateItem(i, "name", e.target.value)
-                }
-              />
-            </div>
+                <td>
+                  <input
+                    className="input"
+                    value={item.material}
+                    onChange={(e) =>
+                      updateItem(i, "material", e.target.value)
+                    }
+                  />
+                </td>
 
-            <div className="col-span-2">
-              <input
-                type="number"
-                min={0}
-                className="input"
-                value={item.qty}
-                onChange={(e) =>
-                  updateItem(i, "qty", Number(e.target.value))
-                }
-              />
-            </div>
+                <td>
+                  <input
+                    type="number"
+                    className="input w-20"
+                    value={item.qty}
+                    onChange={(e) =>
+                      updateItem(i, "qty", Number(e.target.value))
+                    }
+                  />
+                </td>
 
-            <div className="col-span-2">
-              <select
-                className="input"
-                value={item.unit}
-                onChange={(e) =>
-                  updateItem(i, "unit", e.target.value)
-                }
-              >
-                {UNIT_OPTIONS.map((u) => (
-                  <option key={u} value={u}>
-                    {u}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <td>
+                  <select
+                    className="input"
+                    value={item.unit}
+                    onChange={(e) =>
+                      updateItem(i, "unit", e.target.value)
+                    }
+                  >
+                    {UNIT_OPTIONS.map((u) => (
+                      <option key={u}>{u}</option>
+                    ))}
+                  </select>
+                </td>
 
-            <div className="col-span-2">
-              <input
-                type="number"
-                min={0}
-                className="input"
-                value={item.estimasiHarga}
-                onChange={(e) =>
-                  updateItem(
-                    i,
-                    "estimasiHarga",
-                    Number(e.target.value)
-                  )
-                }
-              />
-            </div>
+                <td>
+                  <input
+                    type="number"
+                    className="input"
+                    value={item.harga}
+                    onChange={(e) =>
+                      updateItem(i, "harga", Number(e.target.value))
+                    }
+                  />
+                </td>
 
-            <div className="col-span-2 font-medium">
-              Rp {(item.qty * item.estimasiHarga).toLocaleString("id-ID")}
-            </div>
-          </div>
-        ))}
+                <td className="font-medium">
+                  Rp {(item.qty * item.harga).toLocaleString("id-ID")}
+                </td>
 
-        <button onClick={addItem} className="text-sm text-blue-600">
+                <td>
+                  {items.length > 1 && (
+                    <button
+                      onClick={() => removeItem(i)}
+                      className="text-xs text-red-500"
+                    >
+                      Hapus
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <button
+          onClick={addItem}
+          className="text-sm text-blue-600"
+        >
           + Tambah Item
         </button>
       </div>
 
-      {/* TOTAL */}
-      <div className="text-right text-lg font-semibold">
-        Total Estimasi: Rp {totalEstimasi.toLocaleString("id-ID")}
-      </div>
+      {/* FOOTER */}
+      <div className="flex justify-between items-center">
+        <p className="font-semibold">
+          Total Estimasi: Rp{" "}
+          {totalEstimasi.toLocaleString("id-ID")}
+        </p>
 
-      {/* ACTION */}
-      <div className="flex gap-4">
-        <button
-          onClick={submitRequest}
-          className="px-6 py-3 rounded-lg bg-black text-white text-sm"
-        >
-          Kirim ke Purchasing
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={submitRequest}
+            className="px-6 py-3 bg-black text-white rounded-lg"
+          >
+            Kirim ke Purchasing
+          </button>
 
-        <Link
-          href={`/dashboard/projects/${params.id}`}
-          className="px-6 py-3 rounded-lg border text-sm"
-        >
-          Batal
-        </Link>
+          <Link
+            href={`/dashboard/projects/${params.id}`}
+            className="px-6 py-3 border rounded-lg"
+          >
+            Batal
+          </Link>
+        </div>
       </div>
     </section>
   );
