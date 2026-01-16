@@ -1,7 +1,6 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
-import UsedPctBar from "@/components/dashboard/UsedPctBar";
 import { projects } from "@/lib/data/projects";
 import { getOwnerSummary } from "@/lib/summary/ownerSummary";
 
@@ -23,9 +22,6 @@ export default function OwnerPage() {
         <KpiCard title="Total Sisa" value={summary.totalSisa} />
         <KpiCard title="Status" type="status" statusValue={summary.status} />
       </div>
-
-      {/* PROGRESS */}
-      <UsedPctBar value={summary.usedPct} status={summary.status} />
 
       {/* TABLE */}
       <ProjectTable projects={projects} />
