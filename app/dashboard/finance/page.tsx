@@ -1,3 +1,4 @@
+// app/dashboard/finance/page.tsx
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KpiCard from "@/components/dashboard/KpiCard";
 import UsedPctBar from "@/components/dashboard/UsedPctBar";
@@ -13,7 +14,6 @@ export default function FinancePage() {
         subtitle="Ringkasan keuangan seluruh proyek"
       />
 
-      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard title="Total Kontrak" value={s.totalKontrak} />
         <KpiCard title="Total Biaya" value={s.totalBiaya} />
@@ -21,8 +21,7 @@ export default function FinancePage() {
         <KpiCard title="Status Keuangan" type="status" statusValue={s.status} />
       </div>
 
-      {/* PROGRESS */}
-      <UsedPctBar value={s.usedPct} status={s.status} />
+      <UsedPctBar value={s.avgUsedPct} status={s.status} />
     </section>
   );
 }
