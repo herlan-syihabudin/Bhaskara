@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { addMaterialRequest } from "@/lib/data/materialRequests";
 
 /* ======================
    TYPES
@@ -50,24 +49,19 @@ export default function RequestMaterialPage() {
     setItems(items.filter((_, i) => i !== index));
   }
 
-  const validItems = items.filter(
-    (i) => i.name.trim() !== "" && i.qty > 0
-  );
-
-  const totalEstimasi = validItems.reduce(
-    (acc, i) => acc + i.qty * i.estimasiHarga,
-    0
-  );
-
   function submitRequest() {
-    if (validItems.length === 0) {
-      alert("Isi minimal 1 item material dengan benar");
+    if (items.length === 0) {
+      alert("Minimal 1 item material");
       return;
     }
 
-    addMaterialRequest(params.id, validItems);
+    // ⛔ sementara hanya log (nanti baru masuk store / API)
+    console.log("MR SUBMITTED:", {
+      projectId: params.id,
+      items,
+    });
 
-    alert("Material Request berhasil dikirim ke Purchasing");
+    alert("Permintaan material berhasil dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
   }
 
@@ -76,7 +70,6 @@ export default function RequestMaterialPage() {
   ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
-      {/* HEADER */}
       <div>
         <p className="text-xs tracking-[0.3em] text-gray-400 uppercase">
           MATERIAL REQUEST
@@ -89,7 +82,6 @@ export default function RequestMaterialPage() {
         </p>
       </div>
 
-      {/* FORM */}
       <div className="card p-6 space-y-6">
         {items.map((item, i) => (
           <div
@@ -161,25 +153,18 @@ export default function RequestMaterialPage() {
           </div>
         ))}
 
-        <button onClick={addItem} className="text-sm text-blue-600">
+        <button
+          onClick={addItem}
+          className="text-sm text-blue-600"
+        >
           + Tambah Item
         </button>
       </div>
 
-      {/* SUMMARY */}
-      <div className="text-sm text-gray-600">
-        Total estimasi:{" "}
-        <span className="font-semibold">
-          Rp {totalEstimasi.toLocaleString("id-ID")}
-        </span>
-      </div>
-
-      {/* ACTION */}
       <div className="flex gap-4">
         <button
           onClick={submitRequest}
-          disabled={validItems.length === 0}
-          className="px-6 py-3 rounded-lg bg-black text-white text-sm disabled:opacity-50"
+          className="px-6 py-3 rounded-lg bg-black text-white text-sm"
         >
           Kirim ke Purchasing
         </button>
