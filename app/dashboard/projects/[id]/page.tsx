@@ -3,6 +3,7 @@ import Link from "next/link";
 import KpiCard from "@/components/dashboard/KpiCard";
 import { getProjectById } from "@/lib/data/projects";
 import { getMRByProject } from "@/lib/data/materialRequests";
+import MaterialRequestSummary from "@/components/material/MaterialRequestSummary";
 
 export default function ProjectDetailPage({
   params,
@@ -12,7 +13,8 @@ export default function ProjectDetailPage({
   const project = getProjectById(params.id);
   if (!project) notFound();
 
-  const materialRequests = getMRByProject(project.id);
+  // 🔑 ambil MR berdasarkan project
+  const mrList = getMRByProject(project.id);
 
   return (
     <section className="container-bbm py-12 space-y-12">
@@ -35,12 +37,12 @@ export default function ProjectDetailPage({
         <KpiCard title="Status Proyek" value={project.status} type="text" />
         <KpiCard
           title="Jumlah MR"
-          value={materialRequests.length}
+          value={mrList.length}
           type="text"
         />
       </div>
 
-      {/* ACTION */}
+      {/* ACTION PM */}
       <div className="border rounded-xl p-6 space-y-3">
         <h2 className="text-lg font-semibold">
           Aksi Project Manager
@@ -53,39 +55,11 @@ export default function ProjectDetailPage({
         </Link>
       </div>
 
-      {/* MATERIAL REQUEST LIST */}
-      <div className="border rounded-xl p-6 space-y-4">
-        <h2 className="text-lg font-semibold">
-          Material Request
-        </h2>
-
-        {materialRequests.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            Belum ada material request untuk proyek ini
-          </p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left border-b text-gray-500">
-                <th className="pb-2">Tanggal</th>
-                <th className="pb-2">Jumlah Item</th>
-                <th className="pb-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materialRequests.map((mr) => (
-                <tr key={mr.id} className="border-b">
-                  <td className="py-2">
-                    {new Date(mr.createdAt).toLocaleDateString("id-ID")}
-                  </td>
-                  <td>{mr.items.length}</td>
-                  <td className="font-medium">{mr.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {/* MATERIAL REQUEST (SUMMARY) */}
+      <MaterialRequestSummary
+        projectId={project.id}
+        mrList={mrList}
+      />
     </section>
   );
 }
