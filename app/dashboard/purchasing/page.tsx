@@ -35,7 +35,7 @@ export default function PurchasingPage() {
             )}
 
             {materialRequests.map((mr) => (
-              <tr key={mr.id} className="border-b last:border-none">
+              <tr key={mr.id} className="border-b">
                 <td className="py-3">
                   {new Date(mr.createdAt).toLocaleDateString()}
                 </td>
