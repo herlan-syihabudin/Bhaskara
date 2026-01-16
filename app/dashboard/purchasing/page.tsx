@@ -1,55 +1,59 @@
-import { projects } from "@/lib/data/projects";
-import { statusFromBudget } from "@/lib/engine/budget";
-import KpiCard from "@/components/dashboard/KpiCard";
-import ProjectTable from "@/components/dashboard/ProjectTable";
+import Link from "next/link";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { materialRequests } from "@/lib/data/materialRequests";
 
-export default function PurchasingDashboardPage() {
-  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
-  const totalSisa = totalKontrak - totalBiaya;
-
-  // Purchasing fokus ke exposure → pakai status global
-  const status = statusFromBudget(totalKontrak, totalBiaya);
-
+export default function PurchasingPage() {
   return (
-    <section className="space-y-10">
-      {/* HEADER */}
-      <div>
-        <p className="text-xs tracking-[0.35em] text-gray-400 uppercase">
-          PURCHASING
-        </p>
-        <h1 className="text-2xl font-semibold mt-1">
-          Purchasing Dashboard
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Monitoring komitmen biaya dan potensi risiko pengadaan
-        </p>
-      </div>
+    <section className="container-bbm py-12 space-y-10">
+      <DashboardHeader
+        title="Purchasing Dashboard"
+        subtitle="Daftar permintaan material dari proyek"
+      />
 
-      {/* KPI */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <KpiCard title="Total Proyek" value={projects.length} type="text" />
-        <KpiCard title="Total Kontrak" value={totalKontrak} />
-        <KpiCard title="Total Biaya Real" value={totalBiaya} />
-        <KpiCard title="Sisa Komitmen" value={totalSisa} />
-        <KpiCard
-          title="Status Risiko"
-          type="status"
-          value={status}
-          statusValue={status}
-        />
-      </div>
+      <div className="card p-6">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-gray-500 border-b">
+              <th className="pb-2">Tanggal</th>
+              <th className="pb-2">Project</th>
+              <th className="pb-2">Jumlah Item</th>
+              <th className="pb-2">Status</th>
+              <th className="pb-2"></th>
+            </tr>
+          </thead>
 
-      {/* PROJECT TABLE */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">
-          Proyek Aktif
-        </h2>
-        <p className="text-sm text-gray-500 mb-4">
-          Digunakan untuk monitoring kebutuhan pengadaan dan kontrol biaya
-        </p>
+          <tbody>
+            {materialRequests.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="py-6 text-center text-gray-400"
+                >
+                  Belum ada Material Request
+                </td>
+              </tr>
+            )}
 
-        <ProjectTable projects={projects} />
+            {materialRequests.map((mr) => (
+              <tr key={mr.id} className="border-b last:border-none">
+                <td className="py-3">
+                  {new Date(mr.createdAt).toLocaleDateString()}
+                </td>
+                <td className="py-3">{mr.projectId}</td>
+                <td className="py-3">{mr.items.length}</td>
+                <td className="py-3 font-medium">{mr.status}</td>
+                <td className="py-3">
+                  <Link
+                    href={`/dashboard/purchasing/${mr.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Detail
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   );
