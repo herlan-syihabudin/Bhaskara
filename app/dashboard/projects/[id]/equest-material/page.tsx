@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
+/* ======================
+   TYPES
+====================== */
 type ItemInput = {
   name: string;
   qty: number;
@@ -11,6 +14,9 @@ type ItemInput = {
   estimasiHarga: number;
 };
 
+/* ======================
+   PAGE
+====================== */
 export default function RequestMaterialPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -19,9 +25,19 @@ export default function RequestMaterialPage() {
     { name: "", qty: 1, unit: "pcs", estimasiHarga: 0 },
   ]);
 
-  function updateItem(index: number, field: keyof ItemInput, value: any) {
+  /* ======================
+     HELPERS
+  ====================== */
+  function updateItem<K extends keyof ItemInput>(
+    index: number,
+    field: K,
+    value: ItemInput[K]
+  ) {
     const copy = [...items];
-    copy[index][field] = value;
+    copy[index] = {
+      ...copy[index],
+      [field]: value,
+    };
     setItems(copy);
   }
 
@@ -42,6 +58,7 @@ export default function RequestMaterialPage() {
       return;
     }
 
+    // sementara log dulu (nanti masuk ke data store / API)
     console.log("MR SUBMITTED:", {
       projectId: params.id,
       items,
@@ -51,6 +68,9 @@ export default function RequestMaterialPage() {
     router.push(`/dashboard/projects/${params.id}`);
   }
 
+  /* ======================
+     UI
+  ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
       {/* HEADER */}
