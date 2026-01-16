@@ -1,39 +1,28 @@
-// app/dashboard/finance/page.tsx
-import KpiCard from "@/components/dashboard/KpiCard";
-import ProjectTable from "@/components/dashboard/ProjectTable";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { projects } from "@/lib/data/projects";
-import { statusFromBudget } from "@/lib/engine/budget";
+import KpiCard from "@/components/dashboard/KpiCard";
+import UsedPctBar from "@/components/dashboard/UsedPctBar";
+import { getFinanceSummary } from "@/lib/summary/financeSummary";
 
-export default function FinanceDashboardPage() {
-  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
-  const totalSisa = totalKontrak - totalBiaya;
-
-  const status = statusFromBudget(totalKontrak, totalBiaya);
+export default function FinancePage() {
+  const s = getFinanceSummary();
 
   return (
     <section className="container-bbm py-12 space-y-12">
       <DashboardHeader
         title="Finance Dashboard"
-        subtitle="Kontrol biaya, kontrak, dan kondisi keuangan proyek"
+        subtitle="Ringkasan keuangan seluruh proyek"
       />
 
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard title="Total Kontrak" value={totalKontrak} />
-        <KpiCard title="Total Biaya Keluar" value={totalBiaya} />
-        <KpiCard title="Total Sisa Budget" value={totalSisa} />
-        <KpiCard
-          title="Status Keuangan"
-          type="status"
-          statusValue={status}
-          value={status}
-        />
+        <KpiCard title="Total Kontrak" value={s.totalKontrak} />
+        <KpiCard title="Total Biaya" value={s.totalBiaya} />
+        <KpiCard title="Sisa Dana" value={s.totalSisa} />
+        <KpiCard title="Status Keuangan" type="status" statusValue={s.status} />
       </div>
 
-      {/* TABLE */}
-      <ProjectTable projects={projects} />
+      {/* PROGRESS */}
+      <UsedPctBar value={s.usedPct} status={s.status} />
     </section>
   );
 }
