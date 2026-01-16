@@ -1,40 +1,25 @@
 import { projects } from "@/lib/data/projects";
-import {
-  statusFromBudget,
-  type BudgetStatus,
-} from "@/lib/engine/budget";
+import { getRealCostByProject } from "@/lib/engine/realCost";
+import { statusFromBudget } from "@/lib/engine/budget";
 
-export type OwnerSummary = {
-  totalProyek: number;
-  totalKontrak: number;
-  totalBiaya: number;
-  totalSisa: number;
-  usedPct: number;        // ⬅️ TAMBAHAN
-  status: BudgetStatus;
-};
-
-export function getOwnerSummary(): OwnerSummary {
+export function getOwnerSummary() {
   const totalProyek = projects.length;
+
   const totalKontrak = projects.reduce(
-    (acc, p) => acc + p.nilaiKontrak,
-    0
-  );
-  const totalBiaya = projects.reduce(
-    (acc, p) => acc + p.biayaReal,
+    (a, p) => a + p.nilaiKontrak,
     0
   );
 
-  const usedPct =
-    totalKontrak > 0
-      ? (totalBiaya / totalKontrak) * 100
-      : 0;
+  const totalBiaya = projects.reduce(
+    (a, p) => a + getRealCostByProject(p.id),
+    0
+  );
 
   return {
     totalProyek,
     totalKontrak,
     totalBiaya,
     totalSisa: totalKontrak - totalBiaya,
-    usedPct,              // ⬅️ TAMBAHKAN DI SINI
     status: statusFromBudget(totalKontrak, totalBiaya),
   };
 }
