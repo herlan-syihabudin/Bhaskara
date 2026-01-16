@@ -6,7 +6,7 @@ import {
   updateItemHarga,
   updateItemStatus,
 } from "@/lib/data/materialRequests";
-import type { MRStatus } from "@/lib/data/materialRequests";
+import type { MRItemStatus } from "@/lib/data/materialRequests";
 
 export default function PurchasingPage() {
   const params = useParams<{ id: string }>();
@@ -32,6 +32,7 @@ export default function PurchasingPage() {
               <p className="font-medium">
                 Requester: {mr.requester}
               </p>
+
               {mr.catatan && (
                 <p className="text-gray-500">
                   Catatan: {mr.catatan}
@@ -44,17 +45,17 @@ export default function PurchasingPage() {
             </span>
           </div>
 
-          {/* TABLE */}
+          {/* TABLE ITEM */}
           <table className="w-full text-sm table-fixed">
             <thead className="border-b text-gray-500">
               <tr>
-                <th>No</th>
-                <th>Material</th>
-                <th>Qty</th>
-                <th>Unit</th>
-                <th>Harga</th>
-                <th>Total</th>
-                <th>Status</th>
+                <th className="w-10">No</th>
+                <th className="w-[35%]">Material</th>
+                <th className="w-16 text-center">Qty</th>
+                <th className="w-16">Unit</th>
+                <th className="w-28">Harga</th>
+                <th className="w-28">Total</th>
+                <th className="w-32">Status</th>
               </tr>
             </thead>
 
@@ -63,14 +64,16 @@ export default function PurchasingPage() {
                 <tr key={i} className="border-b">
                   <td>{i + 1}</td>
                   <td>{item.name}</td>
-                  <td>{item.qty}</td>
+                  <td className="text-center">{item.qty}</td>
                   <td>{item.unit}</td>
 
+                  {/* HARGA */}
                   <td>
                     <input
                       type="number"
                       className="input w-28"
                       value={item.estimasiHarga}
+                      min={0}
                       onChange={(e) =>
                         updateItemHarga(
                           mr.id,
@@ -81,6 +84,7 @@ export default function PurchasingPage() {
                     />
                   </td>
 
+                  {/* TOTAL */}
                   <td className="font-medium">
                     Rp{" "}
                     {(item.qty * item.estimasiHarga).toLocaleString(
@@ -88,6 +92,7 @@ export default function PurchasingPage() {
                     )}
                   </td>
 
+                  {/* STATUS ITEM */}
                   <td>
                     <select
                       className="input w-32"
@@ -96,7 +101,7 @@ export default function PurchasingPage() {
                         updateItemStatus(
                           mr.id,
                           i,
-                          e.target.value as MRStatus
+                          e.target.value as MRItemStatus
                         )
                       }
                     >
