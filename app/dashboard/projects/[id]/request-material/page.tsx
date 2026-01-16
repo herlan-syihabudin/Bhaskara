@@ -6,7 +6,7 @@ import Link from "next/link";
 import { addMaterialRequest } from "@/lib/data/materialRequests";
 
 /* ======================
-   TYPES (FORM ONLY)
+   TYPES
 ====================== */
 type ItemInput = {
   material: string;
@@ -31,6 +31,7 @@ export default function RequestMaterialPage() {
   const router = useRouter();
 
   const [requester, setRequester] = useState("");
+  const [catatan, setCatatan] = useState("");
   const [now, setNow] = useState(new Date());
 
   const [items, setItems] = useState<ItemInput[]>([
@@ -101,7 +102,11 @@ export default function RequestMaterialPage() {
       estimasiHarga: i.harga,
     }));
 
-    addMaterialRequest(params.id, mappedItems);
+    addMaterialRequest(params.id, {
+      requester,
+      catatan,
+      items: mappedItems,
+    });
 
     alert("Material Request dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
@@ -147,7 +152,7 @@ export default function RequestMaterialPage() {
         </div>
       </div>
 
-      {/* MATERIAL TABLE */}
+      {/* TABLE */}
       <div className="card p-6 space-y-4">
         <table className="w-full text-sm table-fixed">
           <thead className="border-b text-gray-500">
@@ -156,9 +161,9 @@ export default function RequestMaterialPage() {
               <th className="w-[40%]">Material</th>
               <th className="w-24">Qty</th>
               <th className="w-24">Unit</th>
-              <th className="w-32">Harga</th>
-              <th className="w-32">Total</th>
-              <th className="w-16"></th>
+              <th className="w-28">Harga</th>
+              <th className="w-28">Total</th>
+              <th className="w-16 text-center">Aksi</th>
             </tr>
           </thead>
 
@@ -198,16 +203,14 @@ export default function RequestMaterialPage() {
                     }
                   >
                     {UNIT_OPTIONS.map((u) => (
-                      <option key={u} value={u}>
-                        {u}
-                      </option>
+                      <option key={u}>{u}</option>
                     ))}
                   </select>
                 </td>
 
                 <td>
                   <input
-                    className="input bg-gray-100 text-gray-500 cursor-not-allowed"
+                    className="input bg-gray-100 text-gray-500"
                     value="Rp 0"
                     disabled
                   />
@@ -217,11 +220,11 @@ export default function RequestMaterialPage() {
                   Rp {(item.qty * item.harga).toLocaleString("id-ID")}
                 </td>
 
-                <td>
+                <td className="text-center">
                   {items.length > 1 && (
                     <button
                       onClick={() => removeItem(i)}
-                      className="text-xs text-red-500"
+                      className="text-xs text-red-500 hover:underline"
                     >
                       Hapus
                     </button>
@@ -238,6 +241,19 @@ export default function RequestMaterialPage() {
         >
           + Tambah Item
         </button>
+      </div>
+
+      {/* CATATAN */}
+      <div className="card p-6">
+        <label className="text-sm font-medium">
+          Catatan / Keterangan
+        </label>
+        <textarea
+          className="input mt-2 h-24"
+          placeholder="Contoh: untuk pekerjaan lantai area gudang, urgent hari ini"
+          value={catatan}
+          onChange={(e) => setCatatan(e.target.value)}
+        />
       </div>
 
       {/* FOOTER */}
