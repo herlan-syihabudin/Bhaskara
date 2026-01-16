@@ -28,7 +28,7 @@ export default function MaterialRequestList({
           </div>
 
           <p className="text-xs text-gray-500">
-            Requested by {mr.requestedBy} • {mr.createdAt}
+            {mr.createdAt}
           </p>
 
           <ul className="text-sm list-disc pl-5">
