@@ -5,6 +5,9 @@ export type MRStatus =
   | "ORDERED"
   | "DELIVERED";
 
+/* ======================
+   ITEM
+====================== */
 export type MRItem = {
   name: string;
   qty: number;
@@ -12,34 +15,44 @@ export type MRItem = {
   estimasiHarga: number;
 };
 
+/* ======================
+   MATERIAL REQUEST
+====================== */
 export type MaterialRequest = {
   id: string;
   projectId: string;
+  requester: string;
+  catatan?: string;
   status: MRStatus;
   items: MRItem[];
   createdAt: string;
 };
 
-/* =========================
+/* ======================
    IN-MEMORY DATA STORE
-   (sementara, bukan engine)
-========================= */
+====================== */
 export const materialRequests: MaterialRequest[] = [];
 
-/* =========================
+/* ======================
    ACTIONS
-========================= */
+====================== */
 
 // dipanggil dari halaman Request Material (PM / Lapangan)
 export function addMaterialRequest(
   projectId: string,
-  items: MRItem[]
+  payload: {
+    requester: string;
+    catatan?: string;
+    items: MRItem[];
+  }
 ) {
   materialRequests.push({
     id: crypto.randomUUID(),
     projectId,
+    requester: payload.requester,
+    catatan: payload.catatan,
     status: "SUBMITTED",
-    items,
+    items: payload.items,
     createdAt: new Date().toISOString(),
   });
 }
