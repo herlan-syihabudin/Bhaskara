@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/dashboard", label: "Owner Dashboard" },
-  { href: "/dashboard/pm", label: "Project Manager" }, // ✅ PM
+  { href: "/dashboard/pm", label: "Project Manager" },
   { href: "/dashboard/finance", label: "Finance" },
   { href: "/dashboard/purchasing", label: "Purchasing" },
   { href: "/dashboard/logistik", label: "Logistik" },
