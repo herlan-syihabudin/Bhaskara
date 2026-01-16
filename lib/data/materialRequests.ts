@@ -10,6 +10,7 @@ export type MRItem = {
   qty: number;
   unit: string;
   estimasiHarga: number;
+  status: MRStatus;
 };
 
 export type MaterialRequest = {
@@ -22,11 +23,16 @@ export type MaterialRequest = {
   createdAt: string;
 };
 
+/* =========================
+   IN MEMORY STORE
+========================= */
 export const materialRequests: MaterialRequest[] = [];
 
 /* =========================
    ACTIONS
 ========================= */
+
+// dipakai halaman Request Material
 export function addMaterialRequest(
   projectId: string,
   payload: {
@@ -44,4 +50,20 @@ export function addMaterialRequest(
     items: payload.items,
     createdAt: new Date().toISOString(),
   });
+}
+
+// ✅ INI YANG HILANG → DIPAKAI DI PROJECT DETAIL
+export function getMRByProject(projectId: string) {
+  return materialRequests.filter(
+    (mr) => mr.projectId === projectId
+  );
+}
+
+// optional (future)
+export function updateMRStatus(
+  id: string,
+  status: MRStatus
+) {
+  const mr = materialRequests.find((m) => m.id === id);
+  if (mr) mr.status = status;
 }
