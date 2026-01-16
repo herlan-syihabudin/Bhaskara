@@ -1,29 +1,9 @@
-import { getRealCostByProject } from "@/lib/engine/realCost";
+// lib/data/projects.ts
+export type ProjectStatus = "ONGOING" | "DONE";
 
 export type Project = {
   id: string;
   name: string;
   nilaiKontrak: number;
+  status: ProjectStatus;
 };
-
-export const projects: Project[] = [
-  {
-    id: "cikarang",
-    name: "Proyek Gudang Cikarang",
-    nilaiKontrak: 10_000_000,
-  },
-];
-
-export function getProjectWithRealCost(projectId: string) {
-  const project = projects.find((p) => p.id === projectId);
-  if (!project) return null;
-
-  const biayaReal = getRealCostByProject(projectId);
-  const sisa = project.nilaiKontrak - biayaReal;
-
-  return {
-    ...project,
-    biayaReal,
-    sisa,
-  };
-}
