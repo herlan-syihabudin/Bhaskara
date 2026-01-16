@@ -4,21 +4,26 @@ import FeaturedProjects from "@/components/home/FeaturedProjects";
 import CallToAction from "@/components/home/CallToAction";
 import WhyBBM from "@/components/home/WhyBBM";
 import Reveal from "@/components/ui/Reveal";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
     <>
       <section className="relative border-b border-gray-200 overflow-hidden">
-        {/* ===== BACKGROUND IMAGE ===== */}
-        <div className="absolute inset-0 -z-10">
-          <img
-            src="/hero-bbm.jpg"
-            alt="BBM Engineering Project"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-white/80" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50" />
-        </div>
+        
+       {/* ===== BACKGROUND IMAGE (UPGRADED) ===== */}
+<div className="absolute inset-0 -z-10">
+  <Image
+    src="/hero-bbm.jpg"
+    alt=""
+    fill
+    priority
+    sizes="100vw"
+    className="object-cover"
+  />
+  <div className="absolute inset-0 bg-white/80" />
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50" />
+</div>
 
         <div className="container-bbm py-32 grid lg:grid-cols-12 gap-16 items-center">
 
