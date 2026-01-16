@@ -23,16 +23,11 @@ export type MaterialRequest = {
   createdAt: string;
 };
 
-/* =========================
-   IN MEMORY STORE
-========================= */
 export const materialRequests: MaterialRequest[] = [];
 
 /* =========================
    ACTIONS
 ========================= */
-
-// dipakai halaman Request Material
 export function addMaterialRequest(
   projectId: string,
   payload: {
@@ -52,18 +47,31 @@ export function addMaterialRequest(
   });
 }
 
-// ✅ INI YANG HILANG → DIPAKAI DI PROJECT DETAIL
 export function getMRByProject(projectId: string) {
   return materialRequests.filter(
     (mr) => mr.projectId === projectId
   );
 }
 
-// optional (future)
-export function updateMRStatus(
-  id: string,
+// 🔥 PURCHASING ACTIONS
+export function updateItemHarga(
+  mrId: string,
+  index: number,
+  harga: number
+) {
+  const mr = materialRequests.find((m) => m.id === mrId);
+  if (mr && mr.items[index]) {
+    mr.items[index].estimasiHarga = harga;
+  }
+}
+
+export function updateItemStatus(
+  mrId: string,
+  index: number,
   status: MRStatus
 ) {
-  const mr = materialRequests.find((m) => m.id === id);
-  if (mr) mr.status = status;
+  const mr = materialRequests.find((m) => m.id === mrId);
+  if (mr && mr.items[index]) {
+    mr.items[index].status = status;
+  }
 }
