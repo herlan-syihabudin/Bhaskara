@@ -3,7 +3,7 @@ import Link from "next/link";
 import KpiCard from "@/components/dashboard/KpiCard";
 import { getProjectById } from "@/lib/data/projects";
 import { getMRByProject } from "@/lib/data/materialRequests";
-import MaterialRequestSummary from "@/components/material/MaterialRequestSummary";
+import MaterialRequestSummary from "@/components/dashboard/MaterialRequestSummary";
 
 export default function ProjectDetailPage({
   params,
@@ -13,7 +13,6 @@ export default function ProjectDetailPage({
   const project = getProjectById(params.id);
   if (!project) notFound();
 
-  // 🔑 ambil MR berdasarkan project
   const mrList = getMRByProject(project.id);
 
   return (
@@ -55,7 +54,7 @@ export default function ProjectDetailPage({
         </Link>
       </div>
 
-      {/* MATERIAL REQUEST (SUMMARY) */}
+      {/* MATERIAL REQUEST SUMMARY */}
       <MaterialRequestSummary
         projectId={project.id}
         mrList={mrList}
