@@ -1,7 +1,6 @@
 // lib/data/materialRequests.ts
 
 export type MRStatus =
-  | "DRAFT"
   | "SUBMITTED"
   | "APPROVED"
   | "REJECTED"
@@ -9,7 +8,6 @@ export type MRStatus =
   | "DELIVERED";
 
 export type MRItem = {
-  id: string;
   name: string;
   qty: number;
   unit: string;
@@ -19,21 +17,31 @@ export type MRItem = {
 export type MaterialRequest = {
   id: string;
   projectId: string;
-  requestedBy: string; // PM / Site
   status: MRStatus;
   items: MRItem[];
   createdAt: string;
 };
 
-/**
- * SEMENTARA KOSONG
- * nanti diisi saat submit MR
- */
+// IN-MEMORY STORE (AMAN, BUKAN ENGINE)
 export const materialRequests: MaterialRequest[] = [];
 
-/**
- * Helper AMAN (READ ONLY)
- */
+/* =========================
+   ACTIONS
+========================= */
+
+export function addMaterialRequest(
+  projectId: string,
+  items: MRItem[]
+) {
+  materialRequests.push({
+    id: crypto.randomUUID(),
+    projectId,
+    status: "SUBMITTED",
+    items,
+    createdAt: new Date().toISOString(),
+  });
+}
+
 export function getMRByProject(projectId: string) {
   return materialRequests.filter(
     (mr) => mr.projectId === projectId
