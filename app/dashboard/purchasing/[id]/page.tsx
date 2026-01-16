@@ -16,7 +16,9 @@ export default function PurchasingDetailPage() {
   if (!mr) {
     return (
       <section className="container-bbm py-10">
-        <p className="text-gray-500">Material Request tidak ditemukan</p>
+        <p className="text-gray-500">
+          Material Request tidak ditemukan
+        </p>
       </section>
     );
   }
@@ -28,21 +30,24 @@ export default function PurchasingDetailPage() {
       </h1>
 
       {/* HEADER MR */}
-      <div className="card p-6 space-y-2">
-        <p className="font-medium">Requester: {mr.requester}</p>
-
-        {mr.catatan && (
-          <p className="text-sm text-gray-500">
-            Catatan: {mr.catatan}
+      <div className="card p-6 flex justify-between text-sm">
+        <div>
+          <p className="font-medium">
+            Requester: {mr.requester}
           </p>
-        )}
+          {mr.catatan && (
+            <p className="text-gray-500">
+              Catatan: {mr.catatan}
+            </p>
+          )}
+        </div>
 
-        <span className="inline-block px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
+        <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
           {mr.status}
         </span>
       </div>
 
-      {/* ITEM TABLE */}
+      {/* TABLE ITEM */}
       <div className="card p-6">
         <table className="w-full text-sm table-fixed">
           <thead className="border-b text-gray-500">
@@ -69,9 +74,8 @@ export default function PurchasingDetailPage() {
                   <input
                     type="number"
                     className="input w-28"
-                    min={0}
                     value={item.estimasiHarga}
-                    disabled={item.status !== "SUBMITTED"}
+                    min={0}
                     onChange={(e) =>
                       updateItemHarga(
                         mr.id,
@@ -83,7 +87,10 @@ export default function PurchasingDetailPage() {
                 </td>
 
                 <td className="font-medium">
-                  Rp {(item.qty * item.estimasiHarga).toLocaleString("id-ID")}
+                  Rp{" "}
+                  {(item.qty * item.estimasiHarga).toLocaleString(
+                    "id-ID"
+                  )}
                 </td>
 
                 <td>
