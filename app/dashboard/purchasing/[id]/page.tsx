@@ -6,15 +6,16 @@ import {
   updateItemHarga,
   updateItemStatus,
 } from "@/lib/data/materialRequests";
+import type { MRStatus } from "@/lib/data/materialRequests";
 
 export default function PurchasingPage() {
-  const params = useParams<{ projectId: string }>();
-  const mrList = getMRByProject(params.projectId);
+  const params = useParams<{ id: string }>();
+  const mrList = getMRByProject(params.id);
 
   return (
     <section className="container-bbm py-10 space-y-8">
       <h1 className="text-2xl font-semibold">
-        Purchasing – Proyek {params.projectId}
+        Purchasing – Proyek {params.id}
       </h1>
 
       {mrList.length === 0 && (
@@ -65,7 +66,6 @@ export default function PurchasingPage() {
                   <td>{item.qty}</td>
                   <td>{item.unit}</td>
 
-                  {/* HARGA */}
                   <td>
                     <input
                       type="number"
@@ -88,7 +88,6 @@ export default function PurchasingPage() {
                     )}
                   </td>
 
-                  {/* STATUS ITEM */}
                   <td>
                     <select
                       className="input w-32"
@@ -97,19 +96,13 @@ export default function PurchasingPage() {
                         updateItemStatus(
                           mr.id,
                           i,
-                          e.target.value as any
+                          e.target.value as MRStatus
                         )
                       }
                     >
-                      <option value="SUBMITTED">
-                        SUBMITTED
-                      </option>
-                      <option value="ORDERED">
-                        ORDERED
-                      </option>
-                      <option value="DELIVERED">
-                        DELIVERED
-                      </option>
+                      <option value="SUBMITTED">SUBMITTED</option>
+                      <option value="ORDERED">ORDERED</option>
+                      <option value="DELIVERED">DELIVERED</option>
                     </select>
                   </td>
                 </tr>
