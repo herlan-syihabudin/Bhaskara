@@ -1,3 +1,8 @@
+import { statusFromBudget, type BudgetStatus } from "@/lib/engine/budget";
+
+/* =========================
+   TYPES
+========================= */
 export type Project = {
   id: string;
   name: string;
@@ -5,6 +10,9 @@ export type Project = {
   biayaReal: number;
 };
 
+/* =========================
+   SOURCE DATA
+========================= */
 export const projects: Project[] = [
   {
     id: "cikarang",
@@ -20,6 +28,23 @@ export const projects: Project[] = [
   },
 ];
 
+/* =========================
+   DERIVED HELPERS
+========================= */
 export function getProjectById(id: string) {
-  return projects.find(p => p.id === id);
+  return projects.find((p) => p.id === id);
+}
+
+export function getProjectSisa(project: Project) {
+  return project.nilaiKontrak - project.biayaReal;
+}
+
+export function getProjectUsedPct(project: Project) {
+  return project.nilaiKontrak > 0
+    ? (project.biayaReal / project.nilaiKontrak) * 100
+    : 0;
+}
+
+export function getProjectStatus(project: Project): BudgetStatus {
+  return statusFromBudget(project.nilaiKontrak, project.biayaReal);
 }
