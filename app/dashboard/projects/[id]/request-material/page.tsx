@@ -5,9 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { addMaterialRequest } from "@/lib/data/materialRequests";
 
+/* ======================
+   TYPES (FORM ONLY)
+====================== */
 type ItemInput = {
   material: string;
-  qty: number | "";
+  qty: number;
   unit: string;
   harga: number;
 };
@@ -28,34 +31,25 @@ export default function RequestMaterialPage() {
   const router = useRouter();
 
   const [requester, setRequester] = useState("");
-  const [tanggal, setTanggal] = useState("");
+  const [now, setNow] = useState(new Date());
 
   const [items, setItems] = useState<ItemInput[]>([
-    { material: "", qty: "", unit: "pcs", harga: 0 },
+    { material: "", qty: 0, unit: "pcs", harga: 0 },
   ]);
 
   /* ======================
      REALTIME CLOCK
   ====================== */
   useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setTanggal(
-        now.toLocaleString("id-ID", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
-    };
-    tick();
-    const i = setInterval(tick, 1000);
-    return () => clearInterval(i);
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
+  /* ======================
+     HELPERS
+  ====================== */
   function updateItem<K extends keyof ItemInput>(
     index: number,
     field: K,
@@ -69,7 +63,7 @@ export default function RequestMaterialPage() {
   function addItem() {
     setItems([
       ...items,
-      { material: "", qty: "", unit: "pcs", harga: 0 },
+      { material: "", qty: 0, unit: "pcs", harga: 0 },
     ]);
   }
 
@@ -78,14 +72,17 @@ export default function RequestMaterialPage() {
   }
 
   const validItems = items.filter(
-    (i) => i.material.trim() && i.qty !== "" && Number(i.qty) > 0
+    (i) => i.material.trim() !== "" && i.qty > 0
   );
 
   const totalEstimasi = validItems.reduce(
-    (acc, i) => acc + Number(i.qty) * i.harga,
+    (acc, i) => acc + i.qty * i.harga,
     0
   );
 
+  /* ======================
+     SUBMIT
+  ====================== */
   function submitRequest() {
     if (!requester.trim()) {
       alert("Nama requester wajib diisi");
@@ -93,49 +90,56 @@ export default function RequestMaterialPage() {
     }
 
     if (validItems.length === 0) {
-      alert("Minimal 1 material & qty diisi");
+      alert("Minimal 1 material valid");
       return;
     }
 
     const mappedItems = validItems.map((i) => ({
       name: i.material,
-      qty: Number(i.qty),
+      qty: i.qty,
       unit: i.unit,
       estimasiHarga: i.harga,
     }));
 
     addMaterialRequest(params.id, mappedItems);
+
+    alert("Material Request dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
   }
 
+  /* ======================
+     UI
+  ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
       <h1 className="text-2xl font-semibold">
         Request Material Proyek
       </h1>
 
-      {/* HEADER INFO */}
+      {/* META */}
       <div className="card p-6 grid grid-cols-3 gap-6">
         <div>
           <label className="text-xs text-gray-500">Nama Proyek</label>
-          <div className="mt-1 font-medium">
-            Proyek {params.id}
-          </div>
-        </div>
-
-        <div>
-          <label className="text-xs text-gray-500">
-            Tanggal & Jam
-          </label>
-          <div className="mt-1 font-medium">{tanggal}</div>
-        </div>
-
-        <div>
-          <label className="text-xs text-gray-500">
-            Nama Requester
-          </label>
           <input
-            className="input mt-1"
+            className="input bg-gray-100"
+            value={`Proyek ${params.id}`}
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="text-xs text-gray-500">Tanggal & Jam</label>
+          <input
+            className="input bg-gray-100"
+            value={now.toLocaleString("id-ID")}
+            disabled
+          />
+        </div>
+
+        <div>
+          <label className="text-xs text-gray-500">Nama Requester</label>
+          <input
+            className="input"
             value={requester}
             onChange={(e) => setRequester(e.target.value)}
             placeholder="Nama petugas lapangan"
@@ -143,18 +147,18 @@ export default function RequestMaterialPage() {
         </div>
       </div>
 
-      {/* TABLE */}
-      <div className="card p-6">
-        <table className="w-full text-sm">
+      {/* MATERIAL TABLE */}
+      <div className="card p-6 space-y-4">
+        <table className="w-full text-sm table-fixed">
           <thead className="border-b text-gray-500">
             <tr>
-              <th>No</th>
-              <th>Material</th>
+              <th className="w-12">No</th>
+              <th className="w-[40%]">Material</th>
               <th className="w-24">Qty</th>
               <th className="w-24">Unit</th>
               <th className="w-32">Harga</th>
               <th className="w-32">Total</th>
-              <th></th>
+              <th className="w-16"></th>
             </tr>
           </thead>
 
@@ -176,45 +180,41 @@ export default function RequestMaterialPage() {
                 <td>
                   <input
                     type="number"
-                    className="input"
+                    className="input w-20"
+                    min={0}
                     value={item.qty}
-                    placeholder="0"
                     onChange={(e) =>
-                      updateItem(
-                        i,
-                        "qty",
-                        e.target.value === ""
-                          ? ""
-                          : Number(e.target.value)
-                      )
+                      updateItem(i, "qty", Number(e.target.value))
                     }
                   />
                 </td>
 
                 <td>
                   <select
-                    className="input"
+                    className="input w-24"
                     value={item.unit}
                     onChange={(e) =>
                       updateItem(i, "unit", e.target.value)
                     }
                   >
                     {UNIT_OPTIONS.map((u) => (
-                      <option key={u}>{u}</option>
+                      <option key={u} value={u}>
+                        {u}
+                      </option>
                     ))}
                   </select>
                 </td>
 
-                {/* HARGA (READ ONLY DISPLAY) */}
-                <td className="text-gray-400">
-                  Rp {item.harga.toLocaleString("id-ID")}
+                <td>
+                  <input
+                    className="input bg-gray-100 text-gray-500 cursor-not-allowed"
+                    value="Rp 0"
+                    disabled
+                  />
                 </td>
 
                 <td className="font-medium">
-                  Rp{" "}
-                  {(Number(item.qty || 0) * item.harga).toLocaleString(
-                    "id-ID"
-                  )}
+                  Rp {(item.qty * item.harga).toLocaleString("id-ID")}
                 </td>
 
                 <td>
@@ -234,7 +234,7 @@ export default function RequestMaterialPage() {
 
         <button
           onClick={addItem}
-          className="text-sm text-blue-600 mt-3"
+          className="text-sm text-blue-600"
         >
           + Tambah Item
         </button>
