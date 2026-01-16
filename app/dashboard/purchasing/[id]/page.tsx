@@ -1,107 +1,123 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
-  materialRequests,
+  getMRByProject,
+  updateItemHarga,
+  updateItemStatus,
 } from "@/lib/data/materialRequests";
 
-export default function PurchasingDetailPage() {
-  const params = useParams<{ id: string }>();
-  const router = useRouter();
-
-  const mr = materialRequests.find((m) => m.id === params.id);
-
-  if (!mr) {
-    return <p className="p-10">Material Request tidak ditemukan</p>;
-  }
-
-  function updateStatus(status: typeof mr.status) {
-    mr.status = status;
-    alert(`Status diubah menjadi ${status}`);
-    router.push("/dashboard/purchasing");
-  }
-
-  const totalEstimasi = mr.items.reduce(
-    (acc, i) => acc + i.qty * i.estimasiHarga,
-    0
-  );
+export default function PurchasingPage() {
+  const params = useParams<{ projectId: string }>();
+  const mrList = getMRByProject(params.projectId);
 
   return (
-    <section className="container-bbm py-12 space-y-8">
-      <div>
-        <p className="text-xs tracking-[0.3em] text-gray-400 uppercase">
-          MATERIAL REQUEST DETAIL
-        </p>
-        <h1 className="text-2xl font-semibold mt-1">
-          Project: {mr.projectId}
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Status: <strong>{mr.status}</strong>
-        </p>
-      </div>
+    <section className="container-bbm py-10 space-y-8">
+      <h1 className="text-2xl font-semibold">
+        Purchasing – Proyek {params.projectId}
+      </h1>
 
-      {/* ITEMS */}
-      <div className="card p-6">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-gray-500 border-b">
-              <th>Material</th>
-              <th>Qty</th>
-              <th>Unit</th>
-              <th>Estimasi</th>
-            </tr>
-          </thead>
+      {mrList.length === 0 && (
+        <p className="text-gray-500">
+          Belum ada Material Request
+        </p>
+      )}
 
-          <tbody>
-            {mr.items.map((i, idx) => (
-              <tr key={idx} className="border-b last:border-none">
-                <td className="py-3">{i.name}</td>
-                <td className="py-3">{i.qty}</td>
-                <td className="py-3">{i.unit}</td>
-                <td className="py-3">
-                  Rp {(i.qty * i.estimasiHarga).toLocaleString("id-ID")}
-                </td>
+      {mrList.map((mr) => (
+        <div key={mr.id} className="card p-6 space-y-4">
+          {/* HEADER MR */}
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="font-medium">
+                Requester: {mr.requester}
+              </p>
+              {mr.catatan && (
+                <p className="text-gray-500">
+                  Catatan: {mr.catatan}
+                </p>
+              )}
+            </div>
+
+            <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
+              {mr.status}
+            </span>
+          </div>
+
+          {/* TABLE */}
+          <table className="w-full text-sm table-fixed">
+            <thead className="border-b text-gray-500">
+              <tr>
+                <th>No</th>
+                <th>Material</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Harga</th>
+                <th>Total</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
 
-      {/* SUMMARY */}
-      <div className="text-sm">
-        Total Estimasi:{" "}
-        <strong>Rp {totalEstimasi.toLocaleString("id-ID")}</strong>
-      </div>
+            <tbody>
+              {mr.items.map((item, i) => (
+                <tr key={i} className="border-b">
+                  <td>{i + 1}</td>
+                  <td>{item.name}</td>
+                  <td>{item.qty}</td>
+                  <td>{item.unit}</td>
 
-      {/* ACTION */}
-      <div className="flex gap-4">
-        {mr.status === "SUBMITTED" && (
-          <>
-            <button
-              onClick={() => updateStatus("APPROVED")}
-              className="px-4 py-2 bg-black text-white rounded-lg text-sm"
-            >
-              Approve
-            </button>
+                  {/* HARGA */}
+                  <td>
+                    <input
+                      type="number"
+                      className="input w-28"
+                      value={item.estimasiHarga}
+                      onChange={(e) =>
+                        updateItemHarga(
+                          mr.id,
+                          i,
+                          Number(e.target.value)
+                        )
+                      }
+                    />
+                  </td>
 
-            <button
-              onClick={() => updateStatus("REJECTED")}
-              className="px-4 py-2 border rounded-lg text-sm"
-            >
-              Reject
-            </button>
-          </>
-        )}
+                  <td className="font-medium">
+                    Rp{" "}
+                    {(item.qty * item.estimasiHarga).toLocaleString(
+                      "id-ID"
+                    )}
+                  </td>
 
-        {mr.status === "APPROVED" && (
-          <button
-            onClick={() => updateStatus("ORDERED")}
-            className="px-4 py-2 bg-black text-white rounded-lg text-sm"
-          >
-            Order ke Supplier
-          </button>
-        )}
-      </div>
+                  {/* STATUS ITEM */}
+                  <td>
+                    <select
+                      className="input w-32"
+                      value={item.status}
+                      onChange={(e) =>
+                        updateItemStatus(
+                          mr.id,
+                          i,
+                          e.target.value as any
+                        )
+                      }
+                    >
+                      <option value="SUBMITTED">
+                        SUBMITTED
+                      </option>
+                      <option value="ORDERED">
+                        ORDERED
+                      </option>
+                      <option value="DELIVERED">
+                        DELIVERED
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
     </section>
   );
 }
