@@ -1,33 +1,27 @@
-// lib/summary/financeSummary.ts
 import { projects } from "@/lib/data/projects";
-import { statusFromBudget, type BudgetStatus } from "@/lib/engine/budget";
+import {
+  statusFromBudget,
+  type BudgetStatus,
+} from "@/lib/engine/budget";
 
-export type FinanceSummary = {
+export type OwnerSummary = {
+  totalProyek: number;
   totalKontrak: number;
   totalBiaya: number;
   totalSisa: number;
   status: BudgetStatus;
-  avgUsedPct: number;
 };
 
-export function getFinanceSummary(): FinanceSummary {
-  const totalKontrak = projects.reduce((a, p) => a + p.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((a, p) => a + p.biayaReal, 0);
-  const totalSisa = totalKontrak - totalBiaya;
-
-  const avgUsedPct =
-    projects.length > 0
-      ? projects.reduce(
-          (a, p) => a + (p.biayaReal / p.nilaiKontrak) * 100,
-          0
-        ) / projects.length
-      : 0;
+export function getOwnerSummary(): OwnerSummary {
+  const totalProyek = projects.length;
+  const totalKontrak = projects.reduce((acc, p) => acc + p.nilaiKontrak, 0);
+  const totalBiaya = projects.reduce((acc, p) => acc + p.biayaReal, 0);
 
   return {
+    totalProyek,
     totalKontrak,
     totalBiaya,
-    totalSisa,
+    totalSisa: totalKontrak - totalBiaya,
     status: statusFromBudget(totalKontrak, totalBiaya),
-    avgUsedPct,
   };
 }
