@@ -19,7 +19,7 @@ export type MaterialRequest = {
   id: string;
   projectId: string;
   requestedBy: string;
-  neededDate: string;
+  neededDate: string; // ISO date
   status: MRStatus;
   items: MRItem[];
   notes?: string;
@@ -34,24 +34,9 @@ export const materialRequests: MaterialRequest[] = [
     status: "SUBMITTED",
     notes: "Plafond kamar utama",
     items: [
-      {
-        id: "i1",
-        name: "Gypsum 9mm",
-        qty: 10,
-        unit: "lembar",
-      },
-      {
-        id: "i2",
-        name: "Hollow 4x4",
-        qty: 8,
-        unit: "batang",
-      },
-      {
-        id: "i3",
-        name: "Sekrup gypsum",
-        qty: 2,
-        unit: "dus",
-      },
+      { id: "i1", name: "Gypsum 9mm", qty: 10, unit: "lembar" },
+      { id: "i2", name: "Hollow 4x4", qty: 8, unit: "batang" },
+      { id: "i3", name: "Sekrup gypsum", qty: 2, unit: "dus" },
     ],
   },
 ];
