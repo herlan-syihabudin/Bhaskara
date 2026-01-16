@@ -1,48 +1,27 @@
 import { projects } from "@/lib/data/projects";
-import {
-  pct,
-  statusFromUsedPct,
-  type BudgetStatus,
-} from "@/lib/engine/budget";
+import { pct, statusFromBudget } from "@/lib/engine/budget";
+import type { BudgetStatus } from "@/lib/engine/budget";
 
-/* =========================
-   TYPES
-========================= */
-export type OwnerSummary = {
+export function getOwnerSummary(): {
   totalProyek: number;
   totalKontrak: number;
   totalBiaya: number;
   totalSisa: number;
   usedPct: number;
   status: BudgetStatus;
-};
-
-/* =========================
-   ENGINE
-========================= */
-export function getOwnerSummary(): OwnerSummary {
+} {
   const totalProyek = projects.length;
+  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
+  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
 
-  const totalKontrak = projects.reduce(
-    (sum, p) => sum + p.nilaiKontrak,
-    0
-  );
-
-  const totalBiaya = projects.reduce(
-    (sum, p) => sum + p.biayaReal,
-    0
-  );
-
-  const totalSisa = totalKontrak - totalBiaya;
   const usedPct = pct(totalBiaya, totalKontrak);
-  const status = statusFromUsedPct(usedPct);
 
   return {
     totalProyek,
     totalKontrak,
     totalBiaya,
-    totalSisa,
+    totalSisa: totalKontrak - totalBiaya,
     usedPct,
-    status,
+    status: statusFromBudget(totalKontrak, totalBiaya),
   };
 }
