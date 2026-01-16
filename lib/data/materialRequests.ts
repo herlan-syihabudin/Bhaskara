@@ -1,5 +1,3 @@
-// lib/data/materialRequests.ts
-
 export type MRStatus =
   | "SUBMITTED"
   | "APPROVED"
@@ -17,17 +15,13 @@ export type MRItem = {
 export type MaterialRequest = {
   id: string;
   projectId: string;
+  requestedBy: string;
   status: MRStatus;
   items: MRItem[];
   createdAt: string;
 };
 
-// IN-MEMORY STORE (AMAN, BUKAN ENGINE)
 export const materialRequests: MaterialRequest[] = [];
-
-/* =========================
-   ACTIONS
-========================= */
 
 export function addMaterialRequest(
   projectId: string,
@@ -36,6 +30,7 @@ export function addMaterialRequest(
   materialRequests.push({
     id: crypto.randomUUID(),
     projectId,
+    requestedBy: "PM Lapangan",
     status: "SUBMITTED",
     items,
     createdAt: new Date().toISOString(),
