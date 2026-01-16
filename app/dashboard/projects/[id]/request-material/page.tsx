@@ -13,7 +13,6 @@ type ItemInput = {
   qty: number;
   unit: string;
   harga: number;
-  status: "SUBMITTED";
 };
 
 const UNIT_OPTIONS = [
@@ -36,13 +35,7 @@ export default function RequestMaterialPage() {
   const [now, setNow] = useState(new Date());
 
   const [items, setItems] = useState<ItemInput[]>([
-    {
-      material: "",
-      qty: 0,
-      unit: "pcs",
-      harga: 0,
-      status: "SUBMITTED",
-    },
+    { material: "", qty: 0, unit: "pcs", harga: 0 },
   ]);
 
   /* ======================
@@ -69,13 +62,7 @@ export default function RequestMaterialPage() {
   function addItem() {
     setItems([
       ...items,
-      {
-        material: "",
-        qty: 0,
-        unit: "pcs",
-        harga: 0,
-        status: "SUBMITTED",
-      },
+      { material: "", qty: 0, unit: "pcs", harga: 0 },
     ]);
   }
 
@@ -106,7 +93,16 @@ export default function RequestMaterialPage() {
       return;
     }
 
-    addMaterialRequest(params.id, validItems);
+    addMaterialRequest(params.id, {
+      requester,
+      catatan,
+      items: validItems.map((i) => ({
+        name: i.material,
+        qty: i.qty,
+        unit: i.unit,
+        estimasiHarga: i.harga,
+      })),
+    });
 
     alert("Material Request dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
