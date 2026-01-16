@@ -28,7 +28,7 @@ export default function MaterialRequestList({
           </div>
 
           <p className="text-xs text-gray-500">
-            {mr.createdAt}
+            {new Date(mr.createdAt).toLocaleString("id-ID")}
           </p>
 
           <ul className="text-sm list-disc pl-5">
