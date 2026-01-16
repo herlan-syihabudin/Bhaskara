@@ -1,5 +1,3 @@
-// lib/data/materialRequests.ts
-
 /* =========================
    TYPES
 ========================= */
@@ -35,7 +33,6 @@ export type MaterialRequest = {
 
 /* =========================
    IN-MEMORY STORE
-   (sementara, sebelum pakai DB)
 ========================= */
 
 export const materialRequests: MaterialRequest[] = [];
@@ -45,34 +42,25 @@ export const materialRequests: MaterialRequest[] = [];
 ========================= */
 
 function recalcMRStatus(mr: MaterialRequest) {
-  // Kalau sudah REJECTED, jangan diubah otomatis
   if (mr.status === "REJECTED") return;
 
   const statuses = mr.items.map((i) => i.status);
 
-  if (statuses.length === 0) {
-    mr.status = "SUBMITTED";
-    return;
-  }
-
-  // Semua sudah dikirim ke site
   if (statuses.every((s) => s === "DELIVERED")) {
     mr.status = "DELIVERED";
     return;
   }
 
-  // Minimal ada 1 yang sudah di-order
   if (statuses.some((s) => s === "ORDERED")) {
     mr.status = "ORDERED";
     return;
   }
 
-  // Default: masih submitted semua
   mr.status = "SUBMITTED";
 }
 
 /* =========================
-   ACTIONS: PROJECT / LAPANGAN
+   PROJECT / LAPANGAN
 ========================= */
 
 export function addMaterialRequest(
@@ -80,7 +68,7 @@ export function addMaterialRequest(
   payload: {
     requester: string;
     catatan?: string;
-    items: Omit<MRItem, "status">[]; // name, qty, unit, estimasiHarga
+    items: Omit<MRItem, "status">[];
   }
 ) {
   materialRequests.push({
@@ -103,15 +91,10 @@ export function getMRByProject(projectId: string) {
   );
 }
 
-export function getMRById(id: string) {
-  return materialRequests.find((mr) => mr.id === id);
-}
-
 /* =========================
-   ACTIONS: PURCHASING
+   PURCHASING
 ========================= */
 
-// Update harga item — hanya boleh kalau masih SUBMITTED
 export function updateItemHarga(
   mrId: string,
   index: number,
@@ -123,13 +106,11 @@ export function updateItemHarga(
   const item = mr.items[index];
   if (!item) return;
 
-  // Harga hanya bisa diisi saat status item masih SUBMITTED
   if (item.status !== "SUBMITTED") return;
 
   item.estimasiHarga = harga;
 }
 
-// Update status per-item (SUBMITTED → ORDERED → DELIVERED)
 export function updateItemStatus(
   mrId: string,
   index: number,
@@ -141,22 +122,33 @@ export function updateItemStatus(
   const item = mr.items[index];
   if (!item) return;
 
-  const order: MRItemStatus[] = ["SUBMITTED", "ORDERED", "DELIVERED"];
-
-  const currentIdx = order.indexOf(item.status);
-  const targetIdx = order.indexOf(status);
-
-  // Tidak boleh mundur status (misal dari ORDERED balik ke SUBMITTED)
-  if (targetIdx < currentIdx) return;
-
   item.status = status;
-
-  // Auto update status MR
   recalcMRStatus(mr);
 }
 
 /* =========================
-   ACTIONS: MANAGEMENT
+   LOGISTIK (INI YANG KURANG!)
+========================= */
+
+export function markItemDelivered(
+  mrId: string,
+  index: number
+) {
+  const mr = materialRequests.find((m) => m.id === mrId);
+  if (!mr) return;
+
+  const item = mr.items[index];
+  if (!item) return;
+
+  // Logistik hanya boleh kirim item yang SUDAH ORDERED
+  if (item.status !== "ORDERED") return;
+
+  item.status = "DELIVERED";
+  recalcMRStatus(mr);
+}
+
+/* =========================
+   MANAGEMENT
 ========================= */
 
 export function rejectMR(mrId: string) {
