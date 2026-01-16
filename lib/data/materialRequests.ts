@@ -21,13 +21,16 @@ export type MaterialRequest = {
 };
 
 /* =========================
-   IN-MEMORY STORE
+   IN-MEMORY DATA STORE
+   (sementara, bukan engine)
 ========================= */
 export const materialRequests: MaterialRequest[] = [];
 
 /* =========================
    ACTIONS
 ========================= */
+
+// dipanggil dari halaman Request Material (PM / Lapangan)
 export function addMaterialRequest(
   projectId: string,
   items: MRItem[]
@@ -41,6 +44,7 @@ export function addMaterialRequest(
   });
 }
 
+// dipakai Purchasing
 export function approveMR(id: string) {
   const mr = materialRequests.find((m) => m.id === id);
   if (mr) mr.status = "APPROVED";
@@ -56,6 +60,7 @@ export function orderMR(id: string) {
   if (mr) mr.status = "ORDERED";
 }
 
+// dipakai Project / Logistik
 export function getMRByProject(projectId: string) {
   return materialRequests.filter(
     (mr) => mr.projectId === projectId
