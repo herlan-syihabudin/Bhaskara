@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { addMaterialRequest } from "@/lib/data/materialRequests";
@@ -31,13 +31,33 @@ export default function RequestMaterialPage() {
   const router = useRouter();
 
   const [requester, setRequester] = useState("");
-  const [tanggal, setTanggal] = useState(
-    new Date().toISOString().slice(0, 16)
-  );
+  const [tanggal, setTanggal] = useState("");
 
   const [items, setItems] = useState<ItemInput[]>([
     { material: "", qty: 1, unit: "pcs", harga: 0 },
   ]);
+
+  /* ======================
+     REALTIME CLOCK
+  ====================== */
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const formatted = now.toLocaleString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      setTanggal(formatted);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   /* ======================
      HELPERS
@@ -73,7 +93,7 @@ export default function RequestMaterialPage() {
   );
 
   /* ======================
-     SUBMIT (FIXED)
+     SUBMIT
   ====================== */
   function submitRequest() {
     if (!requester.trim()) {
@@ -86,7 +106,6 @@ export default function RequestMaterialPage() {
       return;
     }
 
-    // 🔑 MAP KE FORMAT MRItem (WAJIB)
     const mappedItems = validItems.map((i) => ({
       name: i.material,
       qty: i.qty,
@@ -110,32 +129,31 @@ export default function RequestMaterialPage() {
       </h1>
 
       {/* META */}
-      <div className="card p-6 grid grid-cols-3 gap-4">
+      <div className="card p-6 grid grid-cols-3 gap-6">
         <div>
-          <label className="text-xs text-gray-500">
+          <label className="text-xs text-gray-500 mb-1 block">
             Nama Proyek
           </label>
           <input
-            className="input"
-            value={params.id}
+            className="input bg-gray-100 text-gray-700"
+            value={`Proyek ${params.id}`}
             disabled
           />
         </div>
 
         <div>
-          <label className="text-xs text-gray-500">
+          <label className="text-xs text-gray-500 mb-1 block">
             Tanggal & Jam
           </label>
           <input
-            type="datetime-local"
-            className="input"
+            className="input bg-gray-100 text-gray-700"
             value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
+            disabled
           />
         </div>
 
         <div>
-          <label className="text-xs text-gray-500">
+          <label className="text-xs text-gray-500 mb-1 block">
             Nama Requester
           </label>
           <input
@@ -152,12 +170,12 @@ export default function RequestMaterialPage() {
         <table className="w-full text-sm">
           <thead className="border-b text-gray-500">
             <tr>
-              <th>No</th>
+              <th className="py-2">No</th>
               <th>Material</th>
-              <th>Qty</th>
-              <th>Unit</th>
-              <th>Harga / Unit</th>
-              <th>Total</th>
+              <th className="w-24">Qty</th>
+              <th className="w-28">Unit</th>
+              <th className="w-40">Harga / Unit</th>
+              <th className="w-32">Total</th>
               <th></th>
             </tr>
           </thead>
@@ -165,18 +183,14 @@ export default function RequestMaterialPage() {
           <tbody>
             {items.map((item, i) => (
               <tr key={i} className="border-b">
-                <td>{i + 1}</td>
+                <td className="py-2">{i + 1}</td>
 
                 <td>
                   <input
                     className="input"
                     value={item.material}
                     onChange={(e) =>
-                      updateItem(
-                        i,
-                        "material",
-                        e.target.value
-                      )
+                      updateItem(i, "material", e.target.value)
                     }
                   />
                 </td>
@@ -184,15 +198,11 @@ export default function RequestMaterialPage() {
                 <td>
                   <input
                     type="number"
-                    className="input w-20"
-                    value={item.qty}
                     min={1}
+                    className="input"
+                    value={item.qty}
                     onChange={(e) =>
-                      updateItem(
-                        i,
-                        "qty",
-                        Number(e.target.value)
-                      )
+                      updateItem(i, "qty", Number(e.target.value))
                     }
                   />
                 </td>
@@ -216,24 +226,18 @@ export default function RequestMaterialPage() {
                 <td>
                   <input
                     type="number"
-                    className="input"
+                    className="input bg-gray-100 text-gray-500 cursor-not-allowed"
                     value={item.harga}
-                    min={0}
-                    onChange={(e) =>
-                      updateItem(
-                        i,
-                        "harga",
-                        Number(e.target.value)
-                      )
-                    }
+                    disabled
                   />
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Diisi oleh Purchasing
+                  </p>
                 </td>
 
                 <td className="font-medium">
                   Rp{" "}
-                  {(item.qty * item.harga).toLocaleString(
-                    "id-ID"
-                  )}
+                  {(item.qty * item.harga).toLocaleString("id-ID")}
                 </td>
 
                 <td>
