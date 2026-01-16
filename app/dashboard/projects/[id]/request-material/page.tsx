@@ -5,6 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { addMaterialRequest } from "@/lib/data/materialRequests";
 
+/* ======================
+   TYPES (FORM ONLY)
+====================== */
 type ItemInput = {
   material: string;
   qty: number;
@@ -36,6 +39,9 @@ export default function RequestMaterialPage() {
     { material: "", qty: 1, unit: "pcs", harga: 0 },
   ]);
 
+  /* ======================
+     HELPERS
+  ====================== */
   function updateItem<K extends keyof ItemInput>(
     index: number,
     field: K,
@@ -58,43 +64,68 @@ export default function RequestMaterialPage() {
   }
 
   const validItems = items.filter(
-    (i) => i.material.trim() && i.qty > 0
+    (i) => i.material.trim() !== "" && i.qty > 0
   );
 
   const totalEstimasi = validItems.reduce(
-    (a, i) => a + i.qty * i.harga,
+    (acc, i) => acc + i.qty * i.harga,
     0
   );
 
+  /* ======================
+     SUBMIT (FIXED)
+  ====================== */
   function submitRequest() {
     if (!requester.trim()) {
       alert("Nama requester wajib diisi");
       return;
     }
+
     if (validItems.length === 0) {
       alert("Minimal 1 material valid");
       return;
     }
 
-    addMaterialRequest(params.id, validItems);
+    // 🔑 MAP KE FORMAT MRItem (WAJIB)
+    const mappedItems = validItems.map((i) => ({
+      name: i.material,
+      qty: i.qty,
+      unit: i.unit,
+      estimasiHarga: i.harga,
+    }));
+
+    addMaterialRequest(params.id, mappedItems);
 
     alert("Material Request dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
   }
 
+  /* ======================
+     UI
+  ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
-      <h1 className="text-2xl font-semibold">Request Material Proyek</h1>
+      <h1 className="text-2xl font-semibold">
+        Request Material Proyek
+      </h1>
 
       {/* META */}
       <div className="card p-6 grid grid-cols-3 gap-4">
         <div>
-          <label className="text-xs text-gray-500">Nama Proyek</label>
-          <input className="input" value={params.id} disabled />
+          <label className="text-xs text-gray-500">
+            Nama Proyek
+          </label>
+          <input
+            className="input"
+            value={params.id}
+            disabled
+          />
         </div>
 
         <div>
-          <label className="text-xs text-gray-500">Tanggal & Jam</label>
+          <label className="text-xs text-gray-500">
+            Tanggal & Jam
+          </label>
           <input
             type="datetime-local"
             className="input"
@@ -104,7 +135,9 @@ export default function RequestMaterialPage() {
         </div>
 
         <div>
-          <label className="text-xs text-gray-500">Nama Requester</label>
+          <label className="text-xs text-gray-500">
+            Nama Requester
+          </label>
           <input
             className="input"
             value={requester}
@@ -139,7 +172,11 @@ export default function RequestMaterialPage() {
                     className="input"
                     value={item.material}
                     onChange={(e) =>
-                      updateItem(i, "material", e.target.value)
+                      updateItem(
+                        i,
+                        "material",
+                        e.target.value
+                      )
                     }
                   />
                 </td>
@@ -149,8 +186,13 @@ export default function RequestMaterialPage() {
                     type="number"
                     className="input w-20"
                     value={item.qty}
+                    min={1}
                     onChange={(e) =>
-                      updateItem(i, "qty", Number(e.target.value))
+                      updateItem(
+                        i,
+                        "qty",
+                        Number(e.target.value)
+                      )
                     }
                   />
                 </td>
@@ -164,7 +206,9 @@ export default function RequestMaterialPage() {
                     }
                   >
                     {UNIT_OPTIONS.map((u) => (
-                      <option key={u}>{u}</option>
+                      <option key={u} value={u}>
+                        {u}
+                      </option>
                     ))}
                   </select>
                 </td>
@@ -174,14 +218,22 @@ export default function RequestMaterialPage() {
                     type="number"
                     className="input"
                     value={item.harga}
+                    min={0}
                     onChange={(e) =>
-                      updateItem(i, "harga", Number(e.target.value))
+                      updateItem(
+                        i,
+                        "harga",
+                        Number(e.target.value)
+                      )
                     }
                   />
                 </td>
 
                 <td className="font-medium">
-                  Rp {(item.qty * item.harga).toLocaleString("id-ID")}
+                  Rp{" "}
+                  {(item.qty * item.harga).toLocaleString(
+                    "id-ID"
+                  )}
                 </td>
 
                 <td>
