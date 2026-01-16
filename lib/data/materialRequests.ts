@@ -1,42 +1,22 @@
-// lib/data/materialRequests.ts
+// lib/data/materialRequest.ts
 
 export type MRStatus =
   | "DRAFT"
   | "SUBMITTED"
-  | "APPROVED"
-  | "REJECTED"
-  | "CLOSED";
+  | "ORDERED"
+  | "DELIVERED";
 
-export type MRItem = {
-  id: string;
+export type MaterialItem = {
   name: string;
   qty: number;
   unit: string;
-  spec?: string;
 };
 
 export type MaterialRequest = {
   id: string;
   projectId: string;
   requestedBy: string;
-  neededDate: string; // ISO date
+  date: string;
   status: MRStatus;
-  items: MRItem[];
-  notes?: string;
+  items: MaterialItem[];
 };
-
-export const materialRequests: MaterialRequest[] = [
-  {
-    id: "MR-001",
-    projectId: "p001",
-    requestedBy: "Lapangan - Andi",
-    neededDate: "2026-01-20",
-    status: "SUBMITTED",
-    notes: "Plafond kamar utama",
-    items: [
-      { id: "i1", name: "Gypsum 9mm", qty: 10, unit: "lembar" },
-      { id: "i2", name: "Hollow 4x4", qty: 8, unit: "batang" },
-      { id: "i3", name: "Sekrup gypsum", qty: 2, unit: "dus" },
-    ],
-  },
-];
