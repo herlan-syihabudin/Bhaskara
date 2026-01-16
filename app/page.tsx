@@ -14,7 +14,7 @@ export default function HomePage() {
        {/* ===== BACKGROUND IMAGE (UPGRADED) ===== */}
 <div className="absolute inset-0 -z-10">
   <Image
-    src="/hero-bbm.jpg"
+    src="/hero-project.jpg"
     alt=""
     fill
     priority
