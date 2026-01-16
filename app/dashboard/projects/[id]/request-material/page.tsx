@@ -12,7 +12,6 @@ type ItemInput = {
   material: string;
   qty: number;
   unit: string;
-  harga: number;
 };
 
 const UNIT_OPTIONS = [
@@ -35,15 +34,15 @@ export default function RequestMaterialPage() {
   const [now, setNow] = useState(new Date());
 
   const [items, setItems] = useState<ItemInput[]>([
-    { material: "", qty: 0, unit: "pcs", harga: 0 },
+    { material: "", qty: 0, unit: "pcs" },
   ]);
 
   /* ======================
      REALTIME CLOCK
   ====================== */
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
   }, []);
 
   /* ======================
@@ -60,10 +59,7 @@ export default function RequestMaterialPage() {
   }
 
   function addItem() {
-    setItems([
-      ...items,
-      { material: "", qty: 0, unit: "pcs", harga: 0 },
-    ]);
+    setItems([...items, { material: "", qty: 0, unit: "pcs" }]);
   }
 
   function removeItem(index: number) {
@@ -71,13 +67,10 @@ export default function RequestMaterialPage() {
   }
 
   const validItems = items.filter(
-    (i) => i.material.trim() !== "" && i.qty > 0
+    (i) => i.material.trim() && i.qty > 0
   );
 
-  const totalEstimasi = validItems.reduce(
-    (acc, i) => acc + i.qty * i.harga,
-    0
-  );
+  const totalEstimasi = 0; // harga diisi Purchasing
 
   /* ======================
      SUBMIT
@@ -100,7 +93,8 @@ export default function RequestMaterialPage() {
         name: i.material,
         qty: i.qty,
         unit: i.unit,
-        estimasiHarga: i.harga,
+        estimasiHarga: 0,
+        status: "SUBMITTED",
       })),
     });
 
@@ -113,7 +107,9 @@ export default function RequestMaterialPage() {
   ====================== */
   return (
     <section className="container-bbm py-12 space-y-8">
-      <h1 className="text-2xl font-semibold">Request Material Proyek</h1>
+      <h1 className="text-2xl font-semibold">
+        Request Material Proyek
+      </h1>
 
       {/* HEADER */}
       <div className="card p-6 grid grid-cols-3 gap-6">
@@ -146,11 +142,11 @@ export default function RequestMaterialPage() {
           <thead className="border-b text-gray-500">
             <tr>
               <th className="w-10">No</th>
-              <th className="w-[38%]">Material</th>
+              <th className="w-[40%]">Material</th>
               <th className="w-20 text-center">Qty</th>
               <th className="w-20">Unit</th>
               <th className="w-24">Harga</th>
-              <th className="w-28">Total</th>
+              <th className="w-24">Total</th>
               <th className="w-28">Status</th>
             </tr>
           </thead>
@@ -197,11 +193,7 @@ export default function RequestMaterialPage() {
                 </td>
 
                 <td className="text-gray-400">Rp 0</td>
-
-                <td className="font-medium">
-                  Rp{" "}
-                  {(item.qty * item.harga).toLocaleString("id-ID")}
-                </td>
+                <td className="font-medium">Rp 0</td>
 
                 <td>
                   <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
@@ -226,17 +218,16 @@ export default function RequestMaterialPage() {
         <p className="text-sm font-medium">Catatan / Keterangan</p>
         <textarea
           className="input mt-2 h-24"
-          placeholder="Contoh: untuk pekerjaan lantai area gudang, urgent hari ini"
           value={catatan}
           onChange={(e) => setCatatan(e.target.value)}
+          placeholder="Contoh: pekerjaan lantai gudang, urgent"
         />
       </div>
 
       {/* FOOTER */}
       <div className="flex justify-between items-center">
         <p className="font-semibold">
-          Total Estimasi: Rp{" "}
-          {totalEstimasi.toLocaleString("id-ID")}
+          Total Estimasi: Rp {totalEstimasi.toLocaleString("id-ID")}
         </p>
 
         <div className="flex gap-3">
