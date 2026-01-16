@@ -1,7 +1,11 @@
 export type MRStatus =
   | "SUBMITTED"
-  | "APPROVED"
-  | "REJECTED"
+  | "ORDERED"
+  | "DELIVERED"
+  | "REJECTED";
+
+export type MRItemStatus =
+  | "SUBMITTED"
   | "ORDERED"
   | "DELIVERED";
 
@@ -10,7 +14,7 @@ export type MRItem = {
   qty: number;
   unit: string;
   estimasiHarga: number;
-  status: MRStatus;
+  status: MRItemStatus;
 };
 
 export type MaterialRequest = {
@@ -26,6 +30,25 @@ export type MaterialRequest = {
 export const materialRequests: MaterialRequest[] = [];
 
 /* =========================
+   HELPERS
+========================= */
+function recalcMRStatus(mr: MaterialRequest) {
+  const statuses = mr.items.map((i) => i.status);
+
+  if (statuses.every((s) => s === "DELIVERED")) {
+    mr.status = "DELIVERED";
+    return;
+  }
+
+  if (statuses.some((s) => s === "ORDERED")) {
+    mr.status = "ORDERED";
+    return;
+  }
+
+  mr.status = "SUBMITTED";
+}
+
+/* =========================
    ACTIONS
 ========================= */
 export function addMaterialRequest(
@@ -33,7 +56,7 @@ export function addMaterialRequest(
   payload: {
     requester: string;
     catatan?: string;
-    items: MRItem[];
+    items: Omit<MRItem, "status">[];
   }
 ) {
   materialRequests.push({
@@ -42,7 +65,10 @@ export function addMaterialRequest(
     requester: payload.requester,
     catatan: payload.catatan,
     status: "SUBMITTED",
-    items: payload.items,
+    items: payload.items.map((i) => ({
+      ...i,
+      status: "SUBMITTED",
+    })),
     createdAt: new Date().toISOString(),
   });
 }
@@ -53,25 +79,39 @@ export function getMRByProject(projectId: string) {
   );
 }
 
-// 🔥 PURCHASING ACTIONS
+/* =========================
+   PURCHASING ACTIONS
+========================= */
 export function updateItemHarga(
   mrId: string,
   index: number,
   harga: number
 ) {
   const mr = materialRequests.find((m) => m.id === mrId);
-  if (mr && mr.items[index]) {
-    mr.items[index].estimasiHarga = harga;
-  }
+  if (!mr) return;
+
+  const item = mr.items[index];
+  if (!item) return;
+
+  // 🔒 LOCK HARGA
+  if (item.status !== "SUBMITTED") return;
+
+  item.estimasiHarga = harga;
 }
 
 export function updateItemStatus(
   mrId: string,
   index: number,
-  status: MRStatus
+  status: MRItemStatus
 ) {
   const mr = materialRequests.find((m) => m.id === mrId);
-  if (mr && mr.items[index]) {
-    mr.items[index].status = status;
-  }
+  if (!mr) return;
+
+  const item = mr.items[index];
+  if (!item) return;
+
+  item.status = status;
+
+  // 🔁 AUTO UPDATE STATUS MR
+  recalcMRStatus(mr);
 }
