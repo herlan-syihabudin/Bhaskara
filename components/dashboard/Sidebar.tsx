@@ -20,7 +20,6 @@ export default function Sidebar() {
           Bhaskara
         </h2>
       </div>
-
       {/* NAV */}
       <nav className="p-4 space-y-1 text-sm">
         {links.map((l) => (
