@@ -16,15 +16,33 @@ type ItemInput = {
 };
 
 /* ======================
+   CONST
+====================== */
+const UNIT_OPTIONS = [
+  "pcs",
+  "unit",
+  "bh",
+  "m",
+  "m²",
+  "m³",
+  "kg",
+  "sak",
+  "set",
+];
+
+/* ======================
    PAGE
 ====================== */
 export default function RequestMaterialPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
 
-  const today = new Date().toLocaleDateString("id-ID");
+  const now = new Date();
+  const tanggalJam = now.toLocaleString("id-ID");
 
+  const [projectName, setProjectName] = useState(params.id);
   const [requester, setRequester] = useState("");
+
   const [items, setItems] = useState<ItemInput[]>([
     { name: "", qty: 1, unit: "pcs", estimasiHarga: 0 },
   ]);
@@ -63,6 +81,11 @@ export default function RequestMaterialPage() {
   );
 
   function submitRequest() {
+    if (!projectName.trim()) {
+      alert("Nama proyek wajib diisi");
+      return;
+    }
+
     if (!requester.trim()) {
       alert("Nama requester wajib diisi");
       return;
@@ -73,7 +96,7 @@ export default function RequestMaterialPage() {
       return;
     }
 
-    addMaterialRequest(params.id, validItems);
+    addMaterialRequest(projectName, validItems);
 
     alert("Material Request berhasil dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
@@ -97,13 +120,17 @@ export default function RequestMaterialPage() {
       {/* INFO */}
       <div className="card p-6 grid grid-cols-3 gap-6 text-sm">
         <div>
-          <p className="text-gray-500">Nama Proyek</p>
-          <p className="font-medium">{params.id}</p>
+          <label className="text-gray-500">Nama Proyek</label>
+          <input
+            className="input mt-1"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+          />
         </div>
 
         <div>
-          <p className="text-gray-500">Tanggal</p>
-          <p className="font-medium">{today}</p>
+          <p className="text-gray-500">Tanggal & Jam</p>
+          <p className="font-medium mt-1">{tanggalJam}</p>
         </div>
 
         <div>
@@ -119,7 +146,6 @@ export default function RequestMaterialPage() {
 
       {/* TABLE */}
       <div className="card p-6 space-y-4">
-        {/* HEADER ROW */}
         <div className="grid grid-cols-12 gap-4 text-xs text-gray-500 border-b pb-2">
           <div className="col-span-1">No</div>
           <div className="col-span-3">Material</div>
@@ -131,7 +157,7 @@ export default function RequestMaterialPage() {
 
         {items.map((item, i) => (
           <div key={i} className="grid grid-cols-12 gap-4 items-center">
-            <div className="col-span-1 text-sm">{i + 1}</div>
+            <div className="col-span-1">{i + 1}</div>
 
             <div className="col-span-3">
               <input
@@ -146,6 +172,7 @@ export default function RequestMaterialPage() {
             <div className="col-span-2">
               <input
                 type="number"
+                min={0}
                 className="input"
                 value={item.qty}
                 onChange={(e) =>
@@ -155,18 +182,25 @@ export default function RequestMaterialPage() {
             </div>
 
             <div className="col-span-2">
-              <input
+              <select
                 className="input"
                 value={item.unit}
                 onChange={(e) =>
                   updateItem(i, "unit", e.target.value)
                 }
-              />
+              >
+                {UNIT_OPTIONS.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="col-span-2">
               <input
                 type="number"
+                min={0}
                 className="input"
                 value={item.estimasiHarga}
                 onChange={(e) =>
@@ -179,7 +213,7 @@ export default function RequestMaterialPage() {
               />
             </div>
 
-            <div className="col-span-2 text-sm font-medium">
+            <div className="col-span-2 font-medium">
               Rp {(item.qty * item.estimasiHarga).toLocaleString("id-ID")}
             </div>
           </div>
@@ -192,8 +226,7 @@ export default function RequestMaterialPage() {
 
       {/* TOTAL */}
       <div className="text-right text-lg font-semibold">
-        Total Estimasi:{" "}
-        Rp {totalEstimasi.toLocaleString("id-ID")}
+        Total Estimasi: Rp {totalEstimasi.toLocaleString("id-ID")}
       </div>
 
       {/* ACTION */}
