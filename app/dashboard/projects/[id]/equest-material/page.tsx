@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { addMaterialRequest } from "@/lib/data/materialRequests";
 
 /* ======================
    TYPES
@@ -34,10 +35,7 @@ export default function RequestMaterialPage() {
     value: ItemInput[K]
   ) {
     const copy = [...items];
-    copy[index] = {
-      ...copy[index],
-      [field]: value,
-    };
+    copy[index] = { ...copy[index], [field]: value };
     setItems(copy);
   }
 
@@ -52,17 +50,22 @@ export default function RequestMaterialPage() {
     setItems(items.filter((_, i) => i !== index));
   }
 
+  const validItems = items.filter(
+    (i) => i.name.trim() !== "" && i.qty > 0
+  );
+
+  const totalEstimasi = validItems.reduce(
+    (acc, i) => acc + i.qty * i.estimasiHarga,
+    0
+  );
+
   function submitRequest() {
-    if (items.length === 0) {
-      alert("Minimal 1 item material");
+    if (validItems.length === 0) {
+      alert("Isi minimal 1 item material dengan benar");
       return;
     }
 
-    // sementara log dulu (nanti masuk ke data store / API)
-    console.log("MR SUBMITTED:", {
-      projectId: params.id,
-      items,
-    });
+    addMaterialRequest(params.id, validItems);
 
     alert("Material Request berhasil dikirim ke Purchasing");
     router.push(`/dashboard/projects/${params.id}`);
@@ -158,19 +161,25 @@ export default function RequestMaterialPage() {
           </div>
         ))}
 
-        <button
-          onClick={addItem}
-          className="text-sm text-blue-600"
-        >
+        <button onClick={addItem} className="text-sm text-blue-600">
           + Tambah Item
         </button>
+      </div>
+
+      {/* SUMMARY */}
+      <div className="text-sm text-gray-600">
+        Total estimasi:{" "}
+        <span className="font-semibold">
+          Rp {totalEstimasi.toLocaleString("id-ID")}
+        </span>
       </div>
 
       {/* ACTION */}
       <div className="flex gap-4">
         <button
           onClick={submitRequest}
-          className="px-6 py-3 rounded-lg bg-black text-white text-sm"
+          disabled={validItems.length === 0}
+          className="px-6 py-3 rounded-lg bg-black text-white text-sm disabled:opacity-50"
         >
           Kirim ke Purchasing
         </button>
