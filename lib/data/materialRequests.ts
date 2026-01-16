@@ -1,22 +1,31 @@
-// lib/data/materialRequest.ts
+// lib/data/materialRequests.ts
 
 export type MRStatus =
   | "DRAFT"
   | "SUBMITTED"
+  | "APPROVED"
+  | "REJECTED"
   | "ORDERED"
   | "DELIVERED";
 
-export type MaterialItem = {
+export type MRItem = {
+  id: string;
   name: string;
   qty: number;
   unit: string;
+  estimasiHarga: number;
 };
 
 export type MaterialRequest = {
   id: string;
   projectId: string;
-  requestedBy: string;
-  date: string;
+  requestedBy: string; // PM / Lapangan
   status: MRStatus;
-  items: MaterialItem[];
+  items: MRItem[];
+  createdAt: string;
 };
+
+/**
+ * sementara mock data
+ */
+export const materialRequests: MaterialRequest[] = [];
