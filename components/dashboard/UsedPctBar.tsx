@@ -19,7 +19,7 @@ export default function UsedPctBar({
   status: BudgetStatus;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="card p-6 space-y-2 max-w-md">
       <div className="flex justify-between text-xs text-gray-500">
         <span>Budget Terpakai</span>
         <span>{value.toFixed(1)}%</span>
