@@ -9,19 +9,32 @@ export type OwnerSummary = {
   totalKontrak: number;
   totalBiaya: number;
   totalSisa: number;
+  usedPct: number;        // ⬅️ TAMBAHAN
   status: BudgetStatus;
 };
 
 export function getOwnerSummary(): OwnerSummary {
   const totalProyek = projects.length;
-  const totalKontrak = projects.reduce((acc, p) => acc + p.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((acc, p) => acc + p.biayaReal, 0);
+  const totalKontrak = projects.reduce(
+    (acc, p) => acc + p.nilaiKontrak,
+    0
+  );
+  const totalBiaya = projects.reduce(
+    (acc, p) => acc + p.biayaReal,
+    0
+  );
+
+  const usedPct =
+    totalKontrak > 0
+      ? (totalBiaya / totalKontrak) * 100
+      : 0;
 
   return {
     totalProyek,
     totalKontrak,
     totalBiaya,
     totalSisa: totalKontrak - totalBiaya,
+    usedPct,              // ⬅️ TAMBAHKAN DI SINI
     status: statusFromBudget(totalKontrak, totalBiaya),
   };
 }
