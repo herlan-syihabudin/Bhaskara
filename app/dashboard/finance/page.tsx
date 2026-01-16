@@ -14,13 +14,19 @@ export default function FinancePage() {
         subtitle="Ringkasan keuangan seluruh proyek"
       />
 
+      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard title="Total Kontrak" value={s.totalKontrak} />
         <KpiCard title="Total Biaya" value={s.totalBiaya} />
         <KpiCard title="Sisa Dana" value={s.totalSisa} />
-        <KpiCard title="Status Keuangan" type="status" statusValue={s.status} />
+        <KpiCard
+          title="Status Keuangan"
+          type="status"
+          statusValue={s.status}
+        />
       </div>
 
+      {/* PROGRESS */}
       <UsedPctBar value={s.avgUsedPct} status={s.status} />
     </section>
   );
