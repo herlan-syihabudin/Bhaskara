@@ -36,11 +36,11 @@ export const clients = [
   "PT Bagus Jaya Sukses",
   "PT Kino Indonesia",
   "PT KNT 21",
-  "RI 1 Indonesia,
+  "RI 1 Indonesia",
   "Universitas Negeri Jakarta",
   "PT Modena Energy",
-  "PT Kawasaki Motor Indonesia,
-  "PT Natura Aromatik Nusantara
+  "PT Kawasaki Motor Indonesia",
+  "PT Natura Aromatik Nusantara",
 ];
 
 export default function ClientList() {
