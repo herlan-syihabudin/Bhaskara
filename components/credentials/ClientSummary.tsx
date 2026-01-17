@@ -19,6 +19,13 @@ export default function ClientSummary() {
             industrial and commercial clients across Indonesia, supporting
             manufacturing, logistics, utilities, and infrastructure operations.
           </p>
+
+          {/* MICRO PROOF (UPGRADE LEVEL) */}
+          <p className="mt-6 text-xs text-gray-500 max-w-2xl">
+            Engagements include EPC support, brownfield upgrades, operational
+            facilities, and live-plant environments with strict safety,
+            quality, and schedule controls.
+          </p>
         </div>
 
         {/* ================= TRUST STATS ================= */}
@@ -69,6 +76,20 @@ export default function ClientSummary() {
           </p>
         </div>
 
+        {/* ================= CLIENT TYPE GROUPING (PSYCHO UPGRADE) ================= */}
+        <div className="mt-10 max-w-3xl">
+          <p className="text-sm font-medium text-gray-700">
+            Client engagements include:
+          </p>
+
+          <ul className="mt-3 text-sm text-gray-600 list-disc list-inside space-y-1">
+            <li>Multinational manufacturing & automotive suppliers</li>
+            <li>FMCG, food & pharmaceutical production facilities</li>
+            <li>Property developers & industrial estates</li>
+            <li>Government & institutional projects</li>
+          </ul>
+        </div>
+
         {/* ================= NDA DISCLAIMER ================= */}
         <div className="mt-8 max-w-3xl">
           <p className="text-xs text-gray-500">
@@ -79,7 +100,7 @@ export default function ClientSummary() {
           </p>
         </div>
 
-        {/* ================= CLIENT PORTFOLIO CTA ================= */}
+        {/* ================= CLIENT PORTFOLIO CTA (TENDER LANGUAGE) ================= */}
         <div className="mt-10">
           <Link
             href="/credentials"
@@ -88,13 +109,13 @@ export default function ClientSummary() {
                        border-b border-gray-900
                        hover:opacity-80 transition"
           >
-            View client portfolio & credentials
+            View client portfolio, certifications & tender credentials
             <span aria-hidden>→</span>
           </Link>
 
           <p className="mt-2 text-xs text-gray-500 max-w-md">
-            Detailed client lists, certifications, and project credentials
-            are available for procurement and tender evaluation.
+            Available for pre-qualification, procurement review,
+            and formal tender submissions upon request.
           </p>
         </div>
 
