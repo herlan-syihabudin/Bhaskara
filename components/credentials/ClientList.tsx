@@ -20,6 +20,7 @@ export const clients = [
   "PT Sari Takagi Elok Produk",
   "PT Greenland Metal Stamping Indonesia",
   "PT Sinarmas Land",
+  "PT Toa Coating Indonesia",
 
   "PT Pacinesia Chemical Industry",
   "PT Bima Bisaloy",
