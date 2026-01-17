@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <>
       <section className="relative border-b border-gray-200 overflow-hidden">
-        
+      
        {/* ===== BACKGROUND IMAGE (UPGRADED) ===== */}
 <div className="absolute inset-0 -z-10">
   <Image
