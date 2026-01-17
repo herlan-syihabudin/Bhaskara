@@ -1,38 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-
-const projects = {
-  "industrial-plant-construction": {
-    title: "Industrial Plant Construction",
-    category: "Industrial",
-    overview:
-      "Construction and coordination works for industrial facilities executed with strict safety controls, engineering discipline, and structured project management.",
-    scope: [
-      "Foundation and substructure works",
-      "Structural steel fabrication and erection",
-      "Concrete slabs and supporting structures",
-      "Coordination with ongoing plant operations",
-    ],
-    execution: [
-      "Phased execution to maintain plant operation continuity",
-      "Strict HSE enforcement and daily toolbox meetings",
-      "Inspection and Test Plans (ITP) for structural works",
-      "Progress tracking and coordination with client representatives",
-    ],
-    images: [
-      "/projects/industrial-1.jpg",
-      "/projects/industrial-2.jpg",
-      "/projects/industrial-3.jpg",
-    ],
-  },
-};
+import { projects } from "@/lib/projectsData";
 
 export default function ProjectDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const project = projects[params.slug as keyof typeof projects];
+  const project = projects.find((p) => p.slug === params.slug);
 
   if (!project) return notFound();
 
@@ -68,7 +43,7 @@ export default function ProjectDetailPage({
             <img
               key={src}
               src={src}
-              alt=""
+              alt={project.title}
               className="h-56 w-full rounded-xl border object-cover"
             />
           ))}
