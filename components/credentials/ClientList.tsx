@@ -46,35 +46,66 @@ export const clients = [
 export default function ClientList() {
   return (
     <section className="bg-white border-t border-gray-200">
-      <div className="container-bbm py-24">
+      <div className="container-bbm py-28">
 
+        {/* ================= HEADER ================= */}
         <div className="max-w-3xl">
           <span className="badge">CLIENT PORTFOLIO</span>
+
           <h1 className="mt-4">
             Selected Client Engagements
           </h1>
+
           <p className="mt-5 text-gray-600">
             Below is a selection of organizations we have supported across
             industrial and commercial sectors in Indonesia.
           </p>
+
+          {/* Trust anchor (HALUS tapi KUAT) */}
+          <p className="mt-3 text-sm text-gray-500">
+            Including multinational manufacturers, publicly listed companies,
+            and government institutions.
+          </p>
         </div>
 
-        <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* ================= CLIENT GRID ================= */}
+        <div className="mt-20 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
           {clients.map((c) => (
             <div
               key={c}
-              className="card p-5 text-sm text-gray-700"
+              className="
+                group bg-white border border-gray-200 rounded-xl
+                px-6 py-4 text-sm text-gray-700
+                transition-all duration-200
+                hover:border-[color:var(--bbm-green)]
+                hover:shadow-sm hover:-translate-y-0.5
+              "
             >
-              {c}
+              <div className="flex items-center gap-3">
+                {/* Accent dot */}
+                <span
+                  className="h-2 w-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: "#F4C430" }}
+                />
+                <span className="font-medium text-gray-800">
+                  {c}
+                </span>
+              </div>
             </div>
           ))}
+
         </div>
 
-        <p className="mt-10 text-xs text-gray-500 max-w-3xl">
-          Client information is presented for reference purposes only.
-          Project scope details are subject to confidentiality and
-          may be disclosed during formal tender or contractual discussions.
-        </p>
+        {/* ================= FOOTNOTE ================= */}
+        <div className="mt-16 max-w-3xl border-t border-gray-200 pt-8">
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Client information is presented for reference purposes only.
+            Project scopes, documentation, and site references are subject
+            to confidentiality and may be disclosed during formal tender,
+            pre-qualification, or contractual discussions.
+          </p>
+        </div>
 
       </div>
     </section>
