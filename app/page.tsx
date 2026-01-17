@@ -10,9 +10,31 @@ import Reveal from "@/components/ui/Reveal";
 
 /* ================= SEO METADATA ================= */
 export const metadata: Metadata = {
-  title: "PT Bhaskara Buana Mulya | Engineering & Construction Contractor",
+  title:
+    "PT Bhaskara Buana Mulya | Engineering, Construction & MEP Contractor",
   description:
-    "PT Bhaskara Buana Mulya is an engineering-driven general contractor delivering civil, structural, MEP, and interior fit-out projects with disciplined execution and safety-first culture.",
+    "PT Bhaskara Buana Mulya is an engineering-driven general contractor delivering civil, structural, MEP, and interior fit-out projects with disciplined execution and safety-first culture across Indonesia.",
+  openGraph: {
+    title:
+      "PT Bhaskara Buana Mulya | Engineering & Construction Contractor",
+    description:
+      "Engineering-led general contractor delivering civil, structural, MEP, and interior works with disciplined execution and safety-first culture.",
+    url: "https://bhaskara-lqtk.vercel.app",
+    siteName: "PT Bhaskara Buana Mulya",
+    images: [
+      {
+        url: "/hero-project.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Engineering and construction project execution",
+      },
+    ],
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 /* ================= PAGE ================= */
@@ -54,7 +76,7 @@ export default function HomePage() {
               </p>
             </Reveal>
 
-            {/* ===== H1 (SINGLE, MAIN SEO HEADING) ===== */}
+            {/* ===== H1 (SINGLE & SEO-CORRECT) ===== */}
             <Reveal className="reveal-delay-2">
               <h1 className="max-w-3xl">
                 Engineering-driven contractor delivering
@@ -81,7 +103,7 @@ export default function HomePage() {
               </p>
             </Reveal>
 
-            {/* ===== CTA (B2B FRIENDLY) ===== */}
+            {/* ===== CTA (B2B FRIENDLY, NON-AGGRESSIVE) ===== */}
             <Reveal className="reveal-delay-4">
               <div className="mt-12 flex flex-wrap gap-4">
                 <a
@@ -163,13 +185,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= SEO CONTEXT (INVISIBLE, GOOGLE READS) ================= */}
+      {/* ================= SEO CONTEXT (ACCESSIBLE, NON-SPAM) ================= */}
       <section className="sr-only">
-        <h2>Engineering, Construction, and MEP Services in Indonesia</h2>
+        <h2>Engineering, Construction, and MEP Contractor in Indonesia</h2>
         <p>
-          PT Bhaskara Buana Mulya provides engineering-led construction services
-          including civil works, structural steel, MEP engineering, and interior
-          fit-out for industrial and commercial projects across Indonesia.
+          PT Bhaskara Buana Mulya is an Indonesian engineering-driven
+          general contractor providing civil construction, structural
+          steel works, MEP engineering, and interior fit-out services
+          for industrial and commercial projects.
         </p>
       </section>
 
