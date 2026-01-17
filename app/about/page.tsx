@@ -3,7 +3,7 @@ export default function AboutPage() {
     <section className="bg-white">
       <div className="container-bbm py-28">
 
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <div className="max-w-3xl">
           <span className="badge">ABOUT US</span>
 
@@ -11,44 +11,41 @@ export default function AboutPage() {
             PT Bhaskara Buana Mulya
           </h1>
 
-          <p className="mt-8 text-lg">
+          <p className="mt-8 text-lg leading-relaxed">
             PT Bhaskara Buana Mulya is an engineering-driven general contractor
             delivering civil, structural, MEP, and interior works with a strong
-            focus on safety, quality, and disciplined execution across
-            industrial and commercial projects.
+            emphasis on safety, quality, and disciplined execution across
+            industrial and commercial environments.
           </p>
 
-          {/* ➕ CONTEXT ANCHOR (TAMBAHAN HALUS) */}
-          <p className="mt-4 text-sm text-gray-600 max-w-2xl">
-            Our role extends beyond construction activities, encompassing
-            engineering coordination, site supervision, and structured
-            project controls throughout the project lifecycle.
+          <p className="mt-4 text-sm text-gray-600 max-w-2xl leading-relaxed">
+            Our involvement extends beyond construction activities to include
+            engineering coordination, site supervision, and structured project
+            controls throughout the entire project lifecycle.
           </p>
         </div>
 
-        {/* POSITIONING */}
+        {/* ================= POSITIONING ================= */}
         <div className="mt-20 max-w-4xl border-t border-gray-200 pt-12">
           <h2>
-            Engineering-led execution, not just construction
+            Engineering-led delivery, not ad-hoc construction
           </h2>
 
-          <p className="mt-6">
-            We operate with the belief that successful project delivery is
-            achieved through structured engineering planning, qualified site
-            supervision, and disciplined execution rather than ad-hoc decisions
-            on site. Every project is managed with clear scope definition,
-            approved method statements, and measurable performance controls.
+          <p className="mt-6 leading-relaxed">
+            We believe that successful project delivery is achieved through
+            structured engineering planning, qualified site supervision, and
+            disciplined execution — rather than reactive, ad-hoc decisions
+            made on site.
           </p>
 
-          {/* ➕ OPERATIONAL CLARIFIER */}
-          <p className="mt-4 text-sm text-gray-600">
-            This approach allows us to manage risk, control quality, and
-            maintain schedule predictability from mobilization through
-            final handover.
+          <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+            Each project is managed with clearly defined scope, approved
+            drawings and method statements, measurable performance controls,
+            and accountable coordination between all disciplines involved.
           </p>
         </div>
 
-        {/* PRINCIPLES */}
+        {/* ================= OPERATING PRINCIPLES ================= */}
         <div className="mt-20">
           <h2>
             Our Operating Principles
@@ -56,93 +53,97 @@ export default function AboutPage() {
 
           <div className="mt-10 grid gap-8 md:grid-cols-2 max-w-4xl">
             <div className="card p-8">
-              <h3>Safety First</h3>
-              <p className="mt-3 text-sm">
-                Safety is embedded into our planning and execution processes.
-                We enforce HSE standards across all project phases and site
-                activities without compromise.
+              <h3>Health, Safety & Environment</h3>
+              <p className="mt-3 text-sm leading-relaxed">
+                Safety is embedded into our planning and execution processes
+                through formal HSE management systems, site induction,
+                toolbox meetings, and continuous supervision without compromise.
               </p>
             </div>
 
             <div className="card p-8">
               <h3>Engineering Discipline</h3>
-              <p className="mt-3 text-sm">
-                Our projects are led by engineering analysis, detailed planning,
+              <p className="mt-3 text-sm leading-relaxed">
+                Project execution is driven by engineering analysis,
+                constructability review, coordinated shop drawings,
                 and approved method statements to ensure predictable outcomes.
               </p>
             </div>
 
             <div className="card p-8">
-              <h3>Quality Assurance</h3>
-              <p className="mt-3 text-sm">
-                We implement quality control procedures, inspection records,
-                and documentation to maintain workmanship and compliance.
+              <h3>Quality Assurance & Control</h3>
+              <p className="mt-3 text-sm leading-relaxed">
+                Workmanship quality is maintained through inspection
+                and test plans, systematic documentation, and continuous
+                monitoring against project specifications.
               </p>
             </div>
 
             <div className="card p-8">
-              <h3>Accountable Delivery</h3>
-              <p className="mt-3 text-sm">
-                We commit to transparent communication, progress reporting,
-                and accountability from mobilization through final handover.
+              <h3>Accountable Project Delivery</h3>
+              <p className="mt-3 text-sm leading-relaxed">
+                We maintain transparent communication, progress reporting,
+                and accountability from mobilization through final handover,
+                ensuring alignment with client objectives.
               </p>
             </div>
           </div>
         </div>
 
-        {/* LEGAL & COMPLIANCE */}
-<div className="mt-24 max-w-4xl border-t border-gray-200 pt-12">
-  <h2>
-    Legal & Compliance
-  </h2>
+        {/* ================= LEGAL & COMPLIANCE ================= */}
+        <div className="mt-24 max-w-4xl border-t border-gray-200 pt-12">
+          <h2>
+            Legal & Compliance
+          </h2>
 
-  <p className="mt-6">
-    PT Bhaskara Buana Mulya is a legally registered Indonesian company,
-    operating in compliance with applicable laws and regulations governing
-    construction and engineering services.
-  </p>
+          <p className="mt-6 leading-relaxed">
+            PT Bhaskara Buana Mulya is a legally registered Indonesian company
+            operating in compliance with applicable laws and regulations
+            governing construction and engineering services.
+          </p>
 
-  <p className="mt-4 text-sm text-gray-600 max-w-3xl">
-    Our operations are supported by formal corporate registration,
-    statutory tax compliance, and relevant business permits required
-    to execute general contracting, civil works, structural construction,
-    and MEP engineering services.
-  </p>
+          <p className="mt-4 text-sm text-gray-600 max-w-3xl leading-relaxed">
+            Our operations are supported by formal corporate registration,
+            statutory tax compliance, and relevant business permits required
+            to perform general contracting, civil and structural works,
+            and MEP engineering services.
+          </p>
 
-  <div className="mt-8 grid gap-4 md:grid-cols-2 text-sm text-gray-700 max-w-3xl">
-    <ul className="list-disc list-inside space-y-2">
-      <li>Deed of Establishment & Corporate Registration</li>
-      <li>Business Identification Number (NIB)</li>
-      <li>Tax Registration (NPWP)</li>
-    </ul>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 text-sm text-gray-700 max-w-3xl">
+            <ul className="list-disc list-inside space-y-2">
+              <li>Deed of Establishment and corporate registration</li>
+              <li>Business Identification Number (NIB)</li>
+              <li>Tax Registration (NPWP)</li>
+            </ul>
 
-    <ul className="list-disc list-inside space-y-2">
-      <li>Relevant construction permits and certifications</li>
-      <li>Compliance with national HSE and labor regulations</li>
-      <li>Operational governance and reporting standards</li>
-    </ul>
-  </div>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Relevant construction licenses and certifications</li>
+              <li>Compliance with national HSE and labor regulations</li>
+              <li>Governance, reporting, and operational controls</li>
+            </ul>
+          </div>
 
-  <p className="mt-6 text-xs text-gray-500 max-w-3xl">
-    Detailed legal documentation and certifications are available
-    upon formal request during tender processes or contractual discussions.
-  </p>
-</div>
+          <p className="mt-6 text-xs text-gray-500 max-w-3xl">
+            Detailed legal documentation and certifications are available
+            upon formal request during tender processes, audits,
+            or contractual discussions.
+          </p>
+        </div>
 
-        {/* CLOSING STATEMENT */}
+        {/* ================= CLOSING ================= */}
         <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 leading-relaxed">
             Our focus is not only on completing projects, but on delivering
             outcomes that are safe, reliable, and aligned with our clients’
             operational and business objectives.
           </p>
 
-          {/* ➕ STRATEGIC CLOSE */}
           <p className="mt-4 text-xs text-gray-500">
             This commitment underpins our long-term relationships with
             clients across industrial, commercial, and infrastructure sectors.
           </p>
         </div>
+
       </div>
     </section>
   );
