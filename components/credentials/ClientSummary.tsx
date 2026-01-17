@@ -1,9 +1,11 @@
+import Link from "next/link";
+
 export default function ClientSummary() {
   return (
     <section className="bg-white border-b border-gray-200">
       <div className="container-bbm py-24">
 
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <div className="max-w-3xl">
           <span className="badge">CLIENT TRUST</span>
 
@@ -19,7 +21,7 @@ export default function ClientSummary() {
           </p>
         </div>
 
-        {/* TRUST STATS */}
+        {/* ================= TRUST STATS ================= */}
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card p-8">
             <p className="text-sm text-gray-500">Total Clients Served</p>
@@ -58,7 +60,7 @@ export default function ClientSummary() {
           </div>
         </div>
 
-        {/* REGIONAL COVERAGE */}
+        {/* ================= REGIONAL COVERAGE ================= */}
         <div className="mt-14 max-w-3xl">
           <p className="text-sm text-gray-600 leading-relaxed">
             Our client engagements span key industrial regions including
@@ -67,13 +69,32 @@ export default function ClientSummary() {
           </p>
         </div>
 
-        {/* NDA DISCLAIMER */}
+        {/* ================= NDA DISCLAIMER ================= */}
         <div className="mt-8 max-w-3xl">
           <p className="text-xs text-gray-500">
             Client details and project references are presented in aggregate
             to respect confidentiality and non-disclosure obligations.
             Detailed references may be shared during formal tender
             or contractual discussions.
+          </p>
+        </div>
+
+        {/* ================= CLIENT PORTFOLIO CTA ================= */}
+        <div className="mt-10">
+          <Link
+            href="/credentials"
+            className="inline-flex items-center gap-2
+                       text-sm font-medium text-gray-900
+                       border-b border-gray-900
+                       hover:opacity-80 transition"
+          >
+            View client portfolio & credentials
+            <span aria-hidden>→</span>
+          </Link>
+
+          <p className="mt-2 text-xs text-gray-500 max-w-md">
+            Detailed client lists, certifications, and project credentials
+            are available for procurement and tender evaluation.
           </p>
         </div>
 
