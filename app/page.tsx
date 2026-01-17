@@ -7,6 +7,7 @@ import FeaturedProjects from "@/components/home/FeaturedProjects";
 import CallToAction from "@/components/home/CallToAction";
 import WhyBBM from "@/components/home/WhyBBM";
 import Reveal from "@/components/ui/Reveal";
+import ClientSummary from "@/components/credentials/ClientSummary";
 
 /* ================= SEO METADATA ================= */
 export const metadata: Metadata = {
@@ -199,6 +200,7 @@ export default function HomePage() {
       {/* ================= CONTENT SECTIONS (LOGICAL ORDER) ================= */}
       <WhatWeDo />
       <TrustBar />
+      <ClientSummary />
       <WhyBBM />
       <FeaturedProjects />
       <CallToAction />
