@@ -1,11 +1,21 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+
 import WhatWeDo from "@/components/home/WhatWeDo";
 import TrustBar from "@/components/home/TrustBar";
 import FeaturedProjects from "@/components/home/FeaturedProjects";
 import CallToAction from "@/components/home/CallToAction";
 import WhyBBM from "@/components/home/WhyBBM";
 import Reveal from "@/components/ui/Reveal";
-import Image from "next/image";
 
+/* ================= SEO METADATA ================= */
+export const metadata: Metadata = {
+  title: "PT Bhaskara Buana Mulya | Engineering & Construction Contractor",
+  description:
+    "PT Bhaskara Buana Mulya is an engineering-driven general contractor delivering civil, structural, MEP, and interior fit-out projects with disciplined execution and safety-first culture.",
+};
+
+/* ================= PAGE ================= */
 export default function HomePage() {
   return (
     <>
@@ -33,17 +43,18 @@ export default function HomePage() {
 
             <Reveal>
               <p className="text-xs tracking-[0.35em] text-gray-600 mb-4">
-                ENGINEERING • SAFETY • EXECUTION
+                ENGINEERING • SAFETY • EXECUTION • MEP • CONSTRUCTION
               </p>
             </Reveal>
 
             <Reveal className="reveal-delay-1">
               <p className="text-sm text-gray-700 mb-6 max-w-xl">
-                Engineering-driven general contractor for industrial, commercial,
-                and infrastructure projects.
+                Engineering-driven general contractor for industrial,
+                commercial, and infrastructure projects.
               </p>
             </Reveal>
 
+            {/* ===== H1 (SINGLE, MAIN SEO HEADING) ===== */}
             <Reveal className="reveal-delay-2">
               <h1 className="max-w-3xl">
                 Engineering-driven contractor delivering
@@ -57,8 +68,8 @@ export default function HomePage() {
             <Reveal className="reveal-delay-3">
               <p className="mt-10 text-lg max-w-2xl text-gray-800">
                 PT Bhaskara Buana Mulya delivers integrated general contracting,
-                civil and steel construction, MEP engineering, and interior fit-out
-                through disciplined execution and a safety-first culture.
+                civil and steel construction, MEP engineering, and interior
+                fit-out through disciplined execution and a safety-first culture.
               </p>
             </Reveal>
 
@@ -70,7 +81,7 @@ export default function HomePage() {
               </p>
             </Reveal>
 
-            {/* ===== CTA (LEVEL 2 – SOFTER & B2B FRIENDLY) ===== */}
+            {/* ===== CTA (B2B FRIENDLY) ===== */}
             <Reveal className="reveal-delay-4">
               <div className="mt-12 flex flex-wrap gap-4">
                 <a
@@ -152,7 +163,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= SECTIONS (LOGICAL ORDER – LEVEL 2) ================= */}
+      {/* ================= SEO CONTEXT (INVISIBLE, GOOGLE READS) ================= */}
+      <section className="sr-only">
+        <h2>Engineering, Construction, and MEP Services in Indonesia</h2>
+        <p>
+          PT Bhaskara Buana Mulya provides engineering-led construction services
+          including civil works, structural steel, MEP engineering, and interior
+          fit-out for industrial and commercial projects across Indonesia.
+        </p>
+      </section>
+
+      {/* ================= CONTENT SECTIONS (LOGICAL ORDER) ================= */}
       <WhatWeDo />
       <TrustBar />
       <WhyBBM />
