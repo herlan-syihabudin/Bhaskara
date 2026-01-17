@@ -13,8 +13,9 @@ export default function RootLayout({
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
+      /* ================= ORGANIZATION ================= */
       {
-        "@type": "Organization",
+        "@type": ["Organization", "LocalBusiness"],
         "@id": `${baseUrl}#organization`,
         name: "PT Bhaskara Buana Mulya",
         legalName: "PT Bhaskara Buana Mulya",
@@ -43,20 +44,82 @@ export default function RootLayout({
           postalCode: "17155",
           addressCountry: "ID",
         },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: -6.2735,
+          longitude: 107.0206,
+        },
         contactPoint: {
           "@type": "ContactPoint",
           telephone: "+62-21-3871-6066",
-          contactType: "business inquiries",
-          areaServed: "ID",
+          contactType: "Project Inquiry",
           availableLanguage: ["id", "en"],
         },
-        areaServed: {
-          "@type": "Country",
-          name: "Indonesia",
+
+        /* ===== LOCAL SEO CORE ===== */
+        areaServed: [
+          {
+            "@type": "AdministrativeArea",
+            name: "Jabodetabek",
+          },
+          {
+            "@type": "AdministrativeArea",
+            name: "Jawa Barat",
+          },
+          {
+            "@type": "AdministrativeArea",
+            name: "Jawa Tengah",
+          },
+          {
+            "@type": "AdministrativeArea",
+            name: "Jawa Timur",
+          },
+          {
+            "@type": "Country",
+            name: "Indonesia",
+          },
+        ],
+
+        /* ===== SERVICE SIGNAL (NON-SPAM) ===== */
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Construction & MEP Services",
+          itemListElement: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "General Contracting",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "MEP Engineering",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Civil & Structural Construction",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                name: "Interior Fit-Out",
+              },
+            },
+          ],
         },
+
         sameAs: [],
       },
 
+      /* ================= WEBSITE ================= */
       {
         "@type": "WebSite",
         "@id": `${baseUrl}#website`,
@@ -78,7 +141,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
-        {/* ===== GLOBAL ORGANIZATION & WEBSITE SCHEMA ===== */}
+        {/* ===== GLOBAL SEO & LOCAL BUSINESS SCHEMA ===== */}
         <Script
           id="global-schema"
           type="application/ld+json"
