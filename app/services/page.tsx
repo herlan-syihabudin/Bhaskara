@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ServicesHero from "@/components/services/ServicesHero";
 import ServiceList from "@/components/services/ServiceList";
 import CallToAction from "@/components/home/CallToAction";
+import DeliveryModel from "@/components/services/DeliveryModel";
 
 /* ===============================
    SEO METADATA
@@ -119,6 +120,8 @@ export default function ServicesPage() {
 
       {/* ===== SERVICES OVERVIEW ===== */}
       <ServiceList />
+
+       <DeliveryModel />
 
       {/* ===== CTA ===== */}
       <CallToAction />
