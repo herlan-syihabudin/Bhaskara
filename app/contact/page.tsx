@@ -1,104 +1,137 @@
+import Link from "next/link";
+
 export default function ContactPage() {
   return (
     <section className="bg-gray-50">
       <div className="container-bbm py-28">
         <div className="grid gap-16 lg:grid-cols-2 items-start">
-          
-          {/* LEFT: INFO */}
-<div className="max-w-xl">
-  <span className="badge">CONTACT</span>
 
-  <h1 className="mt-6">
-    Let’s discuss
-    <span className="block">your project</span>
-  </h1>
+          {/* ================= LEFT: INFO ================= */}
+          <div className="max-w-xl">
+            <span className="badge">CONTACT</span>
 
-  <p className="mt-6 text-lg">
-    Reach out to our team to discuss project scope, schedule,
-    and execution strategy. We approach every project with
-    engineering rigor and safety-first principles.
-  </p>
+            <h1 className="mt-6">
+              Let’s discuss
+              <span className="block">your project requirements</span>
+            </h1>
 
-  {/* ===== COMPANY IDENTITY ===== */}
-  <div className="mt-10 space-y-3 text-sm text-gray-700">
-    <p>
-      <strong>Company:</strong><br />
-      PT Bhaskara Buana Mulya
-    </p>
+            <p className="mt-6 text-lg text-gray-800 leading-relaxed">
+              Engage with our engineering and project team to align
+              scope, technical requirements, schedule, and execution
+              approach before project commitment.
+            </p>
 
-    <p>
-      <strong>Office Address:</strong><br />
-      Jl. Raya Kedaung, RT.002/RW.004<br />
-      Cimuning, Kec. Mustika Jaya<br />
-      Kota Bekasi, Jawa Barat 17155
-    </p>
+            {/* EXPECTATION SETTING */}
+            <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+              Initial discussions focus on constructability, coordination,
+              risk control, and delivery strategy — ensuring informed
+              decisions from the outset.
+            </p>
 
-    <p>
-      <strong>Office Phone:</strong><br />
-      <a href="tel:+622138716066" className="hover:underline">
-        +62 21 3871 6066
-      </a>
-    </p>
+            {/* ================= COMPANY IDENTITY ================= */}
+            <div className="mt-12 space-y-4 text-sm text-gray-700">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400">
+                  Company
+                </p>
+                <p className="mt-1 font-medium">
+                  PT Bhaskara Buana Mulya
+                </p>
+              </div>
 
-    <p>
-      <strong>WhatsApp:</strong><br />
-      <a
-        href="https://wa.me/6281297396612?text=Halo%20PT%20Bhaskara%20Buana%20Mulya,%20saya%20ingin%20konsultasi%20proyek."
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline"
-      >
-        +62 812 9739 6612
-      </a>
-    </p>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400">
+                  Office Address
+                </p>
+                <p className="mt-1 leading-relaxed">
+                  Jl. Raya Kedaung, RT.002/RW.004<br />
+                  Cimuning, Kec. Mustika Jaya<br />
+                  Kota Bekasi, Jawa Barat 17155
+                </p>
+              </div>
 
-    <p>
-      <strong>Email:</strong><br />
-      <a
-        href="mailto:adm.buanamulya@gmail.com"
-        className="hover:underline"
-      >
-        adm.buanamulya@gmail.com
-      </a>
-    </p>
-  </div>
-</div>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400">
+                  Office Phone
+                </p>
+                <a
+                  href="tel:+622138716066"
+                  className="mt-1 inline-block hover:underline"
+                >
+                  +62 21 3871 6066
+                </a>
+              </div>
 
-          {/* RIGHT: FORM */}
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400">
+                  WhatsApp
+                </p>
+                <a
+                  href="https://wa.me/6281297396612?text=Hello%20PT%20Bhaskara%20Buana%20Mulya,%20I%20would%20like%20to%20discuss%20a%20project."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block hover:underline"
+                >
+                  +62 812 9739 6612
+                </a>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400">
+                  Email
+                </p>
+                <a
+                  href="mailto:adm.buanamulya@gmail.com"
+                  className="mt-1 inline-block hover:underline"
+                >
+                  adm.buanamulya@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* ================= RIGHT: RFQ FORM ================= */}
           <div className="bg-white border border-gray-200 rounded-2xl p-10">
             <h2>Request for Proposal (RFQ)</h2>
 
-            <p className="mt-3 text-sm text-gray-600">
-              Provide a brief overview of your project and our team
-              will respond promptly.
+            <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+              Share a brief overview of your project scope and
+              requirements. Our engineering or project coordination
+              team will respond accordingly.
             </p>
 
             <form className="mt-8 grid gap-5">
               <Input placeholder="Full Name" />
-              <Input placeholder="Company Name" />
+              <Input placeholder="Company / Organization" />
               <Input type="email" placeholder="Email Address" />
-              <Input placeholder="Phone Number" />
+              <Input placeholder="Phone / WhatsApp Number" />
 
               <select className="form-input">
-                <option>Project Type</option>
+                <option value="">Project Type</option>
                 <option>General Contracting</option>
                 <option>MEP Engineering</option>
-                <option>Civil & Structural</option>
+                <option>Civil & Structural Works</option>
                 <option>Interior Fit-Out</option>
               </select>
 
               <textarea
-                className="form-input min-h-[140px]"
-                placeholder="Project description, scope, timeline, or drawings link"
+                className="form-input min-h-[160px]"
+                placeholder="Brief project description, scope, timeline, location, or drawings link"
               />
 
               <button
                 type="submit"
-                className="btn-primary mt-4 w-fit px-8 py-4"
+                className="btn-primary mt-4 w-fit px-9 py-4"
               >
                 Submit RFQ
               </button>
             </form>
+
+            {/* MICRO TRUST */}
+            <p className="mt-4 text-xs text-gray-500">
+              Your inquiry will be reviewed by our engineering or
+              project coordination team.
+            </p>
           </div>
         </div>
       </div>
@@ -106,7 +139,7 @@ export default function ContactPage() {
   );
 }
 
-/* ===== FORM INPUT ===== */
+/* ================= FORM INPUT ================= */
 function Input({
   type = "text",
   placeholder,
