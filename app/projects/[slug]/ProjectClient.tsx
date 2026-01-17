@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Project } from "@/lib/projectsData";
 
 export default function ProjectClient({
@@ -9,7 +10,16 @@ export default function ProjectClient({
 }: {
   project: Project;
 }) {
-  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  // ESC to close lightbox (UX enterprise)
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setActiveIndex(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <section className="bg-white">
@@ -33,20 +43,25 @@ export default function ProjectClient({
           </p>
         </div>
 
-        {/* IMAGE GALLERY */}
+        {/* IMAGE GALLERY (OPTIMIZED) */}
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {project.images.map((src) => (
+          {project.images.map((img, idx) => (
             <button
-              key={src}
-              onClick={() => setActiveImage(src)}
-              className="group relative overflow-hidden rounded-xl border"
+              key={img.src}
+              onClick={() => setActiveIndex(idx)}
+              aria-label={`View image ${idx + 1}`}
+              className="group relative overflow-hidden rounded-xl border focus:outline-none"
             >
-              <img
-                src={src}
-                alt={project.title}
-                className="h-56 w-full object-cover transition-transform
-                           group-hover:scale-105"
-              />
+              <div className="relative h-56 w-full">
+                <Image
+                  src={img.src}
+                  alt={img.alt || project.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform group-hover:scale-105"
+                  priority={idx === 0} // preload first image
+                />
+              </div>
               <div className="absolute inset-0 bg-black/0
                               group-hover:bg-black/10 transition" />
             </button>
@@ -96,18 +111,42 @@ export default function ProjectClient({
         </div>
       </div>
 
-      {/* LIGHTBOX */}
-      {activeImage && (
+      {/* LIGHTBOX – PRO VERSION */}
+      {activeIndex !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center
-                     bg-black/80 backdrop-blur-sm"
-          onClick={() => setActiveImage(null)}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+          onClick={() => setActiveIndex(null)}
+          role="dialog"
+          aria-modal="true"
         >
-          <img
-            src={activeImage}
-            alt=""
-            className="max-h-[90vh] max-w-[90vw] rounded-xl shadow-xl"
-          />
+          {/* Close Button */}
+          <div className="absolute right-4 top-4 z-10">
+            <button
+              onClick={() => setActiveIndex(null)}
+              className="rounded-xl bg-white/10 px-4 py-2 text-white
+                         hover:bg-white/20 transition"
+            >
+              Close ✕
+            </button>
+          </div>
+
+          {/* Image */}
+          <div className="flex h-full items-center justify-center p-6">
+            <div
+              className="relative w-[90vw] max-w-5xl h-[75vh]
+                         rounded-xl overflow-hidden shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={project.images[activeIndex].src}
+                alt={project.images[activeIndex].alt || project.title}
+                fill
+                sizes="90vw"
+                className="object-contain bg-black"
+                priority
+              />
+            </div>
+          </div>
         </div>
       )}
     </section>
