@@ -90,6 +90,45 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* LEGAL & COMPLIANCE */}
+<div className="mt-24 max-w-4xl border-t border-gray-200 pt-12">
+  <h2>
+    Legal & Compliance
+  </h2>
+
+  <p className="mt-6">
+    PT Bhaskara Buana Mulya is a legally registered Indonesian company,
+    operating in compliance with applicable laws and regulations governing
+    construction and engineering services.
+  </p>
+
+  <p className="mt-4 text-sm text-gray-600 max-w-3xl">
+    Our operations are supported by formal corporate registration,
+    statutory tax compliance, and relevant business permits required
+    to execute general contracting, civil works, structural construction,
+    and MEP engineering services.
+  </p>
+
+  <div className="mt-8 grid gap-4 md:grid-cols-2 text-sm text-gray-700 max-w-3xl">
+    <ul className="list-disc list-inside space-y-2">
+      <li>Deed of Establishment & Corporate Registration</li>
+      <li>Business Identification Number (NIB)</li>
+      <li>Tax Registration (NPWP)</li>
+    </ul>
+
+    <ul className="list-disc list-inside space-y-2">
+      <li>Relevant construction permits and certifications</li>
+      <li>Compliance with national HSE and labor regulations</li>
+      <li>Operational governance and reporting standards</li>
+    </ul>
+  </div>
+
+  <p className="mt-6 text-xs text-gray-500 max-w-3xl">
+    Detailed legal documentation and certifications are available
+    upon formal request during tender processes or contractual discussions.
+  </p>
+</div>
+
         {/* CLOSING STATEMENT */}
         <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
           <p className="text-sm text-gray-500">
