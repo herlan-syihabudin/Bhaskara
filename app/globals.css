@@ -44,11 +44,40 @@ p {
   @apply text-gray-600 leading-relaxed;
 }
 
+/* Semantic text helpers (LEVEL 3) */
+.text-lead {
+  @apply text-lg text-gray-700 leading-relaxed;
+}
+
+.text-body {
+  @apply text-sm text-gray-600 leading-relaxed;
+}
+
+.text-muted {
+  @apply text-xs text-gray-500;
+}
+
+/* ===============================
+   LAYOUT SYSTEM
+================================ */
+.container-bbm {
+  @apply max-w-7xl mx-auto px-6;
+}
+
+.section {
+  @apply py-24 md:py-28;
+}
+
+.section-tight {
+  @apply py-16;
+}
+
 /* ===============================
    COMPONENT UTILITIES
 ================================ */
 @layer components {
-  /* Navigation */
+
+  /* ================= NAVIGATION ================= */
   .nav-link {
     @apply relative text-gray-700 hover:text-gray-900 transition;
   }
@@ -63,9 +92,28 @@ p {
     @apply w-full;
   }
 
-  /* Buttons */
+  /* ================= BUTTONS ================= */
+  .btn-primary,
   .btn-outline {
-    @apply px-4 py-2 border text-gray-900 transition;
+    @apply rounded-xl font-medium transition;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 text-white;
+    background-color: var(--bbm-green);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--bbm-green-dark);
+  }
+
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--bbm-yellow);
+    outline-offset: 2px;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border text-gray-900;
     border-color: var(--bbm-green);
   }
 
@@ -74,16 +122,12 @@ p {
     color: #ffffff;
   }
 
-  .btn-primary {
-    @apply px-4 py-2 text-white transition;
-    background-color: var(--bbm-green);
+  .btn-outline:focus-visible {
+    outline: 2px solid var(--bbm-yellow);
+    outline-offset: 2px;
   }
 
-  .btn-primary:hover {
-    background-color: var(--bbm-green-dark);
-  }
-
-  /* Form */
+  /* ================= FORM ================= */
   .form-input {
     @apply w-full px-4 py-3 rounded-xl border
            text-sm text-gray-900 transition;
@@ -95,45 +139,60 @@ p {
     border-color: var(--bbm-green);
     box-shadow: 0 0 0 2px rgba(31, 122, 92, 0.25);
   }
+
+  .form-input.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+  }
+
+  .form-input.success {
+    border-color: var(--bbm-green);
+  }
+
+  /* ================= CARD SYSTEM ================= */
+  .card {
+    @apply bg-white border rounded-2xl;
+    border-color: #e5e7eb;
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    border-color: var(--bbm-green);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ================= BADGE ================= */
+  .badge {
+    @apply inline-block text-xs tracking-[0.35em] uppercase;
+    color: var(--bbm-green);
+  }
 }
 
 /* ===============================
-   BBM DESIGN SYSTEM
+   BRAND ACCENTS
 ================================ */
-
-/* Container */
-.container-bbm {
-  @apply max-w-7xl mx-auto px-6;
-}
-
-/* Section badge */
-.badge {
-  @apply inline-block text-xs tracking-[0.35em] uppercase;
-  color: var(--bbm-green);
-}
-
-/* Accent text (yellow) */
 .accent-yellow {
   color: var(--bbm-yellow);
 }
 
-/* Card system */
-.card {
-  @apply bg-white border rounded-2xl transition;
-  border-color: #e5e7eb;
+.heading-accent span {
+  color: var(--bbm-green);
 }
 
-.card:hover {
-  border-color: var(--bbm-green);
-}
-
-/* Bullet accent (yellow) */
+/* ===============================
+   BULLET / ICON HELPERS
+================================ */
 .bullet-accent {
   width: 6px;
   height: 6px;
   border-radius: 9999px;
   background-color: var(--bbm-yellow);
 }
+
 /* ===============================
    SCROLL MICRO ANIMATION
 ================================ */
@@ -165,6 +224,7 @@ p {
     transition-delay: 0.4s;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1 !important;
@@ -173,11 +233,24 @@ p {
   }
 }
 
-.card:hover {
-  transform: translateY(-2px);
-}
+/* ===============================
+   PRINT & ENTERPRISE FRIENDLY
+================================ */
+@media print {
+  body {
+    color: #000;
+    background: #fff;
+  }
 
-.btn-primary,
-.btn-outline {
-  @apply rounded-xl font-medium;
+  a {
+    text-decoration: underline;
+    color: #000;
+  }
+
+  .btn-primary,
+  .btn-outline,
+  nav,
+  footer {
+    display: none !important;
+  }
 }
