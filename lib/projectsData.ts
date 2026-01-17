@@ -19,7 +19,8 @@ export const projects: Project[] = [
     slug: "industrial-plant-construction",
     title: "Industrial Plant Construction",
     category: "Industrial",
-    desc: "Construction and coordination works for industrial facilities with strict safety and quality control.",
+    desc:
+      "Construction and coordination works for industrial facilities with strict safety and quality control.",
     overview:
       "Construction and coordination works for active industrial facilities executed with strict safety controls, engineering discipline, and structured project management.",
     scope: [
@@ -37,15 +38,18 @@ export const projects: Project[] = [
     images: [
       {
         src: "/projects/industrial-1.jpg",
-        alt: "Industrial plant construction – foundation and early structural works",
+        alt:
+          "Industrial plant construction – foundation and early structural works",
       },
       {
         src: "/projects/industrial-2.jpg",
-        alt: "Industrial plant construction – steel structure erection",
+        alt:
+          "Industrial plant construction – steel structure erection",
       },
       {
         src: "/projects/industrial-3.jpg",
-        alt: "Industrial plant construction – ongoing site execution",
+        alt:
+          "Industrial plant construction – ongoing site execution",
       },
     ],
   },
@@ -54,7 +58,8 @@ export const projects: Project[] = [
     slug: "commercial-office-fit-out",
     title: "Commercial Office Fit-Out",
     category: "Interior & MEP",
-    desc: "End-to-end interior fit-out integrated with MEP systems and disciplined execution management.",
+    desc:
+      "End-to-end interior fit-out integrated with MEP systems and disciplined execution management.",
     overview:
       "Interior fit-out works delivered with integrated MEP coordination, quality control, and disciplined execution management.",
     scope: [
@@ -72,11 +77,13 @@ export const projects: Project[] = [
     images: [
       {
         src: "/projects/office-1.jpg",
-        alt: "Commercial office fit-out – interior finishing works",
+        alt:
+          "Commercial office fit-out – interior finishing works",
       },
       {
         src: "/projects/office-2.jpg",
-        alt: "Commercial office fit-out – integrated MEP installation",
+        alt:
+          "Commercial office fit-out – integrated MEP installation",
       },
     ],
   },
@@ -85,7 +92,8 @@ export const projects: Project[] = [
     slug: "power-electrical-upgrade",
     title: "Power & Electrical Upgrade",
     category: "MEP Engineering",
-    desc: "Electrical system upgrade executed with safety-first commissioning and regulatory compliance.",
+    desc:
+      "Electrical system upgrade executed with safety-first commissioning and regulatory compliance.",
     overview:
       "Electrical system upgrade delivered with safety-first commissioning and full regulatory compliance.",
     scope: [
@@ -103,11 +111,13 @@ export const projects: Project[] = [
     images: [
       {
         src: "/projects/electrical-1.jpg",
-        alt: "Electrical system upgrade – panel installation",
+        alt:
+          "Electrical system upgrade – panel installation",
       },
       {
         src: "/projects/electrical-2.jpg",
-        alt: "Electrical system upgrade – testing and commissioning",
+        alt:
+          "Electrical system upgrade – testing and commissioning",
       },
     ],
   },
