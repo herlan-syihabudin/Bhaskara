@@ -38,39 +38,45 @@ export default function Footer() {
           </div>
 
           {/* ================= CONTACT ================= */}
-          <div>
-            <p className="font-medium text-gray-900 mb-3">
-              Contact
-            </p>
+<div>
+  <p className="font-medium text-gray-900 mb-3">
+    Contact
+  </p>
 
-            <p className="text-sm text-gray-700">
-              <span className="block">
-                Tel:
-                <a
-                  href="tel:+622138716066"
-                  className="block hover:underline"
-                >
-                  +62 21 3871 6066
-                </a>
-                <a
-                  href="tel:+6281297396612"
-                  className="block hover:underline"
-                >
-                  +62 812 9739 6612
-                </a>
-              </span>
+  <p className="text-sm text-gray-700">
+    <span className="block">
+      Office:
+      <a
+        href="tel:+622138716066"
+        className="block hover:underline"
+      >
+        +62 21 3871 6066
+      </a>
+    </span>
 
-              <span className="block mt-3">
-                Email:
-                <a
-                  href="mailto:adm.buanamulya@gmail.com"
-                  className="block hover:underline"
-                >
-                  adm.buanamulya@gmail.com
-                </a>
-              </span>
-            </p>
-          </div>
+    <span className="block mt-2">
+      WhatsApp:
+      <a
+        href="https://wa.me/6281297396612"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block hover:underline"
+      >
+        +62 812 9739 6612
+      </a>
+    </span>
+
+    <span className="block mt-3">
+      Email:
+      <a
+        href="mailto:adm.buanamulya@gmail.com"
+        className="block hover:underline"
+      >
+        adm.buanamulya@gmail.com
+      </a>
+    </span>
+  </p>
+</div>
 
         </div>
 
