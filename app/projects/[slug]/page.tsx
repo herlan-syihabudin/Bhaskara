@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { projects } from "@/lib/projectsData";
 import ProjectClient from "./ProjectClient";
-import type { Metadata } from "next";
 
+/* ===============================
+   METADATA (SEO + OPEN GRAPH)
+================================ */
 export function generateMetadata({
   params,
 }: {
@@ -22,11 +25,19 @@ export function generateMetadata({
     openGraph: {
       title: project.title,
       description: project.overview,
-      images: project.images[0],
+      images: [
+        {
+          url: project.images[0].src, // ✅ FIX TYPE
+          alt: project.images[0].alt || project.title,
+        },
+      ],
     },
   };
 }
 
+/* ===============================
+   PAGE (SERVER COMPONENT)
+================================ */
 export default function ProjectDetailPage({
   params,
 }: {
