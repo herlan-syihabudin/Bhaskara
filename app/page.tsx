@@ -9,21 +9,22 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <>
+      {/* ================= HERO SECTION ================= */}
       <section className="relative border-b border-gray-200 overflow-hidden">
-      
-       {/* ===== BACKGROUND IMAGE (UPGRADED) ===== */}
-<div className="absolute inset-0 -z-10">
-  <Image
-    src="/hero-project.jpg"
-    alt=""
-    fill
-    priority
-    sizes="100vw"
-    className="object-cover"
-  />
-  <div className="absolute inset-0 bg-white/80" />
-  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50" />
-</div>
+
+        {/* ===== BACKGROUND IMAGE ===== */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/hero-project.jpg"
+            alt="Engineering and construction project background"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-white/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50" />
+        </div>
 
         <div className="container-bbm py-32 grid lg:grid-cols-12 gap-16 items-center">
 
@@ -47,8 +48,8 @@ export default function HomePage() {
               <h1 className="max-w-3xl">
                 Engineering-driven contractor delivering
                 <span className="block mt-2 relative">
-                  world-class construction & MEP solutions.
-                  <span className="absolute left-0 -bottom-2 w-24 h-1 bg-[#E6B800] rounded-full" />
+                  world-class construction and MEP solutions.
+                  <span className="absolute left-0 -bottom-3 w-24 h-1 bg-[#E6B800] rounded-full" />
                 </span>
               </h1>
             </Reveal>
@@ -56,16 +57,16 @@ export default function HomePage() {
             <Reveal className="reveal-delay-3">
               <p className="mt-10 text-lg max-w-2xl text-gray-800">
                 PT Bhaskara Buana Mulya provides integrated general contracting,
-                civil & steel construction, MEP engineering, and interior fit-out
-                with disciplined execution and safety-first culture.
+                civil and steel construction, MEP engineering, and interior fit-out
+                with disciplined execution and a safety-first culture.
               </p>
             </Reveal>
 
             <Reveal className="reveal-delay-4">
               <p className="mt-4 text-sm text-gray-700 max-w-2xl">
-                We execute every project through structured planning, approved method
-                statements, and qualified site supervision to ensure compliance with
-                specifications, schedules, and safety standards.
+                We execute every project through structured planning, approved
+                method statements, and qualified site supervision to ensure
+                compliance with specifications, schedules, and safety standards.
               </p>
             </Reveal>
 
@@ -96,7 +97,8 @@ export default function HomePage() {
 
             <Reveal className="reveal-delay-4">
               <p className="mt-3 text-xs text-gray-600">
-                Discuss your project scope, timeline, and technical requirements with our team.
+                Discuss your project scope, timeline, and technical requirements
+                with our team.
               </p>
             </Reveal>
           </div>
@@ -120,7 +122,7 @@ export default function HomePage() {
                 <p className="text-sm text-gray-500">Projects Delivered</p>
                 <p className="mt-2 text-3xl font-semibold text-gray-900">120+</p>
                 <p className="text-sm text-gray-600">
-                  Industrial & commercial sectors
+                  Industrial and commercial sectors
                 </p>
               </div>
 
@@ -130,7 +132,7 @@ export default function HomePage() {
                   MEP • Civil • Steel
                 </p>
                 <p className="text-xs text-gray-600">
-                  Integrated execution & coordination
+                  Integrated execution and coordination
                 </p>
               </div>
 
@@ -149,7 +151,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTIONS */}
+      {/* ================= SECTIONS ================= */}
       <WhatWeDo />
       <WhyBBM />
       <TrustBar />
