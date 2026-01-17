@@ -1,20 +1,26 @@
+import Link from "next/link";
+
 const items = [
   {
+    slug: "general-contracting",
     title: "General Contracting",
     desc: "End-to-end project delivery with disciplined planning, cost control, and execution excellence across industrial and commercial projects.",
     core: true,
   },
   {
+    slug: "mep-engineering",
     title: "MEP Engineering",
     desc: "Electrical, mechanical, and plumbing systems engineered for performance, reliability, safety, and regulatory compliance.",
     core: true,
   },
   {
+    slug: "steel-civil-works",
     title: "Steel & Civil Works",
     desc: "Structural steel, foundations, concrete works, and integrated site infrastructure delivered with engineering precision.",
     core: false,
   },
   {
+    slug: "interior-fit-out",
     title: "Interior Fit-Out",
     desc: "Durable, functional, and efficient interior solutions for operational, commercial, and industrial environments.",
     core: false,
@@ -41,7 +47,6 @@ export default function WhatWeDo() {
             and high-quality outcomes.
           </p>
 
-          {/* Trust clarification (TAMBAHAN — positioning clarity) */}
           <p className="mt-3 text-sm text-gray-500 max-w-xl">
             Our scope covers planning, coordination, execution, and handover,
             aligned with approved drawings, method statements, and project controls
@@ -52,9 +57,11 @@ export default function WhatWeDo() {
         {/* ================= SERVICES GRID ================= */}
         <div className="mt-20 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((x) => (
-            <div
-              key={x.title}
-              className={`card p-8 group transition-all
+            <Link
+              key={x.slug}
+              href={`/capabilities/${x.slug}`}
+              aria-label={`View capability ${x.title}`}
+              className={`card p-8 group transition-all cursor-pointer
                 hover:-translate-y-0.5 hover:shadow-md
                 ${x.core ? "border-gray-300 shadow-sm" : ""}
               `}
@@ -73,11 +80,11 @@ export default function WhatWeDo() {
                 {x.desc}
               </p>
 
-              {/* Micro affordance (UX clarity, bukan CTA keras) */}
-              <div className="mt-6 text-sm font-medium text-gray-900 opacity-0 group-hover:opacity-100 transition">
+              <div className="mt-6 text-sm font-medium text-gray-900
+                              opacity-0 group-hover:opacity-100 transition">
                 View capability →
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
