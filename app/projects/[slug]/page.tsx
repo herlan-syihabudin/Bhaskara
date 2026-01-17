@@ -64,5 +64,86 @@ export default function ProjectDetailPage({
 
   if (!project) return notFound();
 
-  return <ProjectClient project={project} />;
+  const baseUrl = "https://bhaskara-lqtk.vercel.app";
+
+  /* ===============================
+     JSON-LD SCHEMA (LEVEL 4)
+  ================================ */
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      /* ========= ORGANIZATION ========= */
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
+        name: "PT Bhaskara Buana Mulya",
+        url: baseUrl,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress:
+            "Jl. Raya Kedaung, RT.002/RW.004, Cimuning, Mustika Jaya",
+          addressLocality: "Bekasi",
+          addressRegion: "Jawa Barat",
+          postalCode: "17155",
+          addressCountry: "ID",
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+62-21-38716066",
+          contactType: "Project Inquiry",
+        },
+      },
+
+      /* ========= BREADCRUMB ========= */
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Projects",
+            item: `${baseUrl}/projects`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: project.title,
+            item: `${baseUrl}/projects/${project.slug}`,
+          },
+        ],
+      },
+
+      /* ========= PROJECT / CASE STUDY ========= */
+      {
+        "@type": "CreativeWork",
+        "@id": `${baseUrl}/projects/${project.slug}#project`,
+        name: project.title,
+        description: project.overview,
+        url: `${baseUrl}/projects/${project.slug}`,
+        creator: {
+          "@id": `${baseUrl}#organization`,
+        },
+        about: project.category,
+        image: project.images.map((img) => ({
+          "@type": "ImageObject",
+          url: `${baseUrl}${img.src}`,
+          caption: img.alt,
+        })),
+      },
+    ],
+  };
+
+  return (
+    <>
+      {/* ===== SCHEMA INJECTION ===== */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schema),
+        }}
+      />
+
+      <ProjectClient project={project} />
+    </>
+  );
 }
