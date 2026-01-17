@@ -1,36 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-
-const projects = [
-  {
-    slug: "industrial-plant-construction",
-    title: "Industrial Plant Construction",
-    category: "Industrial",
-    desc: "Construction and coordination works for industrial facilities with strict safety and quality control.",
-    image: "/projects/industrial.jpg",
-  },
-  {
-    slug: "warehouse-factory-expansion",
-    title: "Warehouse & Factory Expansion",
-    category: "Civil & Structural",
-    desc: "Structural, foundation, and expansion works to support operational growth.",
-    image: "/projects/warehouse.jpg",
-  },
-  {
-    slug: "commercial-office-fit-out",
-    title: "Commercial Office Fit-Out",
-    category: "Interior",
-    desc: "End-to-end office fit-out with integrated MEP and schedule discipline.",
-    image: "/projects/office.jpg",
-  },
-  {
-    slug: "electrical-power-system-upgrade",
-    title: "Electrical & Power System Upgrade",
-    category: "MEP Engineering",
-    desc: "Electrical system upgrade and commissioning with safety-first execution.",
-    image: "/projects/electrical.jpg",
-  },
-];
+import { projects } from "@/lib/projectsData";
 
 export default function ProjectsPage() {
   return (
@@ -46,10 +16,10 @@ export default function ProjectsPage() {
             <span className="block">with engineering discipline</span>
           </h1>
 
-          <p className="mt-6 text-lg">
-            Below are selected projects delivered across industrial,
-            commercial, and infrastructure sectors, executed with strong
-            engineering control and safety compliance.
+          <p className="mt-6 text-lg text-gray-800">
+            Selected projects across industrial, commercial, and
+            MEP sectors, delivered with disciplined execution and
+            safety-first control.
           </p>
         </div>
 
@@ -66,8 +36,8 @@ export default function ProjectsPage() {
               {/* IMAGE */}
               <div className="relative h-56 overflow-hidden">
                 <Image
-                  src={p.image}
-                  alt=""
+                  src={p.images[0].src}
+                  alt={`${p.title} – PT Bhaskara Buana Mulya project`}
                   fill
                   className="object-cover transition-transform duration-500
                              group-hover:scale-105"
@@ -102,13 +72,14 @@ export default function ProjectsPage() {
           ))}
         </div>
 
-        {/* CLOSING */}
+        {/* DISCLAIMER */}
         <div className="mt-24 max-w-3xl border-t border-gray-200 pt-10">
           <p className="text-sm text-gray-500">
-            Detailed project case studies are available upon formal request
-            and can be discussed during proposal or tender clarification.
+            Detailed project case studies are available upon
+            formal request and during tender clarification.
           </p>
         </div>
+
       </div>
     </section>
   );
