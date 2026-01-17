@@ -1,3 +1,8 @@
+export type ProjectImage = {
+  src: string;
+  alt: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -6,7 +11,7 @@ export type Project = {
   desc: string;
   scope: string[];
   execution: string[];
-  images: string[];
+  images: ProjectImage[];
 };
 
 export const projects: Project[] = [
@@ -30,9 +35,18 @@ export const projects: Project[] = [
       "Progress tracking and coordination with client representatives",
     ],
     images: [
-      "/projects/industrial-1.jpg",
-      "/projects/industrial-2.jpg",
-      "/projects/industrial-3.jpg",
+      {
+        src: "/projects/industrial-1.jpg",
+        alt: "Industrial plant construction – foundation and early structural works",
+      },
+      {
+        src: "/projects/industrial-2.jpg",
+        alt: "Industrial plant construction – steel structure erection",
+      },
+      {
+        src: "/projects/industrial-3.jpg",
+        alt: "Industrial plant construction – ongoing site execution",
+      },
     ],
   },
 
@@ -56,8 +70,14 @@ export const projects: Project[] = [
       "On-time handover with full documentation",
     ],
     images: [
-      "/projects/office-1.jpg",
-      "/projects/office-2.jpg",
+      {
+        src: "/projects/office-1.jpg",
+        alt: "Commercial office fit-out – interior finishing works",
+      },
+      {
+        src: "/projects/office-2.jpg",
+        alt: "Commercial office fit-out – integrated MEP installation",
+      },
     ],
   },
 
@@ -81,8 +101,14 @@ export const projects: Project[] = [
       "As-built documentation and handover",
     ],
     images: [
-      "/projects/electrical-1.jpg",
-      "/projects/electrical-2.jpg",
+      {
+        src: "/projects/electrical-1.jpg",
+        alt: "Electrical system upgrade – panel installation",
+      },
+      {
+        src: "/projects/electrical-2.jpg",
+        alt: "Electrical system upgrade – testing and commissioning",
+      },
     ],
   },
 ];
