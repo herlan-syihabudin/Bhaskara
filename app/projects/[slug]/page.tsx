@@ -16,21 +16,38 @@ export function generateMetadata({
   if (!project) {
     return {
       title: "Project Not Found | PT Bhaskara Buana Mulya",
+      robots: { index: false },
     };
   }
+
+  const url = `https://bhaskara-lqtk.vercel.app/projects/${project.slug}`;
 
   return {
     title: `${project.title} | PT Bhaskara Buana Mulya`,
     description: project.desc,
+
+    alternates: {
+      canonical: url,
+    },
+
     openGraph: {
+      type: "article",
+      url,
       title: project.title,
       description: project.overview,
       images: [
         {
-          url: project.images[0].src, // ✅ FIX TYPE
+          url: project.images[0].src,
           alt: project.images[0].alt || project.title,
         },
       ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.desc,
+      images: [project.images[0].src],
     },
   };
 }
