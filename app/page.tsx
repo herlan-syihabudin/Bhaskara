@@ -56,20 +56,21 @@ export default function HomePage() {
 
             <Reveal className="reveal-delay-3">
               <p className="mt-10 text-lg max-w-2xl text-gray-800">
-                PT Bhaskara Buana Mulya provides integrated general contracting,
+                PT Bhaskara Buana Mulya delivers integrated general contracting,
                 civil and steel construction, MEP engineering, and interior fit-out
-                with disciplined execution and a safety-first culture.
+                through disciplined execution and a safety-first culture.
               </p>
             </Reveal>
 
             <Reveal className="reveal-delay-4">
               <p className="mt-4 text-sm text-gray-700 max-w-2xl">
-                We execute every project through structured planning, approved
-                method statements, and qualified site supervision to ensure
-                compliance with specifications, schedules, and safety standards.
+                Every project is executed through structured planning,
+                approved method statements, qualified supervision,
+                and measurable project controls.
               </p>
             </Reveal>
 
+            {/* ===== CTA (LEVEL 2 – SOFTER & B2B FRIENDLY) ===== */}
             <Reveal className="reveal-delay-4">
               <div className="mt-12 flex flex-wrap gap-4">
                 <a
@@ -78,7 +79,7 @@ export default function HomePage() {
                              transition hover:opacity-90 hover:-translate-y-0.5"
                   style={{ backgroundColor: "#2F6F55" }}
                 >
-                  Request Proposal
+                  Discuss Your Project
                 </a>
 
                 <a
@@ -90,15 +91,15 @@ export default function HomePage() {
                     color: "#2F6F55",
                   }}
                 >
-                  View Projects
+                  View Relevant Projects
                 </a>
               </div>
             </Reveal>
 
             <Reveal className="reveal-delay-4">
-              <p className="mt-3 text-xs text-gray-600">
-                Discuss your project scope, timeline, and technical requirements
-                with our team.
+              <p className="mt-3 text-xs text-gray-600 max-w-xl">
+                Initial discussions are confidential and focused on technical
+                feasibility, execution approach, and project alignment.
               </p>
             </Reveal>
           </div>
@@ -122,7 +123,7 @@ export default function HomePage() {
                 <p className="text-sm text-gray-500">Projects Delivered</p>
                 <p className="mt-2 text-3xl font-semibold text-gray-900">120+</p>
                 <p className="text-sm text-gray-600">
-                  Industrial and commercial sectors
+                  Industrial & commercial sectors
                 </p>
               </div>
 
@@ -132,7 +133,7 @@ export default function HomePage() {
                   MEP • Civil • Steel
                 </p>
                 <p className="text-xs text-gray-600">
-                  Integrated execution and coordination
+                  Integrated execution & coordination
                 </p>
               </div>
 
@@ -151,10 +152,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= SECTIONS ================= */}
+      {/* ================= SECTIONS (LOGICAL ORDER – LEVEL 2) ================= */}
       <WhatWeDo />
-      <WhyBBM />
       <TrustBar />
+      <WhyBBM />
       <FeaturedProjects />
       <CallToAction />
     </>
