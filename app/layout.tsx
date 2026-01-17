@@ -13,7 +13,7 @@ export default function RootLayout({
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      /* ================= ORGANIZATION ================= */
+      /* ================= ORGANIZATION + LOCAL BUSINESS ================= */
       {
         "@type": ["Organization", "LocalBusiness"],
         "@id": `${baseUrl}#organization`,
@@ -23,32 +23,35 @@ export default function RootLayout({
         logo: `${baseUrl}/logo.png`,
         description:
           "Engineering-driven general contractor delivering civil, structural, MEP, and interior works with disciplined execution and safety-first culture.",
-        foundingLocation: {
-          "@type": "Place",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress:
-              "Jl. Raya Kedaung, RT.002/RW.004, Cimuning",
-            addressLocality: "Bekasi",
-            addressRegion: "Jawa Barat",
-            postalCode: "17155",
-            addressCountry: "ID",
-          },
-        },
+
+        /* ===== BUSINESS CATEGORY (MATCH GOOGLE BUSINESS) ===== */
+        additionalType: [
+          "https://schema.org/GeneralContractor",
+          "https://schema.org/ConstructionCompany",
+        ],
+
+        /* ===== ADDRESS (NAP CONSISTENT) ===== */
         address: {
           "@type": "PostalAddress",
-          streetAddress:
-            "Jl. Raya Kedaung, RT.002/RW.004, Cimuning",
+          streetAddress: "Jl. Raya Kedaung, RT.002/RW.004, Cimuning",
           addressLocality: "Bekasi",
           addressRegion: "Jawa Barat",
           postalCode: "17155",
           addressCountry: "ID",
         },
+
+        /* ===== GEO LOCATION ===== */
         geo: {
           "@type": "GeoCoordinates",
           latitude: -6.2735,
           longitude: 107.0206,
         },
+
+        /* ===== GOOGLE MAPS SIGNAL (IMPORTANT) ===== */
+        hasMap:
+          "https://www.google.com/maps/search/?api=1&query=PT+Bhaskara+Buana+Mulya+Bekasi",
+
+        /* ===== CONTACT ===== */
         contactPoint: {
           "@type": "ContactPoint",
           telephone: "+62-21-3871-6066",
@@ -56,31 +59,17 @@ export default function RootLayout({
           availableLanguage: ["id", "en"],
         },
 
-        /* ===== LOCAL SEO CORE ===== */
+        /* ===== LOCAL SEO AREA ===== */
         areaServed: [
-          {
-            "@type": "AdministrativeArea",
-            name: "Jabodetabek",
-          },
-          {
-            "@type": "AdministrativeArea",
-            name: "Jawa Barat",
-          },
-          {
-            "@type": "AdministrativeArea",
-            name: "Jawa Tengah",
-          },
-          {
-            "@type": "AdministrativeArea",
-            name: "Jawa Timur",
-          },
-          {
-            "@type": "Country",
-            name: "Indonesia",
-          },
+          { "@type": "AdministrativeArea", name: "Bekasi" },
+          { "@type": "AdministrativeArea", name: "Jabodetabek" },
+          { "@type": "AdministrativeArea", name: "Jawa Barat" },
+          { "@type": "AdministrativeArea", name: "Jawa Tengah" },
+          { "@type": "AdministrativeArea", name: "Jawa Timur" },
+          { "@type": "Country", name: "Indonesia" },
         ],
 
-        /* ===== SERVICE SIGNAL (NON-SPAM) ===== */
+        /* ===== SERVICE SIGNAL (CLEAN, NON-SPAM) ===== */
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "Construction & MEP Services",
@@ -116,6 +105,7 @@ export default function RootLayout({
           ],
         },
 
+        /* ===== SOCIAL / GBP LINK (ISI NANTI) ===== */
         sameAs: [],
       },
 
@@ -129,11 +119,6 @@ export default function RootLayout({
           "@id": `${baseUrl}#organization`,
         },
         inLanguage: "id-ID",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${baseUrl}/projects?search={search_term_string}`,
-          "query-input": "required name=search_term_string",
-        },
       },
     ],
   };
@@ -141,9 +126,9 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
-        {/* ===== GLOBAL SEO & LOCAL BUSINESS SCHEMA ===== */}
+        {/* ===== GLOBAL SEO + LOCAL BUSINESS SCHEMA ===== */}
         <Script
-          id="global-schema"
+          id="global-local-schema"
           type="application/ld+json"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
