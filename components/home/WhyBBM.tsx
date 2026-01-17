@@ -1,19 +1,19 @@
 const points = [
   {
-    title: "Engineering-Led Execution",
-    desc: "Every project is delivered through structured planning, method statements, and coordinated execution aligned with approved drawings and technical standards.",
+    title: "Engineering-Led Project Delivery",
+    desc: "Project execution is driven by structured engineering planning, coordinated shop drawings, and approved method statements — ensuring constructability, safety, and predictable outcomes.",
   },
   {
-    title: "Safety-First Culture",
-    desc: "Health, Safety, and Environment (HSE) principles are embedded in daily site activities, supervision, and reporting to minimize risk and ensure compliance.",
+    title: "Embedded Safety Management",
+    desc: "Health, Safety, and Environment (HSE) controls are integrated into daily site operations through induction, toolbox meetings, supervision, and formal permit-to-work systems.",
   },
   {
-    title: "Controlled Cost & Schedule",
-    desc: "We apply disciplined cost control, progress tracking, and coordination to maintain predictability from mobilization through final handover.",
+    title: "Controlled Cost and Schedule",
+    desc: "We apply disciplined planning, sequencing, and progress monitoring to maintain cost and schedule predictability throughout all phases of project execution.",
   },
   {
-    title: "Accountability & Transparency",
-    desc: "Clear communication, documented processes, and accountable supervision ensure stakeholders have full visibility throughout the project lifecycle.",
+    title: "Accountable and Transparent Execution",
+    desc: "Clear communication, documented processes, and accountable supervision provide stakeholders with continuous visibility and control across the project lifecycle.",
   },
 ];
 
@@ -27,19 +27,18 @@ export default function WhyBBM() {
           <span className="badge">WHY BBM</span>
 
           <h2 className="mt-4">
-            Built on discipline,
-            <span className="block">driven by engineering</span>
+            Disciplined delivery,
+            <span className="block">engineered for reliability</span>
           </h2>
 
-          <p className="mt-5">
-            Our approach is shaped by engineering rigor, site discipline,
-            and a commitment to safety, quality, and accountable delivery
-            across every phase of construction.
+          <p className="mt-5 leading-relaxed">
+            Our differentiation lies not in claims, but in how projects
+            are planned, controlled, and executed through engineering
+            discipline, site rigor, and accountable project governance.
           </p>
 
-          {/* Trust reinforcement (TAMBAHAN, bukan ganti) */}
-          <p className="mt-3 text-sm text-gray-500 max-w-xl">
-            This framework allows us to manage technical complexity,
+          <p className="mt-3 text-sm text-gray-500 max-w-xl leading-relaxed">
+            This approach enables us to manage technical complexity,
             operational risk, and stakeholder expectations in a
             structured and transparent manner.
           </p>
@@ -50,27 +49,28 @@ export default function WhyBBM() {
           {points.map((p) => (
             <div
               key={p.title}
-              className="card p-8 transition-all
+              className="card p-8 transition-all duration-200
                          hover:-translate-y-0.5 hover:shadow-md"
             >
-              <h3 className="text-lg">
+              <h3 className="text-lg text-gray-900 leading-snug">
                 {p.title}
               </h3>
 
-              <p className="mt-4 text-sm leading-relaxed">
+              <p className="mt-4 text-sm text-gray-700 leading-relaxed">
                 {p.desc}
               </p>
             </div>
           ))}
         </div>
 
-        {/* ================= CLOSING STATEMENT ================= */}
+        {/* ================= STRATEGIC CLOSING ================= */}
         <div className="mt-20 max-w-3xl border-t border-gray-200 pt-10">
           <p className="text-sm text-gray-500 leading-relaxed">
-            This disciplined approach allows us to deliver projects
-            with predictable outcomes, controlled risk, and long-term
-            operational reliability — supporting our clients from
-            early planning through final handover and operation.
+            By combining engineering control, disciplined execution,
+            and transparent governance, we deliver projects with
+            predictable outcomes, controlled risk, and long-term
+            operational reliability — from early planning through
+            final handover and operation.
           </p>
         </div>
 
