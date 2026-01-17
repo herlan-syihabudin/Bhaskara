@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -8,32 +9,40 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
       <div className="max-w-7xl mx-auto h-[76px] px-6 flex items-center justify-between">
+
         {/* BRAND */}
-        <a
+        <Link
           href="/"
           className="text-[17px] font-semibold tracking-tight text-gray-900"
         >
           Bhaskara Buana Mulya
-        </a>
+        </Link>
 
         {/* DESKTOP NAV */}
         <nav className="hidden md:flex items-center gap-8 text-sm">
-          <a href="/about" className="nav-link">
+          <Link href="/about" className="nav-link">
             About
-          </a>
-          <a href="/services" className="nav-link">
-            Services
-          </a>
-          <a href="/projects" className="nav-link">
-            Projects
-          </a>
-          <a href="/capabilities" className="nav-link">
-            Capabilities
-          </a>
+          </Link>
 
-          <a href="/contact" className="btn-outline ml-2">
+          <Link href="/industries" className="nav-link">
+            Industries
+          </Link>
+
+          <Link href="/capabilities" className="nav-link">
+            Capabilities
+          </Link>
+
+          <Link href="/services" className="nav-link">
+            Services
+          </Link>
+
+          <Link href="/projects" className="nav-link">
+            Projects
+          </Link>
+
+          <Link href="/contact" className="btn-outline ml-2">
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* MOBILE TOGGLE */}
@@ -55,33 +64,37 @@ export default function Header() {
       {/* MOBILE MENU */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-200
-        ${open ? "max-h-[400px] border-t border-gray-200" : "max-h-0"}`}
+        ${open ? "max-h-[420px] border-t border-gray-200" : "max-h-0"}`}
       >
         <nav className="flex flex-col px-6 py-6 gap-4 text-sm bg-white">
-          <a href="/about" className="nav-link" onClick={() => setOpen(false)}>
-            About
-          </a>
-          <a href="/services" className="nav-link" onClick={() => setOpen(false)}>
-            Services
-          </a>
-          <a href="/projects" className="nav-link" onClick={() => setOpen(false)}>
-            Projects
-          </a>
-          <a
-            href="/capabilities"
-            className="nav-link"
-            onClick={() => setOpen(false)}
-          >
-            Capabilities
-          </a>
 
-          <a
+          <Link href="/about" className="nav-link" onClick={() => setOpen(false)}>
+            About
+          </Link>
+
+          <Link href="/industries" className="nav-link" onClick={() => setOpen(false)}>
+            Industries
+          </Link>
+
+          <Link href="/capabilities" className="nav-link" onClick={() => setOpen(false)}>
+            Capabilities
+          </Link>
+
+          <Link href="/services" className="nav-link" onClick={() => setOpen(false)}>
+            Services
+          </Link>
+
+          <Link href="/projects" className="nav-link" onClick={() => setOpen(false)}>
+            Projects
+          </Link>
+
+          <Link
             href="/contact"
             className="btn-primary mt-4 w-fit"
             onClick={() => setOpen(false)}
           >
             Contact
-          </a>
+          </Link>
         </nav>
       </div>
     </header>
