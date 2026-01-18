@@ -36,11 +36,11 @@ export const projects: Project[] = [
       "Progress tracking and coordination with client representatives",
     ],
     images: [
-      {
-        src: "/projects/industrial-1.jpg",
-        alt:
-          "Industrial plant construction – foundation and early structural works",
-      },
+    {
+      src: "/projects/factory-bekasi/overview-knt21.jpg",
+      alt:
+        "Industrial factory construction in Bekasi – overall site and warehouse view",
+    },
       {
         src: "/projects/industrial-2.jpg",
         alt:
