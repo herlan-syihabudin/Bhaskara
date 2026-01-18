@@ -47,7 +47,7 @@ export const projects: Project[] = [
           "Industrial plant construction – steel structure erection",
       },
       {
-        src: "/projects/industrial-3.jpg",
+        src: "/projects/factory-bekasi/industrial-3.jpg",
         alt:
           "Industrial plant construction – ongoing site execution",
       },
