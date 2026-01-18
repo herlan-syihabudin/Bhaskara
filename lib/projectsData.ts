@@ -42,7 +42,7 @@ export const projects: Project[] = [
         "Industrial factory construction in Bekasi – overall site and warehouse view",
     },
       {
-        src: "/projects/industrial-2.jpg",
+        src: "/projects/factory-bekasi/industrial-2.jpg",
         alt:
           "Industrial plant construction – steel structure erection",
       },
