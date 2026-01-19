@@ -9,8 +9,10 @@ export default function TambahKaryawanPage() {
   const [form, setForm] = useState({
     nama: "",
     role: "",
-    type: "HARIAN",
+    tipe: "HARIAN",
     rate: "",
+    status: "AKTIF",
+    keterangan: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,50 +28,115 @@ export default function TambahKaryawanPage() {
   }
 
   return (
-    <section className="max-w-xl space-y-6">
-      <h1 className="text-2xl font-semibold">Tambah Karyawan</h1>
+    <section className="max-w-4xl space-y-8">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-semibold">➕ Tambah Karyawan</h1>
+        <p className="text-sm text-gray-500">
+          Input data karyawan untuk kebutuhan absensi & payroll
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          placeholder="Nama Karyawan"
-          className="input"
-          value={form.nama}
-          onChange={(e) => setForm({ ...form, nama: e.target.value })}
-          required
-        />
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Nama */}
+        <div>
+          <label className="label">Nama Karyawan</label>
+          <input
+            className="input"
+            placeholder="Contoh: Budi Santoso"
+            value={form.nama}
+            onChange={(e) => setForm({ ...form, nama: e.target.value })}
+            required
+          />
+        </div>
 
-        <input
-          placeholder="Role (Tukang / Mandor / Staff)"
-          className="input"
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-          required
-        />
+        {/* Role */}
+        <div>
+          <label className="label">Role / Jabatan</label>
+          <input
+            className="input"
+            placeholder="Tukang / Mandor / Staff"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+            required
+          />
+        </div>
 
-        <select
-          className="input"
-          value={form.type}
-          onChange={(e) => setForm({ ...form, type: e.target.value })}
-        >
-          <option value="HARIAN">Harian</option>
-          <option value="BULANAN">Bulanan</option>
-        </select>
+        {/* Tipe */}
+        <div>
+          <label className="label">Tipe Karyawan</label>
+          <select
+            className="input"
+            value={form.tipe}
+            onChange={(e) => setForm({ ...form, tipe: e.target.value })}
+          >
+            <option value="HARIAN">Harian</option>
+            <option value="BULANAN">Bulanan</option>
+          </select>
+        </div>
 
-        <input
-          placeholder="Upah / Gaji"
-          type="number"
-          className="input"
-          value={form.rate}
-          onChange={(e) => setForm({ ...form, rate: e.target.value })}
-          required
-        />
+        {/* Rate */}
+        <div>
+          <label className="label">
+            Upah / Gaji ({form.tipe === "HARIAN" ? "per Hari" : "per Bulan"})
+          </label>
+          <input
+            type="number"
+            className="input"
+            placeholder="Contoh: 150000"
+            value={form.rate}
+            onChange={(e) => setForm({ ...form, rate: e.target.value })}
+            required
+          />
+        </div>
 
-        <button
-          type="submit"
-          className="px-4 py-2 rounded-lg bg-black text-white"
-        >
-          Simpan
-        </button>
+        {/* Status */}
+        <div>
+          <label className="label">Status</label>
+          <select
+            className="input"
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value })}
+          >
+            <option value="AKTIF">Aktif</option>
+            <option value="NONAKTIF">Nonaktif</option>
+          </select>
+        </div>
+
+        {/* Keterangan */}
+        <div className="md:col-span-2">
+          <label className="label">Keterangan (Opsional)</label>
+          <textarea
+            className="input min-h-[80px]"
+            placeholder="Catatan tambahan..."
+            value={form.keterangan}
+            onChange={(e) =>
+              setForm({ ...form, keterangan: e.target.value })
+            }
+          />
+        </div>
+
+        {/* ACTION */}
+        <div className="md:col-span-2 flex gap-3">
+          <button
+            type="submit"
+            className="px-6 py-2 rounded-lg bg-black text-white hover:bg-gray-800"
+          >
+            💾 Simpan Karyawan
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-6 py-2 rounded-lg border"
+          >
+            Batal
+          </button>
+        </div>
       </form>
     </section>
   );
