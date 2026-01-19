@@ -1,11 +1,21 @@
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
+import { headers } from "next/headers";
 
-/* ======================
-   API FETCH (SERVER SAFE)
-====================== */
 async function getProjectSummary() {
-  const res = await fetch("/api/project-summary", {
+  const h = headers();
+  const host = h.get("host");
+
+  if (!host) {
+    throw new Error("Host header not found");
+  }
+
+  const protocol =
+    process.env.NODE_ENV === "development" ? "http" : "https";
+
+  const url = `${protocol}://${host}/api/project-summary`;
+
+  const res = await fetch(url, {
     cache: "no-store",
   });
 
