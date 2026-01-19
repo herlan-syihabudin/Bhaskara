@@ -3,6 +3,9 @@ import { google } from "googleapis";
 
 export const runtime = "nodejs";
 
+/* =====================
+   GOOGLE SHEETS AUTH
+===================== */
 async function getSheets() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -15,6 +18,44 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
+/* =====================
+   GET LIST KARYAWAN
+===================== */
+export async function GET() {
+  try {
+    const sheets = await getSheets();
+
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: process.env.GS_SHEET_ID!,
+      range: "KARYAWAN!A:H",
+    });
+
+    const [, ...rows] = res.data.values ?? [];
+
+    const data = rows.map((r) => ({
+      karyawan_id: r[0],
+      nama: r[1],
+      role: r[2],
+      type: r[3],            // HARIAN / BULANAN
+      rate: Number(r[4] || 0),
+      status: r[5],          // AKTIF / NONAKTIF
+      catatan: r[6] || "",
+      created_at: r[7],
+    }));
+
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("GET KARYAWAN ERROR:", err);
+    return NextResponse.json(
+      { error: "Gagal mengambil data karyawan" },
+      { status: 500 }
+    );
+  }
+}
+
+/* =====================
+   ADD KARYAWAN
+===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
