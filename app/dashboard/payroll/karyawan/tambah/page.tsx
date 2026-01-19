@@ -9,10 +9,10 @@ export default function TambahKaryawanPage() {
   const [form, setForm] = useState({
     nama: "",
     role: "",
-    tipe: "HARIAN",
+    type: "HARIAN",
     rate: "",
     status: "AKTIF",
-    keterangan: "",
+    catatan: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -28,111 +28,109 @@ export default function TambahKaryawanPage() {
   }
 
   return (
-    <section className="max-w-4xl space-y-8">
+    <section className="container-bbm py-12 space-y-8 max-w-3xl">
       {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold">➕ Tambah Karyawan</h1>
-        <p className="text-sm text-gray-500">
-          Input data karyawan untuk kebutuhan absensi & payroll
+        <p className="badge">HR & PAYROLL</p>
+        <h1>Tambah Karyawan</h1>
+        <p className="text-body mt-1">
+          Data ini digunakan untuk absensi dan payroll
         </p>
       </div>
 
       {/* FORM */}
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        {/* Nama */}
-        <div>
-          <label className="label">Nama Karyawan</label>
-          <input
-            className="input"
-            placeholder="Contoh: Budi Santoso"
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
-            required
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="card p-8 space-y-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Nama */}
+          <div>
+            <label className="text-sm font-medium">Nama Karyawan</label>
+            <input
+              className="form-input mt-1"
+              placeholder="Contoh: Budi Santoso"
+              value={form.nama}
+              onChange={(e) => setForm({ ...form, nama: e.target.value })}
+              required
+            />
+          </div>
 
-        {/* Role */}
-        <div>
-          <label className="label">Role / Jabatan</label>
-          <input
-            className="input"
-            placeholder="Tukang / Mandor / Staff"
-            value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}
-            required
-          />
-        </div>
+          {/* Role */}
+          <div>
+            <label className="text-sm font-medium">Role / Jabatan</label>
+            <input
+              className="form-input mt-1"
+              placeholder="Tukang / Mandor / Staff"
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              required
+            />
+          </div>
 
-        {/* Tipe */}
-        <div>
-          <label className="label">Tipe Karyawan</label>
-          <select
-            className="input"
-            value={form.tipe}
-            onChange={(e) => setForm({ ...form, tipe: e.target.value })}
-          >
-            <option value="HARIAN">Harian</option>
-            <option value="BULANAN">Bulanan</option>
-          </select>
-        </div>
+          {/* Type */}
+          <div>
+            <label className="text-sm font-medium">Tipe Karyawan</label>
+            <select
+              className="form-input mt-1"
+              value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value })}
+            >
+              <option value="HARIAN">Harian</option>
+              <option value="BULANAN">Bulanan</option>
+            </select>
+          </div>
 
-        {/* Rate */}
-        <div>
-          <label className="label">
-            Upah / Gaji ({form.tipe === "HARIAN" ? "per Hari" : "per Bulan"})
-          </label>
-          <input
-            type="number"
-            className="input"
-            placeholder="Contoh: 150000"
-            value={form.rate}
-            onChange={(e) => setForm({ ...form, rate: e.target.value })}
-            required
-          />
-        </div>
+          {/* Rate */}
+          <div>
+            <label className="text-sm font-medium">
+              Gaji ({form.type === "HARIAN" ? "per Hari" : "per Bulan"})
+            </label>
+            <input
+              type="number"
+              className="form-input mt-1"
+              placeholder="Contoh: 150000"
+              value={form.rate}
+              onChange={(e) => setForm({ ...form, rate: e.target.value })}
+              required
+            />
+          </div>
 
-        {/* Status */}
-        <div>
-          <label className="label">Status</label>
-          <select
-            className="input"
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value })}
-          >
-            <option value="AKTIF">Aktif</option>
-            <option value="NONAKTIF">Nonaktif</option>
-          </select>
-        </div>
+          {/* Status */}
+          <div>
+            <label className="text-sm font-medium">Status</label>
+            <select
+              className="form-input mt-1"
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+            >
+              <option value="AKTIF">Aktif</option>
+              <option value="NONAKTIF">Nonaktif</option>
+            </select>
+          </div>
 
-        {/* Keterangan */}
-        <div className="md:col-span-2">
-          <label className="label">Keterangan (Opsional)</label>
-          <textarea
-            className="input min-h-[80px]"
-            placeholder="Catatan tambahan..."
-            value={form.keterangan}
-            onChange={(e) =>
-              setForm({ ...form, keterangan: e.target.value })
-            }
-          />
+          {/* Catatan */}
+          <div className="md:col-span-2">
+            <label className="text-sm font-medium">
+              Catatan (Opsional)
+            </label>
+            <textarea
+              className="form-input mt-1 min-h-[90px]"
+              placeholder="Keterangan tambahan…"
+              value={form.catatan}
+              onChange={(e) =>
+                setForm({ ...form, catatan: e.target.value })
+              }
+            />
+          </div>
         </div>
 
         {/* ACTION */}
-        <div className="md:col-span-2 flex gap-3">
-          <button
-            type="submit"
-            className="px-6 py-2 rounded-lg bg-black text-white hover:bg-gray-800"
-          >
-            💾 Simpan Karyawan
+        <div className="flex gap-3 pt-4">
+          <button type="submit" className="btn-primary">
+            Simpan Karyawan
           </button>
-
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2 rounded-lg border"
+            className="btn-outline"
           >
             Batal
           </button>
