@@ -1,26 +1,65 @@
-import { projects } from "@/lib/data/projects";
-import { statusFromBudget } from "@/lib/engine/budget";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
-export default function OwnerDashboardPage() {
-  const totalKontrak = projects.reduce((a, b) => a + b.nilaiKontrak, 0);
-  const totalBiaya = projects.reduce((a, b) => a + b.biayaReal, 0);
-  const totalSisa = totalKontrak - totalBiaya;
-  const status = statusFromBudget(totalKontrak, totalBiaya);
+/* ======================
+   API FETCH
+====================== */
+async function getProjectSummary() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/project-summary`,
+    { cache: "no-store" }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch project summary");
+  }
+
+  return res.json();
+}
+
+export default async function DashboardHomePage() {
+  const projects = await getProjectSummary();
+
+  const totalProyek = projects.length;
+
+  const totalKontrak = projects.reduce(
+    (sum: number, p: any) => sum + p.nilaiKontrak,
+    0
+  );
+
+  const totalBiaya = projects.reduce(
+    (sum: number, p: any) => sum + p.biayaReal,
+    0
+  );
+
+  const totalSisa = projects.reduce(
+    (sum: number, p: any) => sum + p.sisaBudget,
+    0
+  );
+
+  const status =
+    projects.some((p: any) => p.statusBudget === "BAHAYA")
+      ? "BAHAYA"
+      : projects.some((p: any) => p.statusBudget === "WARNING")
+      ? "WARNING"
+      : "AMAN";
 
   return (
     <section className="space-y-10">
-      <h1 className="text-2xl font-semibold">Owner Dashboard</h1>
+      <h1 className="text-2xl font-semibold">
+        Dashboard Overview
+      </h1>
 
+      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <KpiCard title="Total Proyek" value={projects.length} type="text" />
+        <KpiCard title="Total Proyek" value={totalProyek} type="text" />
         <KpiCard title="Total Kontrak" value={totalKontrak} />
         <KpiCard title="Total Biaya" value={totalBiaya} />
         <KpiCard title="Total Sisa" value={totalSisa} />
-        <KpiCard title="Status" type="status" value={status} statusValue={status} />
+        <KpiCard title="Status" type="status" statusValue={status} />
       </div>
 
+      {/* TABLE */}
       <ProjectTable projects={projects} />
     </section>
   );
