@@ -1,9 +1,17 @@
-import { projects } from "@/lib/data/projects";
+import { useEffect, useState } from "react";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 import { statusFromBudget } from "@/lib/engine/budget";
 
 export default function PMDashboardPage() {
+  const [projects, setProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/project-summary")
+      .then(res => res.json())
+      .then(data => setProjects(data.projects || []));
+  }, []);
+
   const totalProyek = projects.length;
 
   const proyekAktif = projects.filter(
@@ -31,29 +39,10 @@ export default function PMDashboardPage() {
 
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard
-          title="Total Proyek"
-          value={totalProyek}
-          type="text"
-        />
-
-        <KpiCard
-          title="Proyek Aktif"
-          value={proyekAktif.length}
-          type="text"
-        />
-
-        <KpiCard
-          title="Proyek Risiko"
-          value={proyekRisiko.length}
-          type="text"
-        />
-
-        <KpiCard
-          title="Fokus Hari Ini"
-          value="Kontrol Biaya"
-          type="text"
-        />
+        <KpiCard title="Total Proyek" value={totalProyek} type="text" />
+        <KpiCard title="Proyek Aktif" value={proyekAktif.length} type="text" />
+        <KpiCard title="Proyek Risiko" value={proyekRisiko.length} type="text" />
+        <KpiCard title="Fokus Hari Ini" value="Kontrol Biaya" type="text" />
       </div>
 
       {/* PROJECT LIST */}
