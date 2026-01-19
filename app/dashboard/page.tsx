@@ -1,9 +1,6 @@
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
-/* ======================
-   API FETCH (SERVER SAFE)
-====================== */
 async function getProjectSummary() {
   const res = await fetch("/api/project-summary", {
     cache: "no-store",
@@ -13,8 +10,7 @@ async function getProjectSummary() {
     throw new Error("Failed to fetch project summary");
   }
 
-  const json = await res.json();
-  return json.projects; // ⬅️ penting
+  return res.json();
 }
 
 export default async function DashboardHomePage() {
@@ -46,11 +42,8 @@ export default async function DashboardHomePage() {
 
   return (
     <section className="space-y-10">
-      <h1 className="text-2xl font-semibold">
-        Dashboard Overview
-      </h1>
+      <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
 
-      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <KpiCard title="Total Proyek" value={totalProyek} type="text" />
         <KpiCard title="Total Kontrak" value={totalKontrak} />
@@ -59,7 +52,6 @@ export default async function DashboardHomePage() {
         <KpiCard title="Status" type="status" statusValue={status} />
       </div>
 
-      {/* TABLE */}
       <ProjectTable projects={projects} />
     </section>
   );
