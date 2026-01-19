@@ -25,7 +25,7 @@ export async function GET() {
       range: "PAYROLL!A:L",
     });
 
-    const [header, ...rows] = res.data.values ?? [];
+    const [, ...rows] = res.data.values ?? [];
 
     const data = rows.map((r) => ({
       payroll_id: r[0],
@@ -38,7 +38,7 @@ export async function GET() {
       rate: Number(r[7] || 0),
       lembur: Number(r[8] || 0),
       potongan: Number(r[9] || 0),
-      total: Number(r[10] || 0),
+      total: Number(String(r[10] || "0").replace(/[^0-9]/g, "")),
       status: r[11],
     }));
 
