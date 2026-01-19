@@ -1,11 +1,12 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
+import type { ProjectSummary } from "@/lib/types/project";
 
 /* ======================
    API FETCH
 ====================== */
-async function getProjectSummary() {
+async function getProjectSummary(): Promise<ProjectSummary[]> {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/project-summary`,
     { cache: "no-store" }
@@ -22,23 +23,14 @@ export default async function OwnerPage() {
   const projects = await getProjectSummary();
 
   const totalProyek = projects.length;
-  const totalKontrak = projects.reduce(
-    (sum: number, p: any) => sum + p.nilaiKontrak,
-    0
-  );
-  const totalBiaya = projects.reduce(
-    (sum: number, p: any) => sum + p.biayaReal,
-    0
-  );
-  const totalSisa = projects.reduce(
-    (sum: number, p: any) => sum + p.sisaBudget,
-    0
-  );
+  const totalKontrak = projects.reduce((a, p) => a + p.nilaiKontrak, 0);
+  const totalBiaya = projects.reduce((a, p) => a + p.biayaReal, 0);
+  const totalSisa = projects.reduce((a, p) => a + p.sisaBudget, 0);
 
   const status =
-    projects.some((p: any) => p.statusBudget === "BAHAYA")
+    projects.some((p) => p.statusBudget === "BAHAYA")
       ? "BAHAYA"
-      : projects.some((p: any) => p.statusBudget === "WARNING")
+      : projects.some((p) => p.statusBudget === "WARNING")
       ? "WARNING"
       : "AMAN";
 
@@ -49,7 +41,6 @@ export default async function OwnerPage() {
         subtitle="Ringkasan seluruh proyek & kondisi biaya"
       />
 
-      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <KpiCard title="Total Proyek" value={totalProyek} type="text" />
         <KpiCard title="Total Kontrak" value={totalKontrak} />
@@ -58,7 +49,6 @@ export default async function OwnerPage() {
         <KpiCard title="Status" type="status" statusValue={status} />
       </div>
 
-      {/* TABLE */}
       <ProjectTable projects={projects} />
     </section>
   );
