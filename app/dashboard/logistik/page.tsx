@@ -1,27 +1,27 @@
 import KpiCard from "@/components/dashboard/KpiCard";
-import ProjectTable from "@/components/dashboard/ProjectTable";
-import type { ProjectSummary } from "@/lib/types/project";
+import type { LogistikSummary } from "@/lib/types/logistik";
 
-async function getProjectSummary(): Promise<ProjectSummary[]> {
+async function getLogistikSummary(): Promise<LogistikSummary[]> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/project-summary`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/logistik`,
     { cache: "no-store" }
   );
 
-  if (!res.ok) throw new Error("Failed fetch project summary");
-
+  if (!res.ok) throw new Error("Failed fetch logistik summary");
   return res.json();
 }
 
 export default async function LogistikDashboardPage() {
-  const projects = await getProjectSummary();
+  const data = await getLogistikSummary();
 
-  const totalProyek = projects.length;
-  const proyekAktif = projects.filter(
-    (p) => p.statusBudget !== "BAHAYA"
+  const totalProyek = data.length;
+  const proyekBerjalan = data.filter(
+    (p) => p.status === "ON DELIVERY" || p.status === "PARTIAL"
   ).length;
 
-  const proyekSelesai = totalProyek - proyekAktif;
+  const proyekSelesai = data.filter(
+    (p) => p.status === "RECEIVED"
+  ).length;
 
   return (
     <section className="space-y-10">
@@ -36,12 +36,41 @@ export default async function LogistikDashboardPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard title="Total Proyek" value={totalProyek} type="text" />
-        <KpiCard title="Proyek Aktif" value={proyekAktif} type="text" />
-        <KpiCard title="Proyek Selesai" value={proyekSelesai} type="text" />
+        <KpiCard title="Dalam Pengiriman" value={proyekBerjalan} type="text" />
+        <KpiCard title="Selesai" value={proyekSelesai} type="text" />
         <KpiCard title="Status Logistik" value="ON TRACK" type="text" />
       </div>
 
-      <ProjectTable projects={projects} />
+      {/* TABLE LOGISTIK */}
+      <div className="card p-6">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-gray-500 border-b">
+              <th className="pb-2">Project</th>
+              <th className="pb-2">Total Item</th>
+              <th className="pb-2">Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {data.length === 0 && (
+              <tr>
+                <td colSpan={3} className="py-6 text-center text-gray-400">
+                  Belum ada data logistik
+                </td>
+              </tr>
+            )}
+
+            {data.map((p) => (
+              <tr key={p.project_id} className="border-b last:border-none">
+                <td className="py-3">{p.project_id}</td>
+                <td className="py-3">{p.totalItem}</td>
+                <td className="py-3 font-medium">{p.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
