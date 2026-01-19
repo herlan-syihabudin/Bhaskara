@@ -5,24 +5,49 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 import { statusFromBudget } from "@/lib/engine/budget";
 
+type ProjectSummary = {
+  project_id: string;
+  project_name: string;
+  nilaiKontrak: number;
+  biayaReal: number;
+  statusBudget: "AMAN" | "WARNING" | "BAHAYA";
+};
+
 export default function PMDashboardPage() {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/project-summary")
-      .then(res => res.json())
-      .then(data => setProjects(data.projects || []));
+    async function load() {
+      try {
+        const res = await fetch("/api/project-summary");
+        const json = await res.json();
+        setProjects(json.projects || []);
+      } catch (err) {
+        console.error("LOAD PM DASHBOARD ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
   }, []);
 
   const totalProyek = projects.length;
-
   const proyekAktif = projects.filter(
     (p) => p.biayaReal < p.nilaiKontrak
   );
-
   const proyekRisiko = proyekAktif.filter(
-    (p) => statusFromBudget(p.nilaiKontrak, p.biayaReal) !== "AMAN"
+    (p) => p.statusBudget !== "AMAN"
   );
+
+  if (loading) {
+    return (
+      <section className="py-12">
+        <p className="text-gray-500">Loading dashboard...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-10">
@@ -50,13 +75,9 @@ export default function PMDashboardPage() {
       {/* PROJECT LIST */}
       <div>
         <h2 className="text-lg font-semibold mb-3">
-          Proyek Aktif
+          Daftar Proyek
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
-          Prioritas pengawasan lapangan & realisasi biaya
-        </p>
-
-        <ProjectTable projects={proyekAktif} />
+        <ProjectTable projects={projects} />
       </div>
     </section>
   );
