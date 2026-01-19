@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ProjectSummary } from "@/lib/types/project";
 
 export default function ProjectTable({
@@ -25,7 +26,15 @@ export default function ProjectTable({
         <tbody>
           {projects.map((p) => (
             <tr key={p.project_id} className="border-b last:border-0">
-              <td className="py-3 font-medium">{p.project_name}</td>
+              <td className="py-3 font-medium">
+                <Link
+                  href={`/dashboard/projects/${p.project_id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {p.project_name}
+                </Link>
+              </td>
+
               <td className="py-3 text-right">
                 Rp {p.nilaiKontrak.toLocaleString("id-ID")}
               </td>
@@ -35,6 +44,7 @@ export default function ProjectTable({
               <td className="py-3 text-right">
                 Rp {p.sisaBudget.toLocaleString("id-ID")}
               </td>
+
               <td className="py-3 text-center">
                 <span
                   className={`px-2 py-1 rounded text-xs font-semibold ${
