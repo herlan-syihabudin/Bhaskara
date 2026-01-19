@@ -1,48 +1,76 @@
-export const runtime = "nodejs";
+"use client";
 
-import { NextResponse } from "next/server";
-import { google } from "googleapis";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-async function getSheets() {
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GS_CLIENT_EMAIL!,
-      private_key: process.env.GS_PRIVATE_KEY!.replace(/\\n/g, "\n"),
-    },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+export default function TambahKaryawanPage() {
+  const router = useRouter();
+
+  const [form, setForm] = useState({
+    nama: "",
+    role: "",
+    type: "HARIAN",
+    rate: "",
   });
 
-  return google.sheets({ version: "v4", auth });
-}
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const sheets = await getSheets();
-
-    const karyawan_id = `EMP-${Date.now()}`;
-
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "KARYAWAN!A:H",
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [[
-          karyawan_id,
-          body.nama,
-          body.role,
-          body.tipe_gaji,
-          body.rate,
-          body.status,
-          body.join_date,
-          "",
-        ]],
-      },
+    await fetch("/api/karyawan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
     });
 
-    return NextResponse.json({ success: true });
-  } catch (e) {
-    console.error("KARYAWAN ERROR", e);
-    return NextResponse.json({ error: "Insert karyawan gagal" }, { status: 500 });
+    router.push("/dashboard/payroll/karyawan");
   }
+
+  return (
+    <section className="max-w-xl space-y-6">
+      <h1 className="text-2xl font-semibold">Tambah Karyawan</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          placeholder="Nama Karyawan"
+          className="input"
+          value={form.nama}
+          onChange={(e) => setForm({ ...form, nama: e.target.value })}
+          required
+        />
+
+        <input
+          placeholder="Role (Tukang / Mandor / Staff)"
+          className="input"
+          value={form.role}
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
+          required
+        />
+
+        <select
+          className="input"
+          value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}
+        >
+          <option value="HARIAN">Harian</option>
+          <option value="BULANAN">Bulanan</option>
+        </select>
+
+        <input
+          placeholder="Upah / Gaji"
+          type="number"
+          className="input"
+          value={form.rate}
+          onChange={(e) => setForm({ ...form, rate: e.target.value })}
+          required
+        />
+
+        <button
+          type="submit"
+          className="px-4 py-2 rounded-lg bg-black text-white"
+        >
+          Simpan
+        </button>
+      </form>
+    </section>
+  );
 }
