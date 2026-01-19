@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { statusFromBudget } from "@/lib/engine/budget";
+import type { ProjectSummary } from "@/lib/types/project";
 
 /* =====================
    CONNECT GOOGLE SHEET
@@ -27,9 +28,6 @@ async function getSheets() {
 ===================== */
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const project_id = searchParams.get("id");
-
     const SHEET_ID = process.env.GS_SHEET_ID!;
     const sheets = await getSheets();
 
@@ -39,6 +37,11 @@ export async function GET(req: Request) {
     });
 
     const rows = res.data.values || [];
+    if (rows.length <= 1) {
+      // tidak ada data
+      return NextResponse.json([] as ProjectSummary[]);
+    }
+
     const headers = rows[0];
     const data = rows.slice(1).map((row) =>
       Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
@@ -50,24 +53,33 @@ export async function GET(req: Request) {
     const byProject: Record<string, any[]> = {};
 
     data.forEach((r: any) => {
+      if (!r.project_id) return;
+
       if (!byProject[r.project_id]) {
         byProject[r.project_id] = [];
       }
       byProject[r.project_id].push(r);
     });
 
-    function buildSummary(project_id: string, rows: any[]) {
+    /* =====================
+       BUILD SUMMARY
+    ===================== */
+    function buildSummary(
+      project_id: string,
+      rows: any[]
+    ): ProjectSummary {
       const material = rows.filter(
         (r) => r.status === "RECEIVED" && Number(r.total) > 0
       );
 
-      const biayaMaterial = material.reduce(
+      const biayaReal = material.reduce(
         (sum, r) => sum + Number(r.total),
         0
       );
 
-      const nilaiKontrak = 2500000000; // TEMP
-      const biayaReal = biayaMaterial;
+      // ⚠️ sementara hardcode (nanti ambil dari master project)
+      const nilaiKontrak = 2_500_000_000;
+
       const sisaBudget = nilaiKontrak - biayaReal;
       const statusBudget = statusFromBudget(nilaiKontrak, biayaReal);
 
@@ -75,29 +87,23 @@ export async function GET(req: Request) {
         project_id,
         project_name: `Proyek ${project_id}`,
         nilaiKontrak,
-        biayaMaterial,
-        biayaJasa: 0,
-        biayaAlat: 0,
         biayaReal,
         sisaBudget,
         statusBudget,
       };
     }
 
-    // 🔹 MODE 1: DETAIL PROJECT
-    if (project_id) {
-      const rows = byProject[project_id] || [];
-      return NextResponse.json({
-        project: buildSummary(project_id, rows),
-      });
-    }
-
-    // 🔹 MODE 2: ALL PROJECTS (PM DASHBOARD)
-    const projects = Object.keys(byProject).map((pid) =>
+    /* =====================
+       RETURN ALL PROJECTS
+       ⚠️ PENTING:
+       - LANGSUNG ARRAY
+       - BUKAN { projects }
+    ===================== */
+    const projects: ProjectSummary[] = Object.keys(byProject).map((pid) =>
       buildSummary(pid, byProject[pid])
     );
 
-    return NextResponse.json({ projects });
+    return NextResponse.json(projects);
   } catch (err) {
     console.error("PROJECT SUMMARY ERROR:", err);
     return NextResponse.json(
