@@ -11,7 +11,6 @@ async function getSheets() {
     },
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
-
   return google.sheets({ version: "v4", auth });
 }
 
@@ -33,8 +32,9 @@ export async function GET() {
     rows.forEach((r) => {
       if (r[3]) uniq.add(r[3]);
       if (Number(r[6] || 0) > 0) hadir++;
-      total += Number(String(r[10] || "0").replace(/\D/g, ""));
-      if (r[11] === "UNPAID") unpaid += Number(r[10] || 0);
+      const val = Number(String(r[10] || "0").replace(/\D/g, ""));
+      total += val;
+      if (r[11] === "UNPAID") unpaid += val;
     });
 
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET() {
       },
     });
   } catch (e) {
-    console.error(e);
+    console.error("PAYROLL SUMMARY ERROR", e);
     return NextResponse.json({ error: "Payroll summary error" }, { status: 500 });
   }
 }
