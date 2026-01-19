@@ -33,47 +33,51 @@ export async function GET() {
 
     const [, ...rows] = res.data.values ?? [];
 
-    /**
-     * GROUP PER PROJECT
-     */
+    // PRIORITAS STATUS (INI PENTING!)
+    const priority: Record<string, number> = {
+      "ON DELIVERY": 3,
+      "PARTIAL": 2,
+      "RECEIVED": 1,
+      "READY": 0,
+    };
+
     const grouped: Record<string, any> = {};
 
-    rows.forEach(
-      ([
-        log_id,
-        req_id,
-        project_id,
-        item,
-        qty,
-        satuan,
-        tanggal_kirim,
-        tanggal_terima,
-        lokasi,
-        status_logistik,
-      ]) => {
-        if (!project_id) return;
+    rows.forEach((r) => {
+      const project_id = r[2];
+      const qty = Number(r[4] || 0);
+      const status = r[9];
+      const tanggalKirim = r[6];
+      const tanggalTerima = r[7];
 
-        if (!grouped[project_id]) {
-          grouped[project_id] = {
-            project_id,
-            totalItem: 0,
-            status: "READY",
-            lastUpdate: tanggal_kirim || "",
-          };
-        }
+      if (!project_id) return;
 
-        grouped[project_id].totalItem += Number(qty || 0);
-
-        // STATUS PRIORITY
-        if (status_logistik === "ON DELIVERY") {
-          grouped[project_id].status = "ON DELIVERY";
-        } else if (status_logistik === "PARTIAL") {
-          grouped[project_id].status = "PARTIAL";
-        } else if (status_logistik === "RECEIVED") {
-          grouped[project_id].status = "RECEIVED";
-        }
+      if (!grouped[project_id]) {
+        grouped[project_id] = {
+          project_id,
+          totalItem: 0,
+          status: "READY",
+          lastUpdate: "",
+        };
       }
-    );
+
+      grouped[project_id].totalItem += qty;
+
+      // 🔴 FIX UTAMA: STATUS TIDAK BOLEH KETIMPA
+      if (
+        priority[status] >
+        priority[grouped[project_id].status]
+      ) {
+        grouped[project_id].status = status;
+      }
+
+      // 🔴 FIX LAST UPDATE
+      if (tanggalTerima) {
+        grouped[project_id].lastUpdate = tanggalTerima;
+      } else if (tanggalKirim) {
+        grouped[project_id].lastUpdate = tanggalKirim;
+      }
+    });
 
     return NextResponse.json(Object.values(grouped));
   } catch (error) {
