@@ -21,10 +21,10 @@ export async function GET() {
     const sheets = await getSheets();
     const SHEET_ID = process.env.GS_SHEET_ID!;
 
-    /* ===== MASTER PROYEK ===== */
+    /* ===== MASTER PROYEK (PAKAI PETIK!) ===== */
     const projectRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "Master proyek!A:E",
+      range: "'Master proyek'!A:E",
     });
 
     const [, ...projects] = projectRes.data.values ?? [];
