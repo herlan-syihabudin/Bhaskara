@@ -1,15 +1,29 @@
-import { projects } from "@/lib/data/projects";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
 
-export default function LogistikDashboardPage() {
+/* ======================
+   API FETCH
+====================== */
+async function getProjectSummary() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/project-summary`,
+    { cache: "no-store" }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch project summary");
+  }
+
+  return res.json();
+}
+
+export default async function LogistikDashboardPage() {
+  const projects = await getProjectSummary();
+
   const totalProyek = projects.length;
-
-  // simulasi beban logistik (sementara)
   const proyekAktif = projects.filter(
-    (p) => p.biayaReal < p.nilaiKontrak
+    (p: any) => p.statusBudget !== "BAHAYA"
   ).length;
-
   const proyekSelesai = totalProyek - proyekAktif;
 
   return (
@@ -29,29 +43,10 @@ export default function LogistikDashboardPage() {
 
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard
-          title="Total Proyek"
-          value={totalProyek}
-          type="text"
-        />
-
-        <KpiCard
-          title="Proyek Aktif"
-          value={proyekAktif}
-          type="text"
-        />
-
-        <KpiCard
-          title="Proyek Selesai"
-          value={proyekSelesai}
-          type="text"
-        />
-
-        <KpiCard
-          title="Status Logistik"
-          value="ON TRACK"
-          type="text"
-        />
+        <KpiCard title="Total Proyek" value={totalProyek} type="text" />
+        <KpiCard title="Proyek Aktif" value={proyekAktif} type="text" />
+        <KpiCard title="Proyek Selesai" value={proyekSelesai} type="text" />
+        <KpiCard title="Status Logistik" value="ON TRACK" type="text" />
       </div>
 
       {/* PROJECT LIST */}
