@@ -1,24 +1,17 @@
 import KpiCard from "@/components/dashboard/KpiCard";
 import Link from "next/link";
-import { headers } from "next/headers";
 
 /* =====================
    FETCH PAYROLL SUMMARY
 ===================== */
 async function getPayrollSummary() {
-  const h = headers();
-  const host = h.get("host");
-  if (!host) throw new Error("Host not found");
+  const res = await fetch("/api/payroll-summary", {
+    cache: "no-store",
+  });
 
-  const protocol =
-    process.env.NODE_ENV === "development" ? "http" : "https";
-
-  const res = await fetch(
-    `${protocol}://${host}/api/payroll-summary`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) throw new Error("Failed to load payroll summary");
+  if (!res.ok) {
+    throw new Error("Failed to load payroll summary");
+  }
 
   return res.json();
 }
