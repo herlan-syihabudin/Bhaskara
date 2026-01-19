@@ -30,19 +30,9 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const project_id = searchParams.get("id");
 
-    if (!project_id) {
-      return NextResponse.json(
-        { error: "project_id required" },
-        { status: 400 }
-      );
-    }
-
     const SHEET_ID = process.env.GS_SHEET_ID!;
     const sheets = await getSheets();
 
-    /* =====================
-       MATERIAL COST
-    ===================== */
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: "MATERIAL_REQUEST!A:L",
@@ -54,29 +44,34 @@ export async function GET(req: Request) {
       Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
     );
 
-    const materialList = data.filter(
-      (r: any) =>
-        r.project_id === project_id &&
-        r.status === "RECEIVED" &&
-        Number(r.total) > 0
-    );
-
-    const biayaMaterial = materialList.reduce(
-      (sum: number, r: any) => sum + Number(r.total),
-      0
-    );
-
     /* =====================
-       KONTRAK (TEMP)
+       GROUP BY PROJECT
     ===================== */
-    const nilaiKontrak = 2500000000; // TODO: ambil dari Sheet SPK
+    const byProject: Record<string, any[]> = {};
 
-    const biayaReal = biayaMaterial;
-    const sisaBudget = nilaiKontrak - biayaReal;
-    const statusBudget = statusFromBudget(nilaiKontrak, biayaReal);
+    data.forEach((r: any) => {
+      if (!byProject[r.project_id]) {
+        byProject[r.project_id] = [];
+      }
+      byProject[r.project_id].push(r);
+    });
 
-    return NextResponse.json({
-      project: {
+    function buildSummary(project_id: string, rows: any[]) {
+      const material = rows.filter(
+        (r) => r.status === "RECEIVED" && Number(r.total) > 0
+      );
+
+      const biayaMaterial = material.reduce(
+        (sum, r) => sum + Number(r.total),
+        0
+      );
+
+      const nilaiKontrak = 2500000000; // TEMP
+      const biayaReal = biayaMaterial;
+      const sisaBudget = nilaiKontrak - biayaReal;
+      const statusBudget = statusFromBudget(nilaiKontrak, biayaReal);
+
+      return {
         project_id,
         project_name: `Proyek ${project_id}`,
         nilaiKontrak,
@@ -86,8 +81,23 @@ export async function GET(req: Request) {
         biayaReal,
         sisaBudget,
         statusBudget,
-      },
-    });
+      };
+    }
+
+    // 🔹 MODE 1: DETAIL PROJECT
+    if (project_id) {
+      const rows = byProject[project_id] || [];
+      return NextResponse.json({
+        project: buildSummary(project_id, rows),
+      });
+    }
+
+    // 🔹 MODE 2: ALL PROJECTS (PM DASHBOARD)
+    const projects = Object.keys(byProject).map((pid) =>
+      buildSummary(pid, byProject[pid])
+    );
+
+    return NextResponse.json({ projects });
   } catch (err) {
     console.error("PROJECT SUMMARY ERROR:", err);
     return NextResponse.json(
