@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
