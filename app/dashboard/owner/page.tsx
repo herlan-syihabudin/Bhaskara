@@ -16,7 +16,8 @@ async function getProjectSummary(): Promise<ProjectSummary[]> {
     throw new Error("Failed to fetch project summary");
   }
 
-  return res.json();
+  const json = await res.json();
+  return json.projects; // ✅ PENTING
 }
 
 export default async function OwnerPage() {
