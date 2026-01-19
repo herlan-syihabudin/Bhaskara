@@ -1,7 +1,35 @@
 import KpiCard from "@/components/dashboard/KpiCard";
 import Link from "next/link";
+import { headers } from "next/headers";
 
-export default function PayrollPage() {
+/* =====================
+   FETCH PAYROLL SUMMARY
+===================== */
+async function getPayrollSummary() {
+  const h = headers();
+  const host = h.get("host");
+  if (!host) throw new Error("Host not found");
+
+  const protocol =
+    process.env.NODE_ENV === "development" ? "http" : "https";
+
+  const res = await fetch(
+    `${protocol}://${host}/api/payroll-summary`,
+    { cache: "no-store" }
+  );
+
+  if (!res.ok) throw new Error("Failed to load payroll summary");
+
+  return res.json();
+}
+
+/* =====================
+   PAGE
+===================== */
+export default async function PayrollPage() {
+  const data = await getPayrollSummary();
+  const kpi = data.kpi;
+
   return (
     <section className="space-y-10">
       {/* HEADER */}
@@ -19,10 +47,26 @@ export default function PayrollPage() {
 
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KpiCard title="Total Karyawan" value={0} type="text" />
-        <KpiCard title="Hadir Bulan Ini" value={0} type="text" />
-        <KpiCard title="Total Gaji Bulan Ini" value={0} />
-        <KpiCard title="Belum Dibayar" value={0} type="text" />
+        <KpiCard
+          title="Total Karyawan"
+          value={kpi.totalKaryawan}
+          type="text"
+        />
+        <KpiCard
+          title="Hadir Bulan Ini"
+          value={kpi.hadirBulanIni}
+          type="text"
+        />
+        <KpiCard
+          title="Total Gaji Bulan Ini"
+          value={`Rp ${kpi.totalGaji.toLocaleString("id-ID")}`}
+          type="text"
+        />
+        <KpiCard
+          title="Belum Dibayar"
+          value={`Rp ${kpi.belumDibayar.toLocaleString("id-ID")}`}
+          type="text"
+        />
       </div>
 
       {/* ACTION */}
