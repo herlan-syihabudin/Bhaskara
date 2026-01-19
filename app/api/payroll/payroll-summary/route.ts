@@ -3,9 +3,6 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 
-/* =====================
-   GOOGLE SHEETS AUTH
-===================== */
 async function getSheets() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -18,51 +15,38 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
-/* =====================
-   GET PAYROLL SUMMARY
-===================== */
 export async function GET() {
   try {
     const sheets = await getSheets();
-    const SHEET_ID = process.env.GS_SHEET_ID!;
-
     const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
+      spreadsheetId: process.env.GS_SHEET_ID!,
       range: "PAYROLL!A:L",
     });
 
     const [, ...rows] = res.data.values ?? [];
 
-    const uniqKaryawan = new Set<string>();
-    let hadirBulanIni = 0;
-    let totalGaji = 0;
-    let belumDibayar = 0;
+    const uniq = new Set<string>();
+    let hadir = 0;
+    let total = 0;
+    let unpaid = 0;
 
     rows.forEach((r) => {
-      const nama = r[3];
-      const qtyHari = Number(r[6] || 0);
-      const total = Number(r[10] || 0);
-      const status = r[11];
-
-      if (nama) uniqKaryawan.add(nama);
-      if (qtyHari > 0) hadirBulanIni++;
-      totalGaji += total;
-      if (status === "UNPAID") belumDibayar += total;
+      if (r[3]) uniq.add(r[3]);
+      if (Number(r[6] || 0) > 0) hadir++;
+      total += Number(String(r[10] || "0").replace(/\D/g, ""));
+      if (r[11] === "UNPAID") unpaid += Number(r[10] || 0);
     });
 
     return NextResponse.json({
       kpi: {
-        totalKaryawan: uniqKaryawan.size,
-        hadirBulanIni,
-        totalGaji,
-        belumDibayar,
+        totalKaryawan: uniq.size,
+        hadirBulanIni: hadir,
+        totalGaji: total,
+        belumDibayar: unpaid,
       },
     });
-  } catch (err) {
-    console.error("PAYROLL SUMMARY ERROR:", err);
-    return NextResponse.json(
-      { error: "Failed to load payroll summary" },
-      { status: 500 }
-    );
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Payroll summary error" }, { status: 500 });
   }
 }
