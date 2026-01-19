@@ -33,7 +33,7 @@ export async function GET() {
 
     const [, ...rows] = res.data.values ?? [];
 
-    // PRIORITAS STATUS (INI PENTING!)
+    /* ===== PRIORITY STATUS ===== */
     const priority: Record<string, number> = {
       "ON DELIVERY": 3,
       "PARTIAL": 2,
@@ -46,7 +46,8 @@ export async function GET() {
     rows.forEach((r) => {
       const project_id = r[2];
       const qty = Number(r[4] || 0);
-      const status = r[9];
+      const statusRaw = r[9] || "READY";
+      const status = priority[statusRaw] !== undefined ? statusRaw : "READY";
       const tanggalKirim = r[6];
       const tanggalTerima = r[7];
 
@@ -61,9 +62,10 @@ export async function GET() {
         };
       }
 
+      /* ===== TOTAL ITEM ===== */
       grouped[project_id].totalItem += qty;
 
-      // 🔴 FIX UTAMA: STATUS TIDAK BOLEH KETIMPA
+      /* ===== STATUS PRIORITY (ANTI KETIMPA) ===== */
       if (
         priority[status] >
         priority[grouped[project_id].status]
@@ -71,11 +73,13 @@ export async function GET() {
         grouped[project_id].status = status;
       }
 
-      // 🔴 FIX LAST UPDATE
-      if (tanggalTerima) {
-        grouped[project_id].lastUpdate = tanggalTerima;
-      } else if (tanggalKirim) {
-        grouped[project_id].lastUpdate = tanggalKirim;
+      /* ===== LAST UPDATE (AMBIL PALING BARU) ===== */
+      const candidateDate = tanggalTerima || tanggalKirim;
+      if (candidateDate) {
+        const prev = grouped[project_id].lastUpdate;
+        if (!prev || new Date(candidateDate) > new Date(prev)) {
+          grouped[project_id].lastUpdate = candidateDate;
+        }
       }
     });
 
