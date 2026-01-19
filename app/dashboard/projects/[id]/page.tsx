@@ -1,19 +1,29 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import KpiCard from "@/components/dashboard/KpiCard";
-import { getProjectById } from "@/lib/data/projects";
-import { getMRByProject } from "@/lib/data/materialRequests";
 import MaterialRequestSummary from "@/components/dashboard/MaterialRequestSummary";
 
-export default function ProjectDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const project = getProjectById(params.id);
-  if (!project) notFound();
+export default function ProjectDetailPage() {
+  const params = useParams<{ id: string }>();
+  const projectId = params.id;
 
-  const mrList = getMRByProject(project.id);
+  const [project, setProject] = useState<any>(null);
+  const [mrList, setMrList] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`/api/project-summary?id=${projectId}`)
+      .then(res => res.json())
+      .then(res => setProject(res.project));
+
+    fetch(`/api/material-request?project_id=${projectId}`)
+      .then(res => res.json())
+      .then(res => setMrList(res.data || []));
+  }, [projectId]);
+
+  if (!project) return null;
 
   return (
     <section className="container-bbm py-12 space-y-12">
@@ -23,7 +33,7 @@ export default function ProjectDetailPage({
           PROJECT DETAIL
         </p>
         <h1 className="text-2xl font-semibold mt-1">
-          {project.name}
+          {project.project_name}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
           Kontrol proyek & permintaan material
@@ -33,12 +43,8 @@ export default function ProjectDetailPage({
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <KpiCard title="Nilai Kontrak" value={project.nilaiKontrak} />
-        <KpiCard title="Status Proyek" value={project.status} type="text" />
-        <KpiCard
-          title="Jumlah MR"
-          value={mrList.length}
-          type="text"
-        />
+        <KpiCard title="Status Proyek" value={project.statusBudget} type="text" />
+        <KpiCard title="Jumlah MR" value={mrList.length} type="text" />
       </div>
 
       {/* ACTION PM */}
@@ -47,7 +53,7 @@ export default function ProjectDetailPage({
           Aksi Project Manager
         </h2>
         <Link
-          href={`/dashboard/projects/${project.id}/request-material`}
+          href={`/dashboard/projects/${projectId}/request-material`}
           className="inline-block px-4 py-2 rounded-lg bg-black text-white text-sm"
         >
           + Request Material
@@ -56,7 +62,7 @@ export default function ProjectDetailPage({
 
       {/* MATERIAL REQUEST SUMMARY */}
       <MaterialRequestSummary
-        projectId={project.id}
+        projectId={projectId}
         mrList={mrList}
       />
     </section>
