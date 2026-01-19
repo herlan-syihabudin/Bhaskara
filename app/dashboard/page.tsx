@@ -1,48 +1,20 @@
-import KpiCard from "@/components/dashboard/KpiCard";
-import ProjectTable from "@/components/dashboard/ProjectTable";
-import { headers } from "next/headers";
-
-async function getProjectSummary() {
-  const h = headers();
-  const host = h.get("host");
-
-  if (!host) {
-    throw new Error("Host header not found");
-  }
-
-  const protocol =
-    process.env.NODE_ENV === "development" ? "http" : "https";
-
-  const url = `${protocol}://${host}/api/project-summary`;
-
-  const res = await fetch(url, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch project summary");
-  }
-
-  return res.json();
-}
-
 export default async function DashboardHomePage() {
   const projects = await getProjectSummary();
 
   const totalProyek = projects.length;
 
   const totalKontrak = projects.reduce(
-    (sum: number, p: any) => sum + p.nilaiKontrak,
+    (sum: number, p: any) => sum + (Number(p.nilaiKontrak) || 0),
     0
   );
 
   const totalBiaya = projects.reduce(
-    (sum: number, p: any) => sum + p.biayaReal,
+    (sum: number, p: any) => sum + (Number(p.biayaReal) || 0),
     0
   );
 
   const totalSisa = projects.reduce(
-    (sum: number, p: any) => sum + p.sisaBudget,
+    (sum: number, p: any) => sum + (Number(p.sisaBudget) || 0),
     0
   );
 
