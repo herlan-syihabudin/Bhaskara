@@ -9,15 +9,12 @@ import type { ProjectSummary } from "@/lib/types/project";
    CONNECT GOOGLE SHEET
 ===================== */
 async function getSheets() {
-  const CLIENT_EMAIL = process.env.GS_CLIENT_EMAIL!;
-  const PRIVATE_KEY = process.env.GS_PRIVATE_KEY!.replace(/\\n/g, "\n");
-
   const auth = new google.auth.GoogleAuth({
     credentials: {
-      client_email: CLIENT_EMAIL,
-      private_key: PRIVATE_KEY,
+      client_email: process.env.GS_CLIENT_EMAIL!,
+      private_key: process.env.GS_PRIVATE_KEY!.replace(/\\n/g, "\n"),
     },
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 
   return google.sheets({ version: "v4", auth });
@@ -26,84 +23,60 @@ async function getSheets() {
 /* =====================
    GET PROJECT SUMMARY
 ===================== */
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const SHEET_ID = process.env.GS_SHEET_ID!;
     const sheets = await getSheets();
 
-    const res = await sheets.spreadsheets.values.get({
+    /* ===== 1️⃣ MASTER PROJECT ===== */
+    const projectRes = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: "PROJECTS!A:C",
+    });
+
+    const projectRows = projectRes.data.values || [];
+    if (projectRows.length <= 1) {
+      return NextResponse.json([] as ProjectSummary[]);
+    }
+
+    const [, ...projectsData] = projectRows;
+
+    /* ===== 2️⃣ MATERIAL REQUEST ===== */
+    const mrRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: "MATERIAL_REQUEST!A:L",
     });
 
-    const rows = res.data.values || [];
-    if (rows.length <= 1) {
-      // tidak ada data
-      return NextResponse.json([] as ProjectSummary[]);
-    }
+    const mrRows = mrRes.data.values || [];
+    const [, ...mrData] = mrRows;
 
-    const headers = rows[0];
-    const data = rows.slice(1).map((row) =>
-      Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
-    );
+    /* ===== 3️⃣ BUILD SUMMARY ===== */
+    const summaries: ProjectSummary[] = projectsData.map(
+      ([project_id, project_name, nilai_kontrak]) => {
+        const biayaReal = mrData
+          .filter(
+            (r) =>
+              r[0] === project_id && // project_id
+              r[8] === "RECEIVED" && // status
+              Number(r[7]) > 0 // total
+          )
+          .reduce((sum, r) => sum + Number(r[7]), 0);
 
-    /* =====================
-       GROUP BY PROJECT
-    ===================== */
-    const byProject: Record<string, any[]> = {};
+        const nilaiKontrak = Number(nilai_kontrak);
+        const sisaBudget = nilaiKontrak - biayaReal;
 
-    data.forEach((r: any) => {
-      if (!r.project_id) return;
-
-      if (!byProject[r.project_id]) {
-        byProject[r.project_id] = [];
+        return {
+          project_id,
+          project_name,
+          nilaiKontrak,
+          biayaReal,
+          sisaBudget,
+          statusBudget: statusFromBudget(nilaiKontrak, biayaReal),
+        };
       }
-      byProject[r.project_id].push(r);
-    });
-
-    /* =====================
-       BUILD SUMMARY
-    ===================== */
-    function buildSummary(
-      project_id: string,
-      rows: any[]
-    ): ProjectSummary {
-      const material = rows.filter(
-        (r) => r.status === "RECEIVED" && Number(r.total) > 0
-      );
-
-      const biayaReal = material.reduce(
-        (sum, r) => sum + Number(r.total),
-        0
-      );
-
-      // ⚠️ sementara hardcode (nanti ambil dari master project)
-      const nilaiKontrak = 2_500_000_000;
-
-      const sisaBudget = nilaiKontrak - biayaReal;
-      const statusBudget = statusFromBudget(nilaiKontrak, biayaReal);
-
-      return {
-        project_id,
-        project_name: `Proyek ${project_id}`,
-        nilaiKontrak,
-        biayaReal,
-        sisaBudget,
-        statusBudget,
-      };
-    }
-
-    /* =====================
-       RETURN ALL PROJECTS
-       ⚠️ PENTING:
-       - LANGSUNG ARRAY
-       - BUKAN { projects }
-    ===================== */
-    const projects: ProjectSummary[] = Object.keys(byProject).map((pid) =>
-      buildSummary(pid, byProject[pid])
     );
 
-    return NextResponse.json(projects);
+    return NextResponse.json(summaries);
   } catch (err) {
     console.error("PROJECT SUMMARY ERROR:", err);
     return NextResponse.json(
