@@ -6,24 +6,68 @@ import Link from "next/link";
 import KpiCard from "@/components/dashboard/KpiCard";
 import MaterialRequestSummary from "@/components/dashboard/MaterialRequestSummary";
 
+type ProjectSummary = {
+  project_id: string;
+  project_name: string;
+  nilaiKontrak: number;
+  biayaMaterial: number;
+  biayaJasa: number;
+  biayaAlat: number;
+  biayaReal: number;
+  sisaBudget: number;
+  statusBudget: "AMAN" | "WARNING" | "BAHAYA";
+};
+
 export default function ProjectDetailPage() {
   const params = useParams<{ id: string }>();
   const projectId = params.id;
 
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<ProjectSummary | null>(null);
   const [mrList, setMrList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/project-summary?id=${projectId}`)
-      .then(res => res.json())
-      .then(res => setProject(res.project));
+    async function loadData() {
+      try {
+        setLoading(true);
 
-    fetch(`/api/material-request?project_id=${projectId}`)
-      .then(res => res.json())
-      .then(res => setMrList(res.data || []));
+        // 1️⃣ Project Summary
+        const ps = await fetch(
+          `/api/project-summary?id=${projectId}`
+        ).then((r) => r.json());
+
+        // 2️⃣ Material Request
+        const mr = await fetch(
+          `/api/material-request?project_id=${projectId}`
+        ).then((r) => r.json());
+
+        setProject(ps.project);
+        setMrList(mr.data || []);
+      } catch (err) {
+        console.error("LOAD PROJECT DETAIL ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
   }, [projectId]);
 
-  if (!project) return null;
+  if (loading) {
+    return (
+      <section className="container-bbm py-12">
+        <p className="text-gray-500">Loading project data...</p>
+      </section>
+    );
+  }
+
+  if (!project) {
+    return (
+      <section className="container-bbm py-12">
+        <p className="text-red-500">Project tidak ditemukan</p>
+      </section>
+    );
+  }
 
   return (
     <section className="container-bbm py-12 space-y-12">
@@ -42,9 +86,20 @@ export default function ProjectDetailPage() {
 
       {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KpiCard title="Nilai Kontrak" value={project.nilaiKontrak} />
-        <KpiCard title="Status Proyek" value={project.statusBudget} type="text" />
-        <KpiCard title="Jumlah MR" value={mrList.length} type="text" />
+        <KpiCard
+          title="Nilai Kontrak"
+          value={project.nilaiKontrak}
+        />
+        <KpiCard
+          title="Status Budget"
+          value={project.statusBudget}
+          type="text"
+        />
+        <KpiCard
+          title="Jumlah Material Request"
+          value={mrList.length}
+          type="text"
+        />
       </div>
 
       {/* ACTION PM */}
