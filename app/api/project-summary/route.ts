@@ -3,11 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { statusFromBudget } from "@/lib/engine/budget";
-import type { ProjectSummary } from "@/lib/types/project";
 
-/* =====================
-   CONNECT GOOGLE SHEET
-===================== */
 async function getSheets() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -20,49 +16,39 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
-/* =====================
-   GET PROJECT SUMMARY
-===================== */
 export async function GET() {
   try {
-    const SHEET_ID = process.env.GS_SHEET_ID!;
     const sheets = await getSheets();
+    const SHEET_ID = process.env.GS_SHEET_ID!;
 
-    /* ===== 1️⃣ MASTER PROJECT ===== */
+    /* ===== MASTER PROYEK ===== */
     const projectRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "PROJECTS!A:C",
+      range: "Master proyek!A:E",
     });
 
-    const projectRows = projectRes.data.values || [];
-    if (projectRows.length <= 1) {
-      return NextResponse.json([] as ProjectSummary[]);
-    }
+    const [, ...projects] = projectRes.data.values ?? [];
 
-    const [, ...projectsData] = projectRows;
-
-    /* ===== 2️⃣ MATERIAL REQUEST ===== */
+    /* ===== MATERIAL REQUEST ===== */
     const mrRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "MATERIAL_REQUEST!A:L",
+      range: "MATERIAL_REQUEST!A:G",
     });
 
-    const mrRows = mrRes.data.values || [];
-    const [, ...mrData] = mrRows;
+    const [, ...materials] = mrRes.data.values ?? [];
 
-    /* ===== 3️⃣ BUILD SUMMARY ===== */
-    const summaries: ProjectSummary[] = projectsData.map(
-      ([project_id, project_name, nilai_kontrak]) => {
-        const biayaReal = mrData
+    const summaries = projects.map(
+      ([project_id, project_name, , nilai_kontrak]) => {
+        const biayaReal = materials
           .filter(
             (r) =>
-              r[0] === project_id && // project_id
-              r[8] === "RECEIVED" && // status
-              Number(r[7]) > 0 // total
+              r[1] === project_id && // project_id
+              r[6] === "RECEIVED" && // status
+              Number(r[5]) > 0 // total
           )
-          .reduce((sum, r) => sum + Number(r[7]), 0);
+          .reduce((sum, r) => sum + Number(r[5]), 0);
 
-        const nilaiKontrak = Number(nilai_kontrak);
+        const nilaiKontrak = Number(nilai_kontrak || 0);
         const sisaBudget = nilaiKontrak - biayaReal;
 
         return {
