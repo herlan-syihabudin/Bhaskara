@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { addMaterialRequest } from "@/lib/data/materialRequests";
 
 /* ======================
    TYPES
@@ -73,9 +72,9 @@ export default function RequestMaterialPage() {
   const totalEstimasi = 0; // harga diisi Purchasing
 
   /* ======================
-     SUBMIT
+     SUBMIT (API CONNECTED)
   ====================== */
-  function submitRequest() {
+  async function submitRequest() {
     if (!requester.trim()) {
       alert("Nama requester wajib diisi");
       return;
@@ -86,20 +85,35 @@ export default function RequestMaterialPage() {
       return;
     }
 
-    addMaterialRequest(params.id, {
-      requester,
-      catatan,
-      items: validItems.map((i) => ({
-        name: i.material,
-        qty: i.qty,
-        unit: i.unit,
-        estimasiHarga: 0,
-        status: "SUBMITTED",
-      })),
-    });
+    try {
+      for (const item of validItems) {
+        const res = await fetch("/api/material-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            project_id: params.id,
+            project_name: `Proyek ${params.id}`,
+            material: item.material,
+            qty: item.qty,
+            unit: item.unit,
+            requester,
+            note: catatan,
+          }),
+        });
 
-    alert("Material Request dikirim ke Purchasing");
-    router.push(`/dashboard/projects/${params.id}`);
+        if (!res.ok) {
+          throw new Error("Gagal mengirim material request");
+        }
+      }
+
+      alert("Material Request berhasil dikirim ke Purchasing");
+      router.push(`/dashboard/projects/${params.id}`);
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengirim request");
+    }
   }
 
   /* ======================
