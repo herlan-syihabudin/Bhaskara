@@ -21,13 +21,14 @@ export async function GET() {
     const sheets = await getSheets();
     const SHEET_ID = process.env.GS_SHEET_ID!;
 
-    /* ===== MASTER PROYEK (PAKAI PETIK!) ===== */
+    /* ===== MASTER PROYEK ===== */
     const projectRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: "'Master proyek'!A:E",
     });
 
-    const [, ...projects] = projectRes.data.values ?? [];
+    const projectRows = projectRes.data.values ?? [];
+    const [, ...projects] = projectRows;
 
     /* ===== MATERIAL REQUEST ===== */
     const mrRes = await sheets.spreadsheets.values.get({
@@ -35,32 +36,35 @@ export async function GET() {
       range: "MATERIAL_REQUEST!A:G",
     });
 
-    const [, ...materials] = mrRes.data.values ?? [];
+    const mrRows = mrRes.data.values ?? [];
+    const [, ...materials] = mrRows;
 
-    const summaries = projects.map(
-      ([project_id, project_name, , nilai_kontrak]) => {
-        const biayaReal = materials
-          .filter(
-            (r) =>
-              r[1] === project_id && // project_id
-              r[6] === "RECEIVED" && // status
-              Number(r[5]) > 0 // total
-          )
-          .reduce((sum, r) => sum + Number(r[5]), 0);
+    const summaries = projects.map((row) => {
+      const project_id = row[0];
+      const project_name = row[1];
 
-        const nilaiKontrak = Number(nilai_kontrak || 0);
-        const sisaBudget = nilaiKontrak - biayaReal;
+      // nilai kontrak HARUS number
+      const nilaiKontrak = Number(row[3]) || 0;
 
-        return {
-          project_id,
-          project_name,
-          nilaiKontrak,
-          biayaReal,
-          sisaBudget,
-          statusBudget: statusFromBudget(nilaiKontrak, biayaReal),
-        };
-      }
-    );
+      const biayaReal = materials
+        .filter(
+          (r) =>
+            r[1] === project_id &&
+            r[6] === "RECEIVED"
+        )
+        .reduce((sum, r) => sum + (Number(r[5]) || 0), 0);
+
+      const sisaBudget = nilaiKontrak - biayaReal;
+
+      return {
+        project_id,
+        project_name,
+        nilaiKontrak,
+        biayaReal,
+        sisaBudget,
+        statusBudget: statusFromBudget(nilaiKontrak, biayaReal),
+      };
+    });
 
     return NextResponse.json(summaries);
   } catch (err) {
