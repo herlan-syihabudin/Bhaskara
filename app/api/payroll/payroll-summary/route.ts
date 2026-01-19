@@ -3,9 +3,6 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 
-/* =====================
-   GOOGLE SHEETS AUTH
-===================== */
 async function getSheets() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -18,9 +15,6 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
-/* =====================
-   GET PAYROLL SUMMARY
-===================== */
 export async function GET() {
   try {
     const sheets = await getSheets();
@@ -33,45 +27,33 @@ export async function GET() {
 
     const [, ...rows] = res.data.values ?? [];
 
-    let totalKaryawan = 0;
-    let hadirBulanIni = 0;
+    const uniq = new Set<string>();
+    let hadir = 0;
     let totalGaji = 0;
     let belumDibayar = 0;
-
-    const uniqKaryawan = new Set<string>();
 
     rows.forEach((r) => {
       const nama = r[3];
       const qtyHari = Number(r[6] || 0);
-      const total = Number(r[10] || 0);
+      const total = Number(String(r[10] || "0").replace(/[^0-9]/g, ""));
       const status = r[11];
 
-      if (nama) uniqKaryawan.add(nama);
-
-      if (qtyHari > 0) hadirBulanIni += 1;
-
+      if (nama) uniq.add(nama);
+      if (qtyHari > 0) hadir++;
       totalGaji += total;
-
-      if (status === "UNPAID") {
-        belumDibayar += total;
-      }
+      if (status === "UNPAID") belumDibayar += total;
     });
-
-    totalKaryawan = uniqKaryawan.size;
 
     return NextResponse.json({
       kpi: {
-        totalKaryawan,
-        hadirBulanIni,
+        totalKaryawan: uniq.size,
+        hadirBulanIni: hadir,
         totalGaji,
         belumDibayar,
       },
     });
-  } catch (error) {
-    console.error("PAYROLL SUMMARY ERROR:", error);
-    return NextResponse.json(
-      { error: "Failed load payroll summary" },
-      { status: 500 }
-    );
+  } catch (e) {
+    console.error("PAYROLL SUMMARY ERROR:", e);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
