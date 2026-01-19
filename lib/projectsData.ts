@@ -76,7 +76,7 @@ export const projects: Project[] = [
     ],
     images: [
       {
-        src: "/projects/office-1.jpg",
+        src: "/projects/factory-bekasi/office-1.jpg",
         alt:
           "Commercial office fit-out – interior finishing works",
       },
