@@ -4,13 +4,18 @@ const links = [
   { href: "/dashboard", label: "Owner Dashboard" },
   { href: "/dashboard/pm", label: "Project Manager" },
   { href: "/dashboard/finance", label: "Finance" },
+
+  // OPERASIONAL
   { href: "/dashboard/purchasing", label: "Purchasing" },
   { href: "/dashboard/logistik", label: "Logistik" },
+
+  // HR & PAYROLL (BARU)
+  { href: "/dashboard/payroll", label: "HR & Payroll" },
 ];
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 bg-white border-r">
+    <aside className="w-64 bg-white border-r min-h-screen">
       {/* HEADER */}
       <div className="p-6 border-b">
         <p className="text-xs tracking-widest text-gray-400 uppercase">
@@ -20,6 +25,7 @@ export default function Sidebar() {
           Bhaskara
         </h2>
       </div>
+
       {/* NAV */}
       <nav className="p-4 space-y-1 text-sm">
         {links.map((l) => (
