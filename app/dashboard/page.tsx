@@ -1,8 +1,23 @@
 import KpiCard from "@/components/dashboard/KpiCard";
 import ProjectTable from "@/components/dashboard/ProjectTable";
+import { headers } from "next/headers";
 
 async function getProjectSummary() {
-  const res = await fetch("/api/project-summary", {
+  const headersList = headers();
+  const host = headersList.get("host");
+
+  if (!host) {
+    throw new Error("Host header not found");
+  }
+
+  const protocol =
+    process.env.NODE_ENV === "development"
+      ? "http"
+      : "https";
+
+  const url = `${protocol}://${host}/api/project-summary`;
+
+  const res = await fetch(url, {
     cache: "no-store",
   });
 
@@ -42,7 +57,9 @@ export default async function DashboardHomePage() {
 
   return (
     <section className="space-y-10">
-      <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
+      <h1 className="text-2xl font-semibold">
+        Dashboard Overview
+      </h1>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <KpiCard title="Total Proyek" value={totalProyek} type="text" />
