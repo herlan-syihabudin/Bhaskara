@@ -1,21 +1,30 @@
 import Link from "next/link";
 
+/* =====================
+   DATA FETCHER
+===================== */
 async function getKaryawan(id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/karyawan?id=${id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/karyawan?id=${id}`,
+    { cache: "no-store" }
+  );
+
   if (!res.ok) throw new Error("Karyawan tidak ditemukan");
   return res.json();
 }
 
 async function getAbsensi(id: string) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/absensi?karyawan_id=${id}`,
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/absensi?karyawan_id=${id}`,
     { cache: "no-store" }
   );
+
   return res.ok ? res.json() : [];
 }
 
+/* =====================
+   PAGE
+===================== */
 export default async function DetailKaryawanPage({
   params,
 }: {
@@ -24,7 +33,9 @@ export default async function DetailKaryawanPage({
   const karyawan = await getKaryawan(params.id);
   const absensi = await getAbsensi(params.id);
 
-  const totalHadir = absensi.filter((a: any) => a.jam_masuk).length;
+  const totalHadir = absensi.filter(
+    (a: any) => a.jam_masuk
+  ).length;
 
   return (
     <section className="container-bbm py-12 space-y-8">
@@ -54,8 +65,11 @@ export default async function DetailKaryawanPage({
 
       {/* PROFIL */}
       <div className="card grid md:grid-cols-4 gap-6">
-        <Info label="Status Kerja" value={karyawan.status} />
-        <Info label="Tanggal Masuk" value={karyawan.tanggal_masuk || "-"} />
+        <Info label="Status Kerja" value={karyawan.status_kerja} />
+        <Info
+          label="Tanggal Masuk"
+          value={karyawan.tanggal_masuk || "-"}
+        />
         <Info
           label="Gaji"
           value={`Rp ${Number(karyawan.rate).toLocaleString("id-ID")}`}
@@ -63,7 +77,7 @@ export default async function DetailKaryawanPage({
         <Info label="Total Hadir" value={`${totalHadir} hari`} />
       </div>
 
-      {/* ABSENSI SUMMARY */}
+      {/* ABSENSI */}
       <div className="card">
         <h3 className="font-semibold mb-4">Absensi Terakhir</h3>
 
@@ -79,7 +93,7 @@ export default async function DetailKaryawanPage({
 
           <tbody>
             {absensi.slice(0, 5).map((a: any) => (
-              <tr key={a.absensi_id} className="border-b last:border-none">
+              <tr key={a.absensi_id} className="border-b">
                 <td className="py-2">{a.tanggal}</td>
                 <td className="text-center">{a.jam_masuk || "-"}</td>
                 <td className="text-center">{a.jam_keluar || "-"}</td>
@@ -111,7 +125,7 @@ export default async function DetailKaryawanPage({
 }
 
 /* =====================
-   SMALL COMPONENT
+   COMPONENT
 ===================== */
 function Info({ label, value }: { label: string; value: string }) {
   return (
