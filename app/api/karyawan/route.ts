@@ -27,7 +27,7 @@ export async function GET() {
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "KARYAWAN!A:H",
+      range: "MASTER_KARYAWAN!A:G",
     });
 
     const [, ...rows] = res.data.values ?? [];
@@ -36,11 +36,10 @@ export async function GET() {
       karyawan_id: r[0],
       nama: r[1],
       role: r[2],
-      type: r[3],            // HARIAN / BULANAN
+      type: r[3], // HARIAN / BULANAN
       rate: Number(r[4] || 0),
-      status: r[5],          // AKTIF / NONAKTIF
+      status: (r[5] || "").toUpperCase(), // AKTIF / NONAKTIF
       catatan: r[6] || "",
-      created_at: r[7],
     }));
 
     return NextResponse.json(data);
@@ -63,19 +62,18 @@ export async function POST(req: Request) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "KARYAWAN!A:H",
+      range: "MASTER_KARYAWAN!A:G",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [
           [
-            `EMP-${Date.now()}`,      // karyawan_id
+            `KRY-${Date.now()}`, // karyawan_id
             body.nama,
             body.role,
-            body.type,                // HARIAN / BULANAN
-            Number(body.rate),        // rate_default
-            body.status,              // AKTIF / NONAKTIF
+            body.type,
+            Number(body.rate),
+            body.status,
             body.catatan || "",
-            new Date().toISOString(), // created_at
           ],
         ],
       },
