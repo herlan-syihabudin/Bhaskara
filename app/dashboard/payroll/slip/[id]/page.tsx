@@ -7,7 +7,7 @@ async function getPayroll(id: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   if (!baseUrl) throw new Error("BASE URL not set");
 
-  const res = await fetch(`${baseUrl}/api/payroll?id=${id}`, {
+  const res = await fetch(`${baseUrl}/api/payroll/${id}`, {
     cache: "no-store",
   });
 
@@ -44,22 +44,15 @@ export default async function SlipGajiPage({
           </p>
         </div>
 
-        <Link
-          href="/dashboard/payroll"
-          className="btn-outline"
-        >
+        <Link href="/dashboard/payroll" className="btn-outline">
           ← Kembali
         </Link>
       </div>
 
       {/* INFO PERUSAHAAN */}
       <div className="card p-6 space-y-1">
-        <p className="font-semibold">
-          PT Bhaskara Buana Mulya
-        </p>
-        <p className="text-sm text-gray-500">
-          Slip Gaji Karyawan
-        </p>
+        <p className="font-semibold">PT Bhaskara Buana Mulya</p>
+        <p className="text-sm text-gray-500">Slip Gaji Karyawan</p>
       </div>
 
       {/* DATA KARYAWAN */}
@@ -72,7 +65,7 @@ export default async function SlipGajiPage({
         <Info
           label="Status Pembayaran"
           value={p.status}
-          highlight
+          highlight={p.status === "PAID"}
         />
       </div>
 
@@ -81,9 +74,12 @@ export default async function SlipGajiPage({
         <h3 className="font-semibold">Rincian Gaji</h3>
 
         <Row label="Hari Kerja" value={`${p.qty_hari || 0} hari`} />
+
         <Row
           label="Gaji Pokok"
-          value={`Rp ${Number(p.gaji_bruto || p.rate || 0).toLocaleString("id-ID")}`}
+          value={`Rp ${Number(p.gaji_bruto || p.rate || 0).toLocaleString(
+            "id-ID"
+          )}`}
         />
 
         <Row
@@ -153,9 +149,7 @@ function Row({
 }) {
   return (
     <div className="flex justify-between">
-      <span className="text-sm text-gray-600">
-        {label}
-      </span>
+      <span className="text-sm text-gray-600">{label}</span>
       <span
         className={`text-sm ${
           bold ? "font-semibold text-black" : ""
