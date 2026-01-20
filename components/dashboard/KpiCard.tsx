@@ -6,7 +6,7 @@ type Props = {
   title: string;
   value?: number | string;
   subtitle?: string;
-  type?: "money" | "text" | "status";
+  type?: "money" | "text" | "status" | "count";
   statusValue?: BudgetStatus;
 };
 
@@ -18,9 +18,23 @@ export default function KpiCard({
   title,
   value,
   subtitle,
-  type = "money",
+  type = "count", // 🔥 DEFAULT JADI COUNT (INI PENTING)
   statusValue,
 }: Props) {
+  let displayValue: React.ReactNode = value;
+
+  if (type === "money" && typeof value === "number") {
+    displayValue = formatIDR(value);
+  }
+
+  if (type === "count" && typeof value === "number") {
+    displayValue = value.toLocaleString("id-ID");
+  }
+
+  if (type === "text") {
+    displayValue = value;
+  }
+
   return (
     <div className="card p-6">
       <p className="text-sm text-gray-500">{title}</p>
@@ -30,14 +44,14 @@ export default function KpiCard({
           <StatusBadge status={statusValue} />
         ) : (
           <p className="text-2xl font-semibold text-gray-900">
-            {typeof value === "number" && type === "money"
-              ? formatIDR(value)
-              : value}
+            {displayValue}
           </p>
         )}
       </div>
 
-      {subtitle && <p className="mt-2 text-xs text-gray-500">{subtitle}</p>}
+      {subtitle && (
+        <p className="mt-2 text-xs text-gray-500">{subtitle}</p>
+      )}
     </div>
   );
 }
