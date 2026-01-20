@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 /* =====================
@@ -24,19 +24,21 @@ export default function KaryawanPage() {
   const [error, setError] = useState("");
 
   /* =====================
+     FILTER STATES
+  ===================== */
+  const [search, setSearch] = useState("");
+  const [filterRole, setFilterRole] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+
+  /* =====================
      FETCH DATA
   ===================== */
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/karyawan", {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error("Gagal mengambil data karyawan");
-        }
-
+        const res = await fetch("/api/karyawan", { cache: "no-store" });
+        if (!res.ok) throw new Error("Gagal mengambil data karyawan");
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -46,12 +48,30 @@ export default function KaryawanPage() {
         setLoading(false);
       }
     }
-
     load();
   }, []);
 
   /* =====================
-     STATES
+     FILTERED DATA
+  ===================== */
+  const filteredData = useMemo(() => {
+    return data.filter((k) => {
+      const q = search.toLowerCase();
+
+      const matchSearch =
+        k.nama.toLowerCase().includes(q) ||
+        k.role.toLowerCase().includes(q);
+
+      const matchRole = filterRole ? k.role === filterRole : true;
+      const matchType = filterType ? k.type === filterType : true;
+      const matchStatus = filterStatus ? k.status === filterStatus : true;
+
+      return matchSearch && matchRole && matchType && matchStatus;
+    });
+  }, [data, search, filterRole, filterType, filterStatus]);
+
+  /* =====================
+     LOADING / ERROR
   ===================== */
   if (loading) {
     return (
@@ -92,6 +112,49 @@ export default function KaryawanPage() {
         </Link>
       </div>
 
+      {/* FILTER BAR */}
+      <div className="card p-4 grid md:grid-cols-4 gap-4">
+        <input
+          className="form-input"
+          placeholder="Cari nama / role..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <select
+          className="form-input"
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+        >
+          <option value="">Semua Role</option>
+          {[...new Set(data.map((d) => d.role))].map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="form-input"
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="">Semua Tipe</option>
+          <option value="HARIAN">Harian</option>
+          <option value="BULANAN">Bulanan</option>
+        </select>
+
+        <select
+          className="form-input"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">Semua Status</option>
+          <option value="AKTIF">Aktif</option>
+          <option value="NONAKTIF">Nonaktif</option>
+        </select>
+      </div>
+
       {/* TABLE */}
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
@@ -107,38 +170,25 @@ export default function KaryawanPage() {
           </thead>
 
           <tbody>
-            {data.length === 0 && (
+            {filteredData.length === 0 && (
               <tr>
-                <td
-                  colSpan={6}
-                  className="py-10 text-center text-gray-400"
-                >
-                  Belum ada data karyawan
+                <td colSpan={6} className="py-10 text-center text-gray-400">
+                  Data tidak ditemukan
                 </td>
               </tr>
             )}
 
-            {data.map((k) => (
+            {filteredData.map((k) => (
               <tr
                 key={k.karyawan_id}
                 className="border-b last:border-none"
               >
-                <td className="px-4 py-3 font-medium">
-                  {k.nama}
-                </td>
-
-                <td className="px-4 py-3">
-                  {k.role}
-                </td>
-
-                <td className="px-4 py-3 text-center">
-                  {k.type}
-                </td>
-
+                <td className="px-4 py-3 font-medium">{k.nama}</td>
+                <td className="px-4 py-3">{k.role}</td>
+                <td className="px-4 py-3 text-center">{k.type}</td>
                 <td className="px-4 py-3 text-right">
                   Rp {Number(k.rate || 0).toLocaleString("id-ID")}
                 </td>
-
                 <td className="px-4 py-3 text-center">
                   <span
                     className={`px-2 py-1 text-xs rounded font-medium ${
@@ -150,7 +200,6 @@ export default function KaryawanPage() {
                     {k.status}
                   </span>
                 </td>
-
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/dashboard/payroll/karyawan/edit/${k.karyawan_id}`}
