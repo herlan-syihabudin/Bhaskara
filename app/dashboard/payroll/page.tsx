@@ -2,14 +2,29 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import Link from "next/link";
 
 /* =====================
+   FETCH KARYAWAN (SSOT)
+===================== */
+async function getKaryawan() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!baseUrl) throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
+
+  const res = await fetch(`${baseUrl}/api/karyawan`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to load karyawan");
+  }
+
+  return res.json();
+}
+
+/* =====================
    FETCH PAYROLL SUMMARY
 ===================== */
 async function getPayrollSummary() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
-  if (!baseUrl) {
-    throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
-  }
+  if (!baseUrl) throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
 
   const res = await fetch(
     `${baseUrl}/api/payroll/payroll-summary`,
@@ -27,7 +42,34 @@ async function getPayrollSummary() {
    PAGE
 ===================== */
 export default async function PayrollPage() {
-  const { kpi } = await getPayrollSummary();
+  const [karyawan, payroll] = await Promise.all([
+    getKaryawan(),
+    getPayrollSummary(),
+  ]);
+
+  const { kpi } = payroll;
+
+  /* ===== HITUNG SDM (DARI 1 SUMBER) ===== */
+  const aktif = karyawan.filter(
+    (k: any) => k.status_kerja === "AKTIF"
+  );
+
+  const totalAktif = aktif.length;
+
+  const totalHarian = aktif.filter(
+    (k: any) => k.type === "HARIAN"
+  ).length;
+
+  const bulanan = aktif.filter(
+    (k: any) => k.type === "BULANAN"
+  );
+
+  const totalKontrak = bulanan.filter(
+    (k: any) =>
+      (k.role || "").toLowerCase().includes("kontrak")
+  ).length;
+
+  const totalTetap = bulanan.length - totalKontrak;
 
   return (
     <section className="space-y-10">
@@ -40,22 +82,22 @@ export default async function PayrollPage() {
           Payroll Management
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Kelola tukang, staff, absensi, dan pembayaran gaji
+          Kelola tenaga kerja & pembayaran gaji
         </p>
       </div>
 
-      {/* KPI */}
+      {/* KPI SDM */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <KpiCard title="Karyawan Aktif" value={totalAktif} />
+        <KpiCard title="Karyawan Tetap" value={totalTetap} />
+        <KpiCard title="Karyawan Kontrak" value={totalKontrak} />
+        <KpiCard title="Pekerja Harian" value={totalHarian} />
+      </div>
+
+      {/* KPI PAYROLL */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
         <KpiCard
-          title="Total Karyawan"
-          value={kpi.totalKaryawan}
-        />
-        <KpiCard
-          title="Hadir Bulan Ini"
-          value={kpi.hadirBulanIni}
-        />
-        <KpiCard
-          title="Total Gaji Bulan Ini"
+          title="Total Gaji Periode Ini"
           value={`Rp ${kpi.totalGaji.toLocaleString("id-ID")}`}
         />
         <KpiCard
