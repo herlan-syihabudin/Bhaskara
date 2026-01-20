@@ -1,66 +1,101 @@
-import Link from "next/link";
+"use client";
 
-async function getAbsensi() {
-  const month = new Date().toISOString().slice(0, 7); // yyyy-mm
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-  const res = await fetch(`${base}/api/absensi?month=${month}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Gagal load absensi");
-  return res.json();
-}
+import { useState } from "react";
 
-export default async function AbsensiPage() {
-  const data = await getAbsensi();
+type Karyawan = {
+  karyawan_id: string;
+  nama: string;
+  role: string;
+  tipe: string;
+};
+
+export default function AbsensiPage() {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // ⚠️ sementara hardcode (nanti ambil dari session / select)
+  const karyawan: Karyawan = {
+    karyawan_id: "EMP-001",
+    nama: "Herlan Syihabudin",
+    role: "Staff",
+    tipe: "BULANAN",
+  };
+
+  async function absen(mode: "MASUK" | "KELUAR") {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/absensi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          karyawan_id: karyawan.karyawan_id,
+          nama: karyawan.nama,
+          role: karyawan.role,
+          tipe: karyawan.tipe,
+          project_id: "PRJ-001",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.error || "Terjadi kesalahan");
+      } else {
+        setMessage(
+          mode === "MASUK"
+            ? `✅ Absen masuk jam ${data.jam_masuk}`
+            : `✅ Absen pulang jam ${data.jam_keluar}`
+        );
+      }
+    } catch (err) {
+      setMessage("❌ Gagal koneksi ke server");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <section className="container-bbm py-12 space-y-8">
-      <div className="flex justify-between items-start gap-4">
-        <div>
-          <p className="badge">HR & PAYROLL</p>
-          <h1>Absensi</h1>
-          <p className="text-body mt-1">Input kehadiran harian karyawan</p>
-        </div>
-
-        <Link href="/dashboard/payroll/absensi/tambah" className="btn-primary">
-          ➕ Tambah Absensi
-        </Link>
+    <section className="container-bbm py-12 max-w-xl space-y-6">
+      <div>
+        <p className="badge">HR & PAYROLL</p>
+        <h1>Absensi Karyawan</h1>
+        <p className="text-body mt-1">
+          Absen masuk & pulang realtime (WIB)
+        </p>
       </div>
 
-      <div className="card overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b text-gray-500">
-            <tr>
-              <th className="px-4 py-3 text-left">Tanggal</th>
-              <th className="px-4 py-3 text-left">Nama</th>
-              <th className="px-4 py-3 text-left">Role</th>
-              <th className="px-4 py-3 text-left">Project</th>
-              <th className="px-4 py-3 text-center">Masuk</th>
-              <th className="px-4 py-3 text-center">Pulang</th>
-            </tr>
-          </thead>
+      <div className="card p-6 space-y-4">
+        <div>
+          <p className="text-sm text-gray-500">Nama</p>
+          <p className="font-medium">{karyawan.nama}</p>
+        </div>
 
-          <tbody>
-            {data.length === 0 && (
-              <tr>
-                <td colSpan={6} className="py-10 text-center text-gray-400">
-                  Belum ada absensi bulan ini
-                </td>
-              </tr>
-            )}
+        <div className="flex gap-3">
+          <button
+            onClick={() => absen("MASUK")}
+            disabled={loading}
+            className="btn-primary w-full"
+          >
+            ⏰ Absen Masuk
+          </button>
 
-            {data.map((a: any) => (
-              <tr key={a.absensi_id} className="border-b last:border-none">
-                <td className="px-4 py-3">{a.tanggal}</td>
-                <td className="px-4 py-3 font-medium">{a.nama}</td>
-                <td className="px-4 py-3">{a.role}</td>
-                <td className="px-4 py-3">{a.project_id}</td>
-                <td className="px-4 py-3 text-center">{a.jam_masuk}</td>
-                <td className="px-4 py-3 text-center">{a.jam_keluar}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          <button
+            onClick={() => absen("KELUAR")}
+            disabled={loading}
+            className="btn-outline w-full"
+          >
+            🏁 Absen Pulang
+          </button>
+        </div>
+
+        {message && (
+          <div className="text-sm mt-3 p-3 rounded bg-gray-50">
+            {message}
+          </div>
+        )}
       </div>
     </section>
   );
