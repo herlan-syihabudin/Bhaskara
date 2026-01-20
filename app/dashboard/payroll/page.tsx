@@ -2,9 +2,9 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import Link from "next/link";
 
 /* =====================
-   FETCH HR SUMMARY
+   FETCH PAYROLL SUMMARY
 ===================== */
-async function getHrSummary() {
+async function getPayrollSummary() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   if (!baseUrl) {
@@ -12,12 +12,12 @@ async function getHrSummary() {
   }
 
   const res = await fetch(
-    `${baseUrl}/api/payroll/hr-summary`,
+    `${baseUrl}/api/payroll/payroll-summary`,
     { cache: "no-store" }
   );
 
   if (!res.ok) {
-    throw new Error("Failed to load HR summary");
+    throw new Error("Failed to load payroll summary");
   }
 
   return res.json();
@@ -27,7 +27,7 @@ async function getHrSummary() {
    PAGE
 ===================== */
 export default async function PayrollPage() {
-  const kpi = await getHrSummary();
+  const { kpi } = await getPayrollSummary();
 
   return (
     <section className="space-y-10">
@@ -37,30 +37,30 @@ export default async function PayrollPage() {
           HR & PAYROLL
         </p>
         <h1 className="text-2xl font-semibold mt-1">
-          HR & Payroll Dashboard
+          Payroll Management
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Control panel data tenaga kerja
+          Kelola tukang, staff, absensi, dan pembayaran gaji
         </p>
       </div>
 
-      {/* KPI SDM */}
+      {/* KPI */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard
-          title="Total Karyawan Aktif"
-          value={kpi.totalAktif}
+          title="Total Karyawan"
+          value={kpi.totalKaryawan}
         />
         <KpiCard
-          title="Karyawan Tetap"
-          value={kpi.totalTetap}
+          title="Hadir Bulan Ini"
+          value={kpi.hadirBulanIni}
         />
         <KpiCard
-          title="Karyawan Kontrak"
-          value={kpi.totalKontrak}
+          title="Total Gaji Bulan Ini"
+          value={`Rp ${kpi.totalGaji.toLocaleString("id-ID")}`}
         />
         <KpiCard
-          title="Pekerja Harian"
-          value={kpi.totalHarian}
+          title="Belum Dibayar"
+          value={`Rp ${kpi.belumDibayar.toLocaleString("id-ID")}`}
         />
       </div>
 
@@ -84,7 +84,7 @@ export default async function PayrollPage() {
           href="/dashboard/payroll/gaji"
           className="card p-6 hover:border-black transition"
         >
-          💰 Payroll
+          💰 Penggajian
         </Link>
       </div>
     </section>
