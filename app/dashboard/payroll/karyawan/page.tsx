@@ -124,18 +124,29 @@ export default function KaryawanPage() {
           <p className="text-body">Master data tenaga kerja</p>
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={exportCSV} className="btn-outline">
-            ⬇ Export Excel
-          </button>
-          <Link
-            href="/dashboard/payroll/karyawan/tambah"
-            className="btn-primary"
-          >
-            ➕ Tambah
-          </Link>
-        </div>
-      </div>
+        <div className="flex items-center gap-3">
+  {/* Export */}
+  <button
+    onClick={exportCSV}
+    className="flex items-center gap-2 h-10 px-4 rounded-lg border
+               border-gray-300 text-gray-700 text-sm
+               hover:bg-gray-50 transition"
+  >
+    ⬇
+    <span>Export Excel</span>
+  </button>
+
+  {/* Tambah */}
+  <Link
+    href="/dashboard/payroll/karyawan/tambah"
+    className="flex items-center gap-2 h-10 px-4 rounded-lg
+               bg-green-600 text-white text-sm font-medium
+               hover:bg-green-700 transition"
+  >
+    ＋
+    <span>Tambah Karyawan</span>
+  </Link>
+</div>
 
       {/* FILTER */}
       <div className="card p-4 grid md:grid-cols-4 gap-3">
