@@ -19,34 +19,40 @@ async function getSheets() {
 }
 
 const SHEET_ID = process.env.GS_SHEET_ID!;
-
-// TAB NAME (samakan dgn sheet kamu)
 const RANGE_ABSENSI = "ABSENSI!A:I";
 
 /* =====================
-   HELPERS
+   TIME HELPERS (REALTIME)
 ===================== */
-function toISODateOnly(d: Date) {
-  // yyyy-mm-dd
+function todayISO() {
+  const d = new Date();
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function monthKeyFromTanggal(tanggal: string) {
-  // input: yyyy-mm-dd -> yyyy-mm
+function nowTime() {
+  return new Date().toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Jakarta",
+  });
+}
+
+function monthKey(tanggal: string) {
   return (tanggal || "").slice(0, 7);
 }
 
 /* =====================
-   GET LIST ABSENSI
+   GET ABSENSI
    /api/absensi?month=2026-01&project_id=PRJ-001
 ===================== */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const month = searchParams.get("month"); // yyyy-mm
+    const month = searchParams.get("month");
     const project_id = searchParams.get("project_id");
 
     const sheets = await getSheets();
@@ -56,7 +62,7 @@ export async function GET(req: Request) {
     });
 
     const values = res.data.values ?? [];
-    const [, ...rows] = values; // skip header
+    const [, ...rows] = values;
 
     let data = rows.map((r) => ({
       absensi_id: r[0],
@@ -71,13 +77,13 @@ export async function GET(req: Request) {
     }));
 
     if (month) {
-      data = data.filter((x) => monthKeyFromTanggal(x.tanggal) === month);
+      data = data.filter((x) => monthKey(x.tanggal) === month);
     }
+
     if (project_id) {
       data = data.filter((x) => x.project_id === project_id);
     }
 
-    // sort terbaru dulu
     data.sort((a, b) => (a.tanggal < b.tanggal ? 1 : -1));
 
     return NextResponse.json(data);
@@ -91,36 +97,26 @@ export async function GET(req: Request) {
 }
 
 /* =====================
-   POST ADD ABSENSI
-   body:
-   {
-     tanggal: "2026-01-20",
-     karyawan_id:"KRY-001",
-     nama:"Herlan...",
-     role:"Staff",
-     tipe:"Bulanan",
-     project_id:"PRJ-001",
-     jam_masuk:"08:00",
-     jam_keluar:"17:00"
-   }
+   POST ABSENSI (REALTIME JAM MASUK)
 ===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const sheets = await getSheets();
 
-    const tanggal = body.tanggal || toISODateOnly(new Date());
+    const tanggal = body.tanggal || todayISO();
+    const jamMasukRealtime = nowTime();
 
     const row = [
-      `ABS-${Date.now()}`,           // absensi_id
-      tanggal,                       // tanggal
-      body.karyawan_id || "",         // karyawan_id
-      body.nama || "",               // nama
-      body.role || "",               // role
-      body.tipe || "",               // tipe
-      body.project_id || "",         // project_id
-      body.jam_masuk || "08:00",     // jam_masuk
-      body.jam_keluar || "17:00",    // jam_keluar
+      `ABS-${Date.now()}`,        // absensi_id
+      tanggal,                    // tanggal
+      body.karyawan_id || "",     // karyawan_id
+      body.nama || "",            // nama
+      body.role || "",            // role
+      body.tipe || "",            // tipe
+      body.project_id || "",      // project_id
+      jamMasukRealtime,           // 🔥 JAM MASUK REALTIME
+      "",                          // jam_keluar (kosong dulu)
     ];
 
     await sheets.spreadsheets.values.append({
@@ -130,7 +126,10 @@ export async function POST(req: Request) {
       requestBody: { values: [row] },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      jam_masuk: jamMasukRealtime,
+    });
   } catch (err) {
     console.error("ADD ABSENSI ERROR:", err);
     return NextResponse.json(
