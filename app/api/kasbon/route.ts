@@ -21,6 +21,22 @@ const SHEET_ID = process.env.GS_SHEET_ID!;
 const RANGE_KASBON = "KASBON!A:H";
 
 /* =====================
+   TIME HELPERS (WIB)
+===================== */
+function todayISO() {
+  const d = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+  );
+  return d.toISOString().slice(0, 10);
+}
+
+function nowTimestamp() {
+  return new Date().toLocaleString("sv-SE", {
+    timeZone: "Asia/Jakarta",
+  }); // yyyy-mm-dd HH:mm:ss
+}
+
+/* =====================
    GET KASBON
    /api/kasbon
    /api/kasbon?karyawan_id=EMP-001
@@ -76,28 +92,24 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    if (!body.karyawan_id || !body.jumlah) {
+    if (!body.karyawan_id || !body.jumlah || Number(body.jumlah) <= 0) {
       return NextResponse.json(
-        { error: "karyawan_id & jumlah wajib" },
+        { error: "karyawan_id & jumlah wajib dan harus > 0" },
         { status: 400 }
       );
     }
 
     const sheets = await getSheets();
 
-    const now = new Date();
-    const tanggal = body.tanggal || now.toISOString().slice(0, 10);
-    const created_at = now.toISOString().replace("T", " ").slice(0, 19);
-
     const row = [
-      `KSB-${Date.now()}`,          // kasbon_id
-      body.karyawan_id,             // karyawan_id
-      tanggal,                      // tanggal
-      Number(body.jumlah),           // jumlah
-      body.keterangan || "",         // keterangan
-      "BELUM_DIPOTONG",              // status
-      "",                            // payroll_id
-      created_at,                    // created_at
+      `KSB-${Date.now()}`,            // kasbon_id
+      body.karyawan_id,               // karyawan_id
+      body.tanggal || todayISO(),     // tanggal
+      Number(body.jumlah),             // jumlah
+      body.keterangan || "",           // keterangan
+      "BELUM_DIPOTONG",                // status
+      "",                              // payroll_id
+      nowTimestamp(),                  // created_at
     ];
 
     await sheets.spreadsheets.values.append({
@@ -118,19 +130,14 @@ export async function POST(req: Request) {
 }
 
 /* =====================
-   UPDATE KASBON
-   (dipakai payroll)
+   PUT KASBON
+   - dipakai payroll
+   - support SINGLE & BATCH
 ===================== */
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-
-    if (!body.kasbon_id || !body.status) {
-      return NextResponse.json(
-        { error: "kasbon_id & status wajib" },
-        { status: 400 }
-      );
-    }
+    const updates = Array.isArray(body) ? body : [body];
 
     const sheets = await getSheets();
     const res = await sheets.spreadsheets.values.get({
@@ -139,30 +146,45 @@ export async function PUT(req: Request) {
     });
 
     const rows = res.data.values ?? [];
-    const rowIndex = rows.findIndex((r) => r[0] === body.kasbon_id);
 
-    if (rowIndex === -1) {
+    const requests: any[] = [];
+
+    for (const item of updates) {
+      if (!item.kasbon_id || !item.status) continue;
+
+      const rowIndex = rows.findIndex((r) => r[0] === item.kasbon_id);
+      if (rowIndex === -1) continue;
+
+      const rowNumber = rowIndex + 1;
+
+      requests.push({
+        range: `KASBON!F${rowNumber}:G${rowNumber}`,
+        values: [[
+          item.status,                 // DIPOTONG
+          item.payroll_id || "",       // payroll_id
+        ]],
+      });
+    }
+
+    if (requests.length === 0) {
       return NextResponse.json(
-        { error: "Kasbon tidak ditemukan" },
-        { status: 404 }
+        { error: "Tidak ada kasbon valid untuk diupdate" },
+        { status: 400 }
       );
     }
 
-    const rowNumber = rowIndex + 1;
-
-    await sheets.spreadsheets.values.update({
+    await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId: SHEET_ID,
-      range: `KASBON!F${rowNumber}:G${rowNumber}`,
-      valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[
-          body.status,                 // DIPOTONG
-          body.payroll_id || "",       // payroll_id
-        ]],
+        valueInputOption: "USER_ENTERED",
+        data: requests,
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      updated: requests.length,
+    });
   } catch (e) {
     console.error("UPDATE KASBON ERROR:", e);
     return NextResponse.json(
