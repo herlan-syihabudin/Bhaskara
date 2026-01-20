@@ -18,11 +18,16 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
+/* =====================
+   CONFIG
+===================== */
 const SHEET_ID = process.env.GS_SHEET_ID!;
-const RANGE = "MASTER_KARYAWAN!A:G";
+const RANGE = "MASTER_KARYAWAN!A:H";
 
 /* =====================
    GET KARYAWAN (ALL / BY ID)
+   /api/karyawan
+   /api/karyawan?id=EMP-xxx
 ===================== */
 export async function GET(req: Request) {
   try {
@@ -41,10 +46,11 @@ export async function GET(req: Request) {
       karyawan_id: r[0],
       nama: r[1],
       role: r[2],
-      type: r[3],
+      type: r[3], // HARIAN / BULANAN
       rate: Number(r[4] || 0),
-      status: r[5],
-      catatan: r[6] || "",
+      status_kerja: r[5] || "AKTIF", // AKTIF | NONAKTIF | RESIGN
+      tanggal_masuk: r[6] || "",
+      catatan: r[7] || "",
     }));
 
     if (id) {
@@ -61,12 +67,15 @@ export async function GET(req: Request) {
     return NextResponse.json(data);
   } catch (err) {
     console.error("GET KARYAWAN ERROR:", err);
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Gagal mengambil data karyawan" },
+      { status: 500 }
+    );
   }
 }
 
 /* =====================
-   ADD KARYAWAN (INI YANG HILANG ❗)
+   ADD KARYAWAN (FINAL)
 ===================== */
 export async function POST(req: Request) {
   try {
@@ -74,12 +83,13 @@ export async function POST(req: Request) {
     const sheets = await getSheets();
 
     const row = [
-      `EMP-${Date.now()}`,  // karyawan_id
-      body.nama,
-      body.role,
-      body.type,
-      Number(body.rate),
-      body.status,
+      `EMP-${Date.now()}`,                 // karyawan_id
+      body.nama || "",
+      body.role || "",
+      body.type || "HARIAN",
+      Number(body.rate || 0),
+      body.status_kerja || "AKTIF",
+      body.tanggal_masuk || "",
       body.catatan || "",
     ];
 
@@ -101,7 +111,7 @@ export async function POST(req: Request) {
 }
 
 /* =====================
-   UPDATE KARYAWAN
+   UPDATE KARYAWAN (FINAL)
 ===================== */
 export async function PUT(req: Request) {
   try {
@@ -118,7 +128,7 @@ export async function PUT(req: Request) {
 
     if (rowIndex === -1) {
       return NextResponse.json(
-        { error: "Data tidak ditemukan" },
+        { error: "Data karyawan tidak ditemukan" },
         { status: 404 }
       );
     }
@@ -127,7 +137,7 @@ export async function PUT(req: Request) {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
-      range: `MASTER_KARYAWAN!A${rowNumber}:G${rowNumber}`,
+      range: `MASTER_KARYAWAN!A${rowNumber}:H${rowNumber}`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [[
@@ -135,8 +145,9 @@ export async function PUT(req: Request) {
           body.nama,
           body.role,
           body.type,
-          Number(body.rate),
-          body.status,
+          Number(body.rate || 0),
+          body.status_kerja,
+          body.tanggal_masuk,
           body.catatan || "",
         ]],
       },
