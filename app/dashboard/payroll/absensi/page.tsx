@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 
+type Mode =
+  | "MASUK"
+  | "KELUAR"
+  | "IZIN"
+  | "SAKIT"
+  | "ALFA"
+  | "CUTI";
+
 type Karyawan = {
   karyawan_id: string;
   nama: string;
@@ -12,8 +20,10 @@ type Karyawan = {
 export default function AbsensiPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  // ⚠️ sementara hardcode (nanti ambil dari session / select)
+  // ⚠️ SEMENTARA HARDCODE
+  // nanti ganti dari session / auth
   const karyawan: Karyawan = {
     karyawan_id: "EMP-001",
     nama: "Herlan Syihabudin",
@@ -21,9 +31,10 @@ export default function AbsensiPage() {
     tipe: "BULANAN",
   };
 
-  async function absen(mode: "MASUK" | "KELUAR") {
+  async function absen(mode: Mode) {
     setLoading(true);
     setMessage("");
+    setError("");
 
     try {
       const res = await fetch("/api/absensi", {
@@ -42,16 +53,23 @@ export default function AbsensiPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.error || "Terjadi kesalahan");
+        setError(data.error || "Terjadi kesalahan");
       } else {
-        setMessage(
-          mode === "MASUK"
-            ? `✅ Absen masuk jam ${data.jam_masuk}`
-            : `✅ Absen pulang jam ${data.jam_keluar}`
-        );
+        // response dari API absensi
+        if (mode === "MASUK") {
+          setMessage(
+            data.status?.startsWith("TELAT")
+              ? `⚠️ Absen masuk TELAT (${data.status.replace("TELAT_", "")})`
+              : `✅ Absen masuk jam ${data.status}`
+          );
+        } else if (mode === "KELUAR") {
+          setMessage("✅ Absen pulang berhasil");
+        } else {
+          setMessage(`✅ Absen ${mode} berhasil dicatat`);
+        }
       }
     } catch (err) {
-      setMessage("❌ Gagal koneksi ke server");
+      setError("❌ Gagal koneksi ke server");
     } finally {
       setLoading(false);
     }
@@ -59,20 +77,30 @@ export default function AbsensiPage() {
 
   return (
     <section className="container-bbm py-12 max-w-xl space-y-6">
+      {/* HEADER */}
       <div>
         <p className="badge">HR & PAYROLL</p>
         <h1>Absensi Karyawan</h1>
         <p className="text-body mt-1">
-          Absen masuk & pulang realtime (WIB)
+          Sistem absensi realtime (WIB)
         </p>
       </div>
 
-      <div className="card p-6 space-y-4">
-        <div>
-          <p className="text-sm text-gray-500">Nama</p>
-          <p className="font-medium">{karyawan.nama}</p>
+      {/* CARD */}
+      <div className="card p-6 space-y-6">
+        {/* INFO KARYAWAN */}
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-gray-500">Nama</p>
+            <p className="font-medium">{karyawan.nama}</p>
+          </div>
+          <div>
+            <p className="text-gray-500">Role</p>
+            <p className="font-medium">{karyawan.role}</p>
+          </div>
         </div>
 
+        {/* ABSEN MASUK / KELUAR */}
         <div className="flex gap-3">
           <button
             onClick={() => absen("MASUK")}
@@ -91,9 +119,49 @@ export default function AbsensiPage() {
           </button>
         </div>
 
-        {message && (
-          <div className="text-sm mt-3 p-3 rounded bg-gray-50">
-            {message}
+        {/* MODE KHUSUS */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <button
+            onClick={() => absen("IZIN")}
+            disabled={loading}
+            className="btn-outline"
+          >
+            📄 Izin
+          </button>
+
+          <button
+            onClick={() => absen("SAKIT")}
+            disabled={loading}
+            className="btn-outline"
+          >
+            🤒 Sakit
+          </button>
+
+          <button
+            onClick={() => absen("CUTI")}
+            disabled={loading}
+            className="btn-outline"
+          >
+            🏖️ Cuti
+          </button>
+
+          <button
+            onClick={() => absen("ALFA")}
+            disabled={loading}
+            className="btn-danger"
+          >
+            ❌ Alfa
+          </button>
+        </div>
+
+        {/* MESSAGE */}
+        {(message || error) && (
+          <div
+            className={`text-sm p-3 rounded ${
+              error ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
+            }`}
+          >
+            {error || message}
           </div>
         )}
       </div>
