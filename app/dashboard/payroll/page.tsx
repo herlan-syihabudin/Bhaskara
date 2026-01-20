@@ -49,27 +49,35 @@ export default async function PayrollPage() {
 
   const { kpi } = payroll;
 
-  /* ===== HITUNG SDM (DARI 1 SUMBER) ===== */
+  /* =====================
+     HITUNG SDM (SSOT)
+  ===================== */
   const aktif = karyawan.filter(
-    (k: any) => k.status_kerja === "AKTIF"
+    (k: any) => (k.status_kerja || "").toUpperCase() === "AKTIF"
   );
+
+  const normalizeType = (t?: string) => {
+    const v = (t || "").toUpperCase();
+    if (v === "HARIAN") return "HARIAN";
+    if (v === "KONTRAK") return "KONTRAK";
+    if (v === "TETAP") return "TETAP";
+    if (v === "BULANAN") return "TETAP"; // fallback legacy
+    return "UNKNOWN";
+  };
 
   const totalAktif = aktif.length;
 
   const totalHarian = aktif.filter(
-    (k: any) => k.type === "HARIAN"
+    (k: any) => normalizeType(k.type) === "HARIAN"
   ).length;
 
-  const bulanan = aktif.filter(
-    (k: any) => k.type === "BULANAN"
-  );
-
-  const totalKontrak = bulanan.filter(
-    (k: any) =>
-      (k.role || "").toLowerCase().includes("kontrak")
+  const totalKontrak = aktif.filter(
+    (k: any) => normalizeType(k.type) === "KONTRAK"
   ).length;
 
-  const totalTetap = bulanan.length - totalKontrak;
+  const totalTetap = aktif.filter(
+    (k: any) => normalizeType(k.type) === "TETAP"
+  ).length;
 
   return (
     <section className="space-y-10">
@@ -95,14 +103,16 @@ export default async function PayrollPage() {
       </div>
 
       {/* KPI PAYROLL */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6">
         <KpiCard
           title="Total Gaji Periode Ini"
-          value={`Rp ${kpi.totalGaji.toLocaleString("id-ID")}`}
+          value={kpi.totalGaji}
+          type="money"
         />
         <KpiCard
           title="Belum Dibayar"
-          value={`Rp ${kpi.belumDibayar.toLocaleString("id-ID")}`}
+          value={kpi.belumDibayar}
+          type="money"
         />
       </div>
 
