@@ -19,72 +19,80 @@ async function getSheets() {
 }
 
 /* =====================
-   GET LIST KARYAWAN
+   GET ALL KARYAWAN
 ===================== */
-export async function GET() {
-  try {
-    const sheets = await getSheets();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
 
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "MASTER_KARYAWAN!A:G",
-    });
+  const sheets = await getSheets();
 
-    const [, ...rows] = res.data.values ?? [];
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.GS_SHEET_ID!,
+    range: "MASTER_KARYAWAN!A:G",
+  });
 
-    const data = rows.map((r) => ({
-      karyawan_id: r[0],
-      nama: r[1],
-      role: r[2],
-      type: r[3], // HARIAN / BULANAN
-      rate: Number(r[4] || 0),
-      status: (r[5] || "").toUpperCase(), // AKTIF / NONAKTIF
-      catatan: r[6] || "",
-    }));
+  const [header, ...rows] = res.data.values ?? [];
 
-    return NextResponse.json(data);
-  } catch (err) {
-    console.error("GET KARYAWAN ERROR:", err);
-    return NextResponse.json(
-      { error: "Gagal mengambil data karyawan" },
-      { status: 500 }
-    );
+  const data = rows.map((r) => ({
+    karyawan_id: r[0],
+    nama: r[1],
+    role: r[2],
+    type: r[3],
+    rate: Number(r[4]),
+    status: r[5],
+    catatan: r[6] || "",
+  }));
+
+  // 👉 GET BY ID
+  if (id) {
+    const found = data.find((k) => k.karyawan_id === id);
+    if (!found) {
+      return NextResponse.json({ error: "Karyawan tidak ditemukan" }, { status: 404 });
+    }
+    return NextResponse.json(found);
   }
+
+  return NextResponse.json(data);
 }
 
 /* =====================
-   ADD KARYAWAN
+   UPDATE KARYAWAN
 ===================== */
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const sheets = await getSheets();
+export async function PUT(req: Request) {
+  const body = await req.json();
+  const sheets = await getSheets();
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "MASTER_KARYAWAN!A:G",
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [
-          [
-            `KRY-${Date.now()}`, // karyawan_id
-            body.nama,
-            body.role,
-            body.type,
-            Number(body.rate),
-            body.status,
-            body.catatan || "",
-          ],
-        ],
-      },
-    });
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.GS_SHEET_ID!,
+    range: "MASTER_KARYAWAN!A:G",
+  });
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("ADD KARYAWAN ERROR:", err);
-    return NextResponse.json(
-      { error: "Gagal menambah karyawan" },
-      { status: 500 }
-    );
+  const rows = res.data.values ?? [];
+  const rowIndex = rows.findIndex((r) => r[0] === body.karyawan_id);
+
+  if (rowIndex === -1) {
+    return NextResponse.json({ error: "Data tidak ditemukan" }, { status: 404 });
   }
+
+  const rowNumber = rowIndex + 1;
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: process.env.GS_SHEET_ID!,
+    range: `MASTER_KARYAWAN!A${rowNumber}:G${rowNumber}`,
+    valueInputOption: "USER_ENTERED",
+    requestBody: {
+      values: [[
+        body.karyawan_id,
+        body.nama,
+        body.role,
+        body.type,
+        body.rate,
+        body.status,
+        body.catatan || "",
+      ]],
+    },
+  });
+
+  return NextResponse.json({ success: true });
 }
