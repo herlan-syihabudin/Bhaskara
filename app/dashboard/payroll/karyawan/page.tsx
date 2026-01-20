@@ -1,26 +1,77 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 /* =====================
-   FETCH DATA KARYAWAN
+   TYPES
 ===================== */
-async function getKaryawan() {
-  const res = await fetch("/api/karyawan", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed load karyawan");
-  }
-
-  return res.json();
-}
+type Karyawan = {
+  karyawan_id: string;
+  nama: string;
+  role: string;
+  type: string;
+  rate: number;
+  status: string;
+};
 
 /* =====================
    PAGE
 ===================== */
-export default async function KaryawanPage() {
-  const data = await getKaryawan();
+export default function KaryawanPage() {
+  const [data, setData] = useState<Karyawan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  /* =====================
+     FETCH DATA
+  ===================== */
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/karyawan", {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          throw new Error("Gagal mengambil data karyawan");
+        }
+
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        console.error(err);
+        setError("Data karyawan gagal dimuat");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, []);
+
+  /* =====================
+     STATES
+  ===================== */
+  if (loading) {
+    return (
+      <section className="container-bbm py-12">
+        <p className="text-gray-500">Loading data karyawan...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="container-bbm py-12">
+        <p className="text-red-600">{error}</p>
+      </section>
+    );
+  }
+
+  /* =====================
+     UI
+  ===================== */
   return (
     <section className="container-bbm py-12 space-y-8">
       {/* HEADER */}
@@ -67,7 +118,7 @@ export default async function KaryawanPage() {
               </tr>
             )}
 
-            {data.map((k: any) => (
+            {data.map((k) => (
               <tr
                 key={k.karyawan_id}
                 className="border-b last:border-none"
@@ -85,18 +136,16 @@ export default async function KaryawanPage() {
                 </td>
 
                 <td className="px-4 py-3 text-right">
-                  Rp{" "}
-                  {Number(k.rate || 0).toLocaleString("id-ID")}
+                  Rp {Number(k.rate || 0).toLocaleString("id-ID")}
                 </td>
 
                 <td className="px-4 py-3 text-center">
                   <span
-                    className={`px-2 py-1 text-xs rounded font-medium
-                      ${
-                        k.status === "AKTIF"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
+                    className={`px-2 py-1 text-xs rounded font-medium ${
+                      k.status === "AKTIF"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
                   >
                     {k.status}
                   </span>
