@@ -25,9 +25,27 @@ const SHEET_ID = process.env.GS_SHEET_ID!;
 const RANGE = "MASTER_KARYAWAN!A:H";
 
 /* =====================
-   GET KARYAWAN (ALL / BY ID)
-   /api/karyawan
-   /api/karyawan?id=EMP-xxx
+   HELPERS
+===================== */
+function normalizeType(v: string) {
+  const t = (v || "").toUpperCase();
+  if (t === "BULANAN") return "TETAP"; // legacy support
+  if (t === "HARIAN" || t === "TETAP" || t === "KONTRAK") return t;
+  return "HARIAN";
+}
+
+function normalizeStatus(v: string) {
+  const s = (v || "").toUpperCase();
+  if (s === "NONAKTIF" || s === "RESIGN") return s;
+  return "AKTIF";
+}
+
+function generateId() {
+  return `EMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
+/* =====================
+   GET KARYAWAN
 ===================== */
 export async function GET(req: Request) {
   try {
@@ -46,9 +64,9 @@ export async function GET(req: Request) {
       karyawan_id: r[0],
       nama: r[1],
       role: r[2],
-      type: r[3], // HARIAN / BULANAN
+      type: normalizeType(r[3]),
       rate: Number(r[4] || 0),
-      status_kerja: r[5] || "AKTIF", // AKTIF | NONAKTIF | RESIGN
+      status_kerja: normalizeStatus(r[5]),
       tanggal_masuk: r[6] || "",
       catatan: r[7] || "",
     }));
@@ -75,7 +93,7 @@ export async function GET(req: Request) {
 }
 
 /* =====================
-   ADD KARYAWAN (FINAL)
+   ADD KARYAWAN
 ===================== */
 export async function POST(req: Request) {
   try {
@@ -83,12 +101,12 @@ export async function POST(req: Request) {
     const sheets = await getSheets();
 
     const row = [
-      `EMP-${Date.now()}`,                 // karyawan_id
+      generateId(),
       body.nama || "",
       body.role || "",
-      body.type || "HARIAN",
+      normalizeType(body.type),
       Number(body.rate || 0),
-      body.status_kerja || "AKTIF",
+      normalizeStatus(body.status_kerja),
       body.tanggal_masuk || "",
       body.catatan || "",
     ];
@@ -111,7 +129,7 @@ export async function POST(req: Request) {
 }
 
 /* =====================
-   UPDATE KARYAWAN (FINAL)
+   UPDATE KARYAWAN
 ===================== */
 export async function PUT(req: Request) {
   try {
@@ -144,9 +162,9 @@ export async function PUT(req: Request) {
           body.karyawan_id,
           body.nama,
           body.role,
-          body.type,
+          normalizeType(body.type),
           Number(body.rate || 0),
-          body.status_kerja,
+          normalizeStatus(body.status_kerja),
           body.tanggal_masuk,
           body.catatan || "",
         ]],
