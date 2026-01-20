@@ -1,87 +1,37 @@
-"use client";
+/**
+ * ⚠️ PAYROLL GENERATE (ARCHIVED)
+ * --------------------------------------------------
+ * File ini DINONAKTIFKAN.
+ * Seluruh logic generate payroll sudah dipindahkan
+ * ke BACKEND API (server-side).
+ *
+ * ❌ Jangan dipakai
+ * ❌ Jangan dikembangkan di sini
+ *
+ * Jika butuh:
+ * → Gunakan API payroll backend
+ * → Buat page baru khusus PREVIEW saja
+ *
+ * Date: 2026-01
+ */
 
-import Link from "next/link";
-
-type Payroll = {
-  payroll_id: string;
-  nama: string;
-  role: string;
-  periode: string;
-  total: number;
-  status: string;
-};
-
-export default function PayrollTable({
-  data,
-}: {
-  data: Payroll[];
-}) {
+export default function PayrollGenerateArchivedPage() {
   return (
-    <div className="card overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="border-b text-gray-500">
-          <tr>
-            <th className="text-left py-3 px-4">Nama</th>
-            <th className="text-left px-4">Role</th>
-            <th className="text-center px-4">Periode</th>
-            <th className="text-right px-4">Total</th>
-            <th className="text-center px-4">Status</th>
-            <th className="text-center px-4">Slip</th>
-          </tr>
-        </thead>
+    <section className="container-bbm py-20 text-center">
+      <div className="max-w-xl mx-auto space-y-4">
+        <h1 className="text-xl font-semibold text-gray-800">
+          Payroll Generator Dipindahkan
+        </h1>
+        <p className="text-gray-500 text-sm">
+          Proses generate payroll sudah dipindahkan ke sistem backend
+          untuk menjaga akurasi, keamanan, dan konsistensi data.
+        </p>
 
-        <tbody>
-          {data.map((p) => (
-            <tr
-              key={p.payroll_id}
-              className="border-b last:border-none"
-            >
-              <td className="px-4 py-3 font-medium">
-                {p.nama}
-              </td>
-              <td className="px-4">{p.role}</td>
-              <td className="px-4 text-center">
-                {p.periode}
-              </td>
-              <td className="px-4 text-right">
-                Rp {Number(p.total || 0).toLocaleString("id-ID")}
-              </td>
-              <td className="px-4 text-center">
-                <span
-                  className={`badge ${
-                    p.status === "UNPAID"
-                      ? "badge-warning"
-                      : "badge-success"
-                  }`}
-                >
-                  {p.status}
-                </span>
-              </td>
-
-              {/* 🔥 TOMBOL SLIP */}
-              <td className="px-4 text-center">
-                <Link
-                  href={`/dashboard/payroll/slip/${p.payroll_id}`}
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  🧾 Lihat Slip
-                </Link>
-              </td>
-            </tr>
-          ))}
-
-          {data.length === 0 && (
-            <tr>
-              <td
-                colSpan={6}
-                className="py-8 text-center text-gray-400"
-              >
-                Belum ada data payroll
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+        <div className="mt-6 text-xs text-gray-400">
+          File ini sengaja dipertahankan sebagai arsip.<br />
+          Tidak digunakan dalam flow aktif.
+        </div>
+      </div>
+    </section>
   );
 }
