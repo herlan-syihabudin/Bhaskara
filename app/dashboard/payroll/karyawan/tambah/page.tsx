@@ -3,20 +3,36 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type KaryawanType = "HARIAN" | "TETAP" | "KONTRAK";
+type StatusKerja = "AKTIF" | "NONAKTIF";
+
 export default function TambahKaryawanPage() {
   const router = useRouter();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    nama: string;
+    role: string;
+    type: KaryawanType;
+    rate: number;
+    status_kerja: StatusKerja;
+    catatan: string;
+  }>({
     nama: "",
     role: "",
     type: "HARIAN",
-    rate: "",
-    status: "AKTIF",
+    rate: 0,
+    status_kerja: "AKTIF",
     catatan: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // VALIDASI LOGIKA DASAR
+    if (form.rate <= 0) {
+      alert("Gaji harus lebih dari 0");
+      return;
+    }
 
     await fetch("/api/karyawan", {
       method: "POST",
@@ -71,35 +87,48 @@ export default function TambahKaryawanPage() {
             <select
               className="form-input mt-1"
               value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, type: e.target.value as KaryawanType })
+              }
             >
               <option value="HARIAN">Harian</option>
-              <option value="BULANAN">Bulanan</option>
+              <option value="TETAP">Tetap</option>
+              <option value="KONTRAK">Kontrak</option>
             </select>
           </div>
 
           {/* Rate */}
           <div>
             <label className="text-sm font-medium">
-              Gaji ({form.type === "HARIAN" ? "per Hari" : "per Bulan"})
+              Gaji{" "}
+              {form.type === "HARIAN"
+                ? "per Hari"
+                : "per Bulan"}
             </label>
             <input
               type="number"
               className="form-input mt-1"
               placeholder="Contoh: 150000"
               value={form.rate}
-              onChange={(e) => setForm({ ...form, rate: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, rate: Number(e.target.value) })
+              }
               required
             />
           </div>
 
           {/* Status */}
           <div>
-            <label className="text-sm font-medium">Status</label>
+            <label className="text-sm font-medium">Status Kerja</label>
             <select
               className="form-input mt-1"
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              value={form.status_kerja}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  status_kerja: e.target.value as StatusKerja,
+                })
+              }
             >
               <option value="AKTIF">Aktif</option>
               <option value="NONAKTIF">Nonaktif</option>
