@@ -16,17 +16,11 @@ type Karyawan = {
   tanggal_masuk?: string;
 };
 
-/* =====================
-   PAGE
-===================== */
 export default function KaryawanPage() {
   const [data, setData] = useState<Karyawan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  /* =====================
-     FILTER STATES
-  ===================== */
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -36,26 +30,22 @@ export default function KaryawanPage() {
      FETCH DATA
   ===================== */
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/karyawan", { cache: "no-store" });
-        if (!res.ok) throw new Error("Gagal mengambil data");
-        setData(await res.json());
-      } catch (e) {
-        setError("Data karyawan gagal dimuat");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    fetch("/api/karyawan", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error("fetch error");
+        return r.json();
+      })
+      .then(setData)
+      .catch(() => setError("Data karyawan gagal dimuat"))
+      .finally(() => setLoading(false));
   }, []);
 
   /* =====================
-     FILTERED DATA
+     FILTER
   ===================== */
   const filteredData = useMemo(() => {
+    const q = search.toLowerCase();
     return data.filter((k) => {
-      const q = search.toLowerCase();
       return (
         (k.nama.toLowerCase().includes(q) ||
           k.role.toLowerCase().includes(q)) &&
@@ -90,8 +80,7 @@ export default function KaryawanPage() {
       k.tanggal_masuk || "",
     ]);
 
-    const csv =
-      [header, ...rows].map((r) => r.join(",")).join("\n");
+    const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -100,16 +89,23 @@ export default function KaryawanPage() {
     a.href = url;
     a.download = "karyawan.csv";
     a.click();
+    URL.revokeObjectURL(url);
   }
 
   /* =====================
-     LOADING / ERROR
+     STATE
   ===================== */
-  if (loading)
+  if (loading) {
     return <p className="container-bbm py-12">Loading...</p>;
+  }
 
-  if (error)
-    return <p className="container-bbm py-12 text-red-600">{error}</p>;
+  if (error) {
+    return (
+      <p className="container-bbm py-12 text-red-600">
+        {error}
+      </p>
+    );
+  }
 
   /* =====================
      UI
@@ -117,36 +113,29 @@ export default function KaryawanPage() {
   return (
     <section className="container-bbm py-12 space-y-6">
       {/* HEADER */}
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <div>
           <p className="badge">HR & PAYROLL</p>
           <h1>Data Karyawan</h1>
           <p className="text-body">Master data tenaga kerja</p>
         </div>
 
-        <div className="flex items-center gap-3">
-  {/* Export */}
-  <button
-    onClick={exportCSV}
-    className="flex items-center gap-2 h-10 px-4 rounded-lg border
-               border-gray-300 text-gray-700 text-sm
-               hover:bg-gray-50 transition"
-  >
-    ⬇
-    <span>Export Excel</span>
-  </button>
+        <div className="flex gap-3">
+          <button
+            onClick={exportCSV}
+            className="flex items-center gap-2 h-10 px-4 rounded-lg border border-gray-300 text-sm hover:bg-gray-50"
+          >
+            ⬇ Export Excel
+          </button>
 
-  {/* Tambah */}
-  <Link
-    href="/dashboard/payroll/karyawan/tambah"
-    className="flex items-center gap-2 h-10 px-4 rounded-lg
-               bg-green-600 text-white text-sm font-medium
-               hover:bg-green-700 transition"
-  >
-    ＋
-    <span>Tambah Karyawan</span>
-  </Link>
-</div>
+          <Link
+            href="/dashboard/payroll/karyawan/tambah"
+            className="flex items-center gap-2 h-10 px-4 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700"
+          >
+            ＋ Tambah
+          </Link>
+        </div>
+      </div>
 
       {/* FILTER */}
       <div className="card p-4 grid md:grid-cols-4 gap-3">
@@ -195,31 +184,29 @@ export default function KaryawanPage() {
         <table className="w-full text-sm">
           <thead className="border-b text-gray-500">
             <tr>
-              <th className="px-3 py-2 text-left">Nama</th>
-              <th className="px-3 py-2">Role</th>
-              <th className="px-3 py-2">Tipe</th>
-              <th className="px-3 py-2">Masuk</th>
-              <th className="px-3 py-2 text-right">Rate</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2 text-right">Aksi</th>
+              <th>Nama</th>
+              <th>Role</th>
+              <th>Tipe</th>
+              <th>Masuk</th>
+              <th className="text-right">Rate</th>
+              <th>Status</th>
+              <th className="text-right">Aksi</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredData.map((k) => (
               <tr key={k.karyawan_id} className="border-b">
-                <td className="px-3 py-2 font-medium">{k.nama}</td>
-                <td className="px-3 py-2">{k.role}</td>
-                <td className="px-3 py-2 text-center">{k.type}</td>
-                <td className="px-3 py-2 text-center">
-                  {k.tanggal_masuk || "-"}
-                </td>
-                <td className="px-3 py-2 text-right">
+                <td className="font-medium">{k.nama}</td>
+                <td>{k.role}</td>
+                <td className="text-center">{k.type}</td>
+                <td className="text-center">{k.tanggal_masuk || "-"}</td>
+                <td className="text-right">
                   Rp {k.rate.toLocaleString("id-ID")}
                 </td>
-                <td className="px-3 py-2 text-center">
+                <td className="text-center">
                   <span
-                    className={`badge ${
+                    className={`px-2 py-1 rounded text-xs font-medium ${
                       k.status_kerja === "AKTIF"
                         ? "bg-green-100 text-green-700"
                         : k.status_kerja === "NONAKTIF"
@@ -230,7 +217,7 @@ export default function KaryawanPage() {
                     {k.status_kerja}
                   </span>
                 </td>
-                <td className="px-3 py-2 text-right space-x-2">
+                <td className="text-right space-x-2">
                   <Link
                     href={`/dashboard/payroll/karyawan/${k.karyawan_id}/absensi`}
                     className="text-xs text-blue-600"
