@@ -23,6 +23,22 @@ async function getAbsensi(id: string) {
 }
 
 /* =====================
+   HELPERS
+===================== */
+function labelType(type: string) {
+  if (type === "HARIAN") return "Pekerja Harian";
+  if (type === "TETAP") return "Karyawan Tetap";
+  if (type === "KONTRAK") return "Karyawan Kontrak";
+  return type;
+}
+
+function labelGaji(type: string, rate: number) {
+  const r = `Rp ${rate.toLocaleString("id-ID")}`;
+  if (type === "HARIAN") return `${r} / hari`;
+  return `${r} / bulan`;
+}
+
+/* =====================
    PAGE
 ===================== */
 export default async function DetailKaryawanPage({
@@ -33,9 +49,19 @@ export default async function DetailKaryawanPage({
   const karyawan = await getKaryawan(params.id);
   const absensi = await getAbsensi(params.id);
 
+  /**
+   * LOGIKA HADIR (AMAN SEMENTARA)
+   * - Hadir = ada jam_masuk
+   * - Izin / Sakit / Alpha bisa dikembangkan nanti via kolom status_absen
+   */
   const totalHadir = absensi.filter(
-    (a: any) => a.jam_masuk
+    (a: any) => a.jam_masuk && a.jam_masuk !== ""
   ).length;
+
+  async function handleResign() {
+    "use server";
+    // ini cuma fallback visual, eksekusi real via client button
+  }
 
   return (
     <section className="container-bbm py-12 space-y-8">
@@ -45,7 +71,7 @@ export default async function DetailKaryawanPage({
           <p className="badge">HR & PAYROLL</p>
           <h1>{karyawan.nama}</h1>
           <p className="text-body">
-            {karyawan.role} • {karyawan.type}
+            {karyawan.role} • {labelType(karyawan.type)}
           </p>
         </div>
 
@@ -57,9 +83,7 @@ export default async function DetailKaryawanPage({
             Edit
           </Link>
 
-          <button className="btn-danger">
-            Set Resign
-          </button>
+          <ResignButton karyawan={karyawan} />
         </div>
       </div>
 
@@ -72,7 +96,7 @@ export default async function DetailKaryawanPage({
         />
         <Info
           label="Gaji"
-          value={`Rp ${Number(karyawan.rate).toLocaleString("id-ID")}`}
+          value={labelGaji(karyawan.type, Number(karyawan.rate))}
         />
         <Info label="Total Hadir" value={`${totalHadir} hari`} />
       </div>
@@ -93,11 +117,11 @@ export default async function DetailKaryawanPage({
 
           <tbody>
             {absensi.slice(0, 5).map((a: any) => (
-              <tr key={a.absensi_id} className="border-b">
+              <tr key={a.absensi_id} className="border-b last:border-none">
                 <td className="py-2">{a.tanggal}</td>
                 <td className="text-center">{a.jam_masuk || "-"}</td>
                 <td className="text-center">{a.jam_keluar || "-"}</td>
-                <td>{a.project_id}</td>
+                <td>{a.project_id || "-"}</td>
               </tr>
             ))}
 
@@ -121,6 +145,32 @@ export default async function DetailKaryawanPage({
         </div>
       </div>
     </section>
+  );
+}
+
+/* =====================
+   CLIENT COMPONENT
+===================== */
+function ResignButton({ karyawan }: { karyawan: any }) {
+  async function onResign() {
+    if (!confirm("Yakin set karyawan menjadi RESIGN?")) return;
+
+    await fetch("/api/karyawan", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...karyawan,
+        status_kerja: "RESIGN",
+      }),
+    });
+
+    location.reload();
+  }
+
+  return (
+    <button onClick={onResign} className="btn-danger">
+      Set Resign
+    </button>
   );
 }
 
