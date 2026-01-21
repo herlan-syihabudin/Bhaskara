@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 /* =====================
-   TYPES
+   TYPES (DATA ASLI)
 ===================== */
 type Kasbon = {
   kasbon_id: string;
@@ -14,7 +14,7 @@ type Kasbon = {
   sisa_kasbon: number;
   potong_per_payroll: number;
   keterangan: string;
-  status: "AKTIF" | "SELESAI" | string;
+  status: "BELUM_DIPOTONG" | "DIPOTONG" | string;
   payroll_id: string;
   created_at: string;
 };
@@ -69,13 +69,25 @@ export default function KasbonPage() {
   }, [karyawan]);
 
   /* =====================
-     FILTER
+     STATUS HELPERS
+  ====================== */
+  const uiStatus = (s: string) =>
+    s === "BELUM_DIPOTONG" ? "AKTIF" : "SELESAI";
+
+  const isAktif = (s: string) => s === "BELUM_DIPOTONG";
+
+  /* =====================
+     FILTERED DATA
   ====================== */
   const filteredKasbon = useMemo(() => {
     let rows = [...kasbon];
 
     if (statusFilter !== "ALL") {
-      rows = rows.filter((r) => r.status === statusFilter);
+      rows = rows.filter((r) =>
+        statusFilter === "AKTIF"
+          ? r.status === "BELUM_DIPOTONG"
+          : r.status === "DIPOTONG"
+      );
     }
 
     if (searchText.trim()) {
@@ -102,7 +114,7 @@ export default function KasbonPage() {
   );
 
   const totalAktif = useMemo(
-    () => filteredKasbon.filter((k) => k.status === "AKTIF").length,
+    () => filteredKasbon.filter((k) => isAktif(k.status)).length,
     [filteredKasbon]
   );
 
@@ -130,7 +142,7 @@ export default function KasbonPage() {
         k.total_kasbon,
         k.sisa_kasbon,
         k.potong_per_payroll,
-        k.status,
+        uiStatus(k.status),
         k.keterangan || "",
       ];
     });
@@ -142,7 +154,6 @@ export default function KasbonPage() {
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = `kasbon_${Date.now()}.csv`;
@@ -154,10 +165,11 @@ export default function KasbonPage() {
   ====================== */
   async function potongCicilan(row: Kasbon) {
     if (updating) return;
+
     const ok = confirm(
       `Potong kasbon:\n${row.kasbon_id}\n\nSisa: Rp ${row.sisa_kasbon.toLocaleString(
         "id-ID"
-      )}`
+      )}\nPotong: Rp ${row.potong_per_payroll.toLocaleString("id-ID")}`
     );
     if (!ok) return;
 
@@ -295,17 +307,17 @@ export default function KasbonPage() {
                     <td>
                       <span
                         className={`badge ${
-                          k.status === "AKTIF"
+                          isAktif(k.status)
                             ? "badge-warning"
                             : "badge-success"
                         }`}
                       >
-                        {k.status}
+                        {uiStatus(k.status)}
                       </span>
                     </td>
 
                     <td>
-                      {k.status === "AKTIF" && (
+                      {isAktif(k.status) && (
                         <button
                           className="text-xs underline text-green-700"
                           onClick={() => potongCicilan(k)}
