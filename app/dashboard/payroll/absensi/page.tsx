@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Mode = "MASUK" | "KELUAR" | "IZIN" | "SAKIT" | "CUTI";
 
@@ -8,6 +8,14 @@ export default function AbsensiPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  // 🔒 DATA USER LOGIN (NANTI GANTI SESSION / AUTH)
+  const karyawan = {
+    karyawan_id: "KRY-001",
+    nama: "Herlan Syihabudin",
+    role: "Staff",
+    tipe: "BULANAN",
+  };
 
   async function absen(mode: Mode) {
     setLoading(true);
@@ -20,7 +28,8 @@ export default function AbsensiPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mode,
-          project_id: "PRJ-001", // opsional
+          project_id: "PRJ-001",
+          ...karyawan, // 🔥 IDENTITAS WAJIB
         }),
       });
 
@@ -30,7 +39,7 @@ export default function AbsensiPage() {
         setError(data.error || "Terjadi kesalahan");
       } else {
         if (mode === "MASUK") {
-          setMessage(`✅ Absen masuk jam ${data.jam}`);
+          setMessage(`✅ Absen masuk: ${data.jam_masuk}`);
         } else if (mode === "KELUAR") {
           setMessage("✅ Absen pulang berhasil");
         } else {
@@ -53,6 +62,12 @@ export default function AbsensiPage() {
       </div>
 
       <div className="card p-6 space-y-6">
+        {/* INFO KARYAWAN */}
+        <div className="text-sm bg-gray-50 p-3 rounded">
+          <p><b>{karyawan.nama}</b></p>
+          <p>{karyawan.role} • {karyawan.tipe}</p>
+        </div>
+
         <div className="flex gap-3">
           <button
             onClick={() => absen("MASUK")}
