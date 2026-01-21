@@ -4,25 +4,29 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 /* =====================
-   TYPES (DATA ASLI)
+   TYPES (SUPPORT LAMA + CICILAN)
 ===================== */
 type Kasbon = {
   kasbon_id: string;
   karyawan_id: string;
   tanggal: string;
-  total_kasbon: number;
-  sisa_kasbon: number;
-  potong_per_payroll: number;
-  keterangan: string;
+
+  // MODE LAMA
+  jumlah?: number;
+
+  // MODE CICILAN
+  total_kasbon?: number;
+  sisa_kasbon?: number;
+  potong_per_payroll?: number;
+
+  keterangan?: string;
   status: "BELUM_DIPOTONG" | "DIPOTONG" | string;
-  payroll_id: string;
-  created_at: string;
+  payroll_id?: string;
 };
 
 type Karyawan = {
   karyawan_id: string;
   nama: string;
-  role?: string;
 };
 
 /* =====================
@@ -69,15 +73,25 @@ export default function KasbonPage() {
   }, [karyawan]);
 
   /* =====================
-     STATUS HELPERS
+     HELPERS
   ====================== */
-  const uiStatus = (s: string) =>
-    s === "BELUM_DIPOTONG" ? "AKTIF" : "SELESAI";
-
   const isAktif = (s: string) => s === "BELUM_DIPOTONG";
+  const uiStatus = (s: string) => (s === "BELUM_DIPOTONG" ? "AKTIF" : "SELESAI");
+
+  const getTotal = (k: Kasbon) =>
+    k.total_kasbon ?? k.jumlah ?? 0;
+
+  const getSisa = (k: Kasbon) =>
+    k.sisa_kasbon ??
+    (k.status === "BELUM_DIPOTONG" ? k.jumlah ?? 0 : 0);
+
+  const isCicilan = (k: Kasbon) =>
+    k.total_kasbon !== undefined &&
+    k.sisa_kasbon !== undefined &&
+    k.potong_per_payroll !== undefined;
 
   /* =====================
-     FILTERED DATA
+     FILTER
   ====================== */
   const filteredKasbon = useMemo(() => {
     let rows = [...kasbon];
@@ -108,8 +122,8 @@ export default function KasbonPage() {
   /* =====================
      KPI
   ====================== */
-  const totalSisaKasbon = useMemo(
-    () => filteredKasbon.reduce((s, r) => s + Number(r.sisa_kasbon || 0), 0),
+  const totalSisa = useMemo(
+    () => filteredKasbon.reduce((s, k) => s + getSisa(k), 0),
     [filteredKasbon]
   );
 
@@ -126,8 +140,8 @@ export default function KasbonPage() {
       "Tanggal",
       "Kasbon ID",
       "Karyawan",
-      "Total Kasbon",
-      "Sisa Kasbon",
+      "Total",
+      "Sisa",
       "Cicilan / Payroll",
       "Status",
       "Keterangan",
@@ -139,9 +153,9 @@ export default function KasbonPage() {
         k.tanggal,
         k.kasbon_id,
         emp?.nama || k.karyawan_id,
-        k.total_kasbon,
-        k.sisa_kasbon,
-        k.potong_per_payroll,
+        getTotal(k),
+        getSisa(k),
+        k.potong_per_payroll ?? "-",
         uiStatus(k.status),
         k.keterangan || "",
       ];
@@ -163,13 +177,14 @@ export default function KasbonPage() {
   /* =====================
      POTONG CICILAN
   ====================== */
-  async function potongCicilan(row: Kasbon) {
+  async function potongCicilan(k: Kasbon) {
     if (updating) return;
+    if (!isCicilan(k)) return;
 
     const ok = confirm(
-      `Potong kasbon:\n${row.kasbon_id}\n\nSisa: Rp ${row.sisa_kasbon.toLocaleString(
+      `Potong kasbon ${k.kasbon_id}\n\nSisa: Rp ${getSisa(k).toLocaleString(
         "id-ID"
-      )}\nPotong: Rp ${row.potong_per_payroll.toLocaleString("id-ID")}`
+      )}\nPotong: Rp ${k.potong_per_payroll!.toLocaleString("id-ID")}`
     );
     if (!ok) return;
 
@@ -179,7 +194,7 @@ export default function KasbonPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          kasbon_id: row.kasbon_id,
+          kasbon_id: k.kasbon_id,
           action: "CICIL",
         }),
       });
@@ -198,9 +213,9 @@ export default function KasbonPage() {
       <div className="flex justify-between items-center">
         <div>
           <p className="badge">HR & PAYROLL</p>
-          <h1>Kasbon Karyawan (Cicilan)</h1>
+          <h1>Kasbon Karyawan</h1>
           <p className="text-body mt-1">
-            Pemotongan kasbon bertahap otomatis via payroll
+            Mendukung kasbon sekali & cicilan payroll
           </p>
         </div>
 
@@ -216,13 +231,13 @@ export default function KasbonPage() {
 
       {/* KPI */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Kpi title="Total Sisa Kasbon" value={totalSisaKasbon} />
+        <Kpi title="Total Sisa Kasbon" value={totalSisa} />
         <Kpi title="Kasbon Aktif" value={totalAktif} type="count" />
         <Kpi title="Total Transaksi" value={filteredKasbon.length} type="count" />
       </div>
 
       {/* FILTER */}
-      <div className="card p-4 flex flex-col md:flex-row gap-4">
+      <div className="card p-4 flex gap-4">
         <select
           className="form-input md:w-48"
           value={statusFilter}
@@ -239,10 +254,6 @@ export default function KasbonPage() {
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
-
-        <button onClick={loadAll} className="btn-outline">
-          🔄 Refresh
-        </button>
       </div>
 
       {/* TABLE */}
@@ -272,11 +283,10 @@ export default function KasbonPage() {
             {!loading &&
               filteredKasbon.map((k) => {
                 const emp = karyawanMap.get(k.karyawan_id);
-                const paid = k.total_kasbon - k.sisa_kasbon;
-                const pct =
-                  k.total_kasbon > 0
-                    ? Math.round((paid / k.total_kasbon) * 100)
-                    : 0;
+                const total = getTotal(k);
+                const sisa = getSisa(k);
+                const paid = total - sisa;
+                const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
 
                 return (
                   <tr key={k.kasbon_id} className="border-b">
@@ -284,12 +294,11 @@ export default function KasbonPage() {
                     <td className="font-medium">
                       {emp?.nama} ({k.karyawan_id})
                     </td>
-                    <td>Rp {k.total_kasbon.toLocaleString("id-ID")}</td>
+                    <td>Rp {total.toLocaleString("id-ID")}</td>
                     <td className="font-semibold">
-                      Rp {k.sisa_kasbon.toLocaleString("id-ID")}
+                      Rp {sisa.toLocaleString("id-ID")}
                     </td>
 
-                    {/* PROGRESS */}
                     <td>
                       <div className="w-32">
                         <div className="h-2 bg-gray-200 rounded">
@@ -317,7 +326,7 @@ export default function KasbonPage() {
                     </td>
 
                     <td>
-                      {isAktif(k.status) && (
+                      {isAktif(k.status) && isCicilan(k) && (
                         <button
                           className="text-xs underline text-green-700"
                           onClick={() => potongCicilan(k)}
@@ -325,6 +334,12 @@ export default function KasbonPage() {
                         >
                           Potong 1x
                         </button>
+                      )}
+
+                      {isAktif(k.status) && !isCicilan(k) && (
+                        <span className="text-xs text-gray-400">
+                          Sekali Potong
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -338,7 +353,7 @@ export default function KasbonPage() {
 }
 
 /* =====================
-   KPI SMALL
+   KPI
 ===================== */
 function Kpi({
   title,
