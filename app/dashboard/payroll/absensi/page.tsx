@@ -1,23 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Mode = "MASUK" | "KELUAR" | "IZIN" | "SAKIT" | "CUTI";
 
+type Karyawan = {
+  karyawan_id: string;
+  nama: string;
+  role: string;
+  type: string;
+  status: string;
+};
+
+type Proyek = {
+  project_id: string;
+  project_name: string;
+  status: string;
+};
+
 export default function AbsensiPage() {
+  const [karyawanList, setKaryawanList] = useState<Karyawan[]>([]);
+  const [proyekList, setProyekList] = useState<Proyek[]>([]);
+
+  const [karyawan, setKaryawan] = useState<Karyawan | null>(null);
+  const [projectId, setProjectId] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // 🔒 DATA USER LOGIN (NANTI GANTI SESSION / AUTH)
-  const karyawan = {
-    karyawan_id: "KRY-001",
-    nama: "Herlan Syihabudin",
-    role: "Staff",
-    tipe: "BULANAN",
-  };
+  /* =====================
+     LOAD MASTER DATA
+  ===================== */
+  useEffect(() => {
+    fetch("/api/karyawan")
+      .then((r) => r.json())
+      .then((data) => {
+        setKaryawanList(
+          (data || []).filter(
+            (k: any) => String(k.status).toUpperCase() === "AKTIF"
+          )
+        );
+      });
 
+    fetch("/api/proyek")
+      .then((r) => r.json())
+      .then((data) => {
+        setProyekList(
+          (data || []).filter(
+            (p: any) => String(p.status).toUpperCase() === "RUNNING"
+          )
+        );
+      });
+  }, []);
+
+  /* =====================
+     ABSEN
+  ===================== */
   async function absen(mode: Mode) {
+    if (!karyawan || !projectId) return;
+
     setLoading(true);
     setMessage("");
     setError("");
@@ -28,8 +70,8 @@ export default function AbsensiPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mode,
-          project_id: "PRJ-001",
-          ...karyawan, // 🔥 IDENTITAS WAJIB
+          karyawan_id: karyawan.karyawan_id,
+          project_id: projectId,
         }),
       });
 
@@ -38,13 +80,7 @@ export default function AbsensiPage() {
       if (!res.ok) {
         setError(data.error || "Terjadi kesalahan");
       } else {
-        if (mode === "MASUK") {
-          setMessage(`✅ Absen masuk: ${data.jam_masuk}`);
-        } else if (mode === "KELUAR") {
-          setMessage("✅ Absen pulang berhasil");
-        } else {
-          setMessage(`✅ ${mode} berhasil dicatat`);
-        }
+        setMessage("✅ Absensi berhasil dicatat");
       }
     } catch {
       setError("❌ Gagal koneksi ke server");
@@ -52,6 +88,8 @@ export default function AbsensiPage() {
       setLoading(false);
     }
   }
+
+  const canAbsen = !!karyawan && !!projectId && !loading;
 
   return (
     <section className="container-bbm py-12 max-w-xl space-y-6">
@@ -62,16 +100,56 @@ export default function AbsensiPage() {
       </div>
 
       <div className="card p-6 space-y-6">
-        {/* INFO KARYAWAN */}
-        <div className="text-sm bg-gray-50 p-3 rounded">
-          <p><b>{karyawan.nama}</b></p>
-          <p>{karyawan.role} • {karyawan.tipe}</p>
+        {/* PILIH KARYAWAN */}
+        <div>
+          <label className="text-sm font-medium">Nama Karyawan</label>
+          <select
+            className="form-input mt-1"
+            value={karyawan?.karyawan_id || ""}
+            onChange={(e) => {
+              const k = karyawanList.find(
+                (x) => x.karyawan_id === e.target.value
+              );
+              setKaryawan(k || null);
+            }}
+          >
+            <option value="">-- pilih nama --</option>
+            {karyawanList.map((k) => (
+              <option key={k.karyawan_id} value={k.karyawan_id}>
+                {k.nama} ({k.role} - {k.type})
+              </option>
+            ))}
+          </select>
+
+          {!karyawan && (
+            <p className="text-xs text-red-600 mt-1">
+              ⚠️ Nama harus terdaftar di master karyawan
+            </p>
+          )}
         </div>
 
+        {/* PILIH PROYEK */}
+        <div>
+          <label className="text-sm font-medium">Lokasi Proyek</label>
+          <select
+            className="form-input mt-1"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          >
+            <option value="">-- pilih proyek --</option>
+            {proyekList.map((p) => (
+              <option key={p.project_id} value={p.project_id}>
+                {p.project_name} ({p.project_id})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* BUTTON */}
         <div className="flex gap-3">
           <button
             onClick={() => absen("MASUK")}
-            disabled={loading}
+            disabled={!canAbsen}
             className="btn-primary w-full"
           >
             ⏰ Absen Masuk
@@ -79,7 +157,7 @@ export default function AbsensiPage() {
 
           <button
             onClick={() => absen("KELUAR")}
-            disabled={loading}
+            disabled={!canAbsen}
             className="btn-outline w-full"
           >
             🏁 Absen Pulang
@@ -87,13 +165,25 @@ export default function AbsensiPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <button onClick={() => absen("IZIN")} className="btn-outline">
+          <button
+            onClick={() => absen("IZIN")}
+            disabled={!canAbsen}
+            className="btn-outline"
+          >
             📄 Izin
           </button>
-          <button onClick={() => absen("SAKIT")} className="btn-outline">
+          <button
+            onClick={() => absen("SAKIT")}
+            disabled={!canAbsen}
+            className="btn-outline"
+          >
             🤒 Sakit
           </button>
-          <button onClick={() => absen("CUTI")} className="btn-outline">
+          <button
+            onClick={() => absen("CUTI")}
+            disabled={!canAbsen}
+            className="btn-outline"
+          >
             🏖️ Cuti
           </button>
         </div>
