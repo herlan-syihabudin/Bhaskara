@@ -8,8 +8,8 @@ type Karyawan = {
   karyawan_id: string;
   nama: string;
   role: string;
-  tipe: string;
-  status: string;
+  type: string;
+  status_kerja: string;
 };
 
 type Proyek = {
@@ -35,25 +35,30 @@ export default function AbsensiPage() {
   useEffect(() => {
     fetch("/api/karyawan")
       .then((r) => r.json())
-      .then((data) =>
-        setKaryawanList(
-          (data || []).filter(
-            (k: any) => String(k.status).toUpperCase() === "AKTIF"
-          )
-        )
-      );
+      .then((data) => {
+        const aktif = (data || []).filter(
+          (k: any) =>
+            String(k.status_kerja || "").toUpperCase() === "AKTIF"
+        );
+        setKaryawanList(aktif);
+      })
+      .catch(() => setKaryawanList([]));
 
     fetch("/api/proyek")
       .then((r) => r.json())
-      .then((data) =>
-        setProyekList(
-          (data || []).filter(
-            (p: any) => String(p.status).toUpperCase() === "RUNNING"
-          )
-        )
-      );
+      .then((data) => {
+        const running = (data || []).filter(
+          (p: any) =>
+            String(p.status || "").toUpperCase() === "RUNNING"
+        );
+        setProyekList(running);
+      })
+      .catch(() => setProyekList([]));
   }, []);
 
+  /* =====================
+     ABSEN ACTION
+  ===================== */
   async function absen(mode: Mode) {
     if (!karyawan || !projectId) return;
 
@@ -75,7 +80,7 @@ export default function AbsensiPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Terjadi kesalahan");
+        setError(data.error || "Gagal mencatat absensi");
       } else {
         setMessage("✅ Absensi berhasil dicatat");
       }
@@ -86,8 +91,11 @@ export default function AbsensiPage() {
     }
   }
 
-  const canAbsen = !!karyawan && !!projectId && !loading;
+  const canAbsen = Boolean(karyawan && projectId && !loading);
 
+  /* =====================
+     UI
+  ===================== */
   return (
     <section className="container-bbm py-12 max-w-xl space-y-6">
       <div>
@@ -99,30 +107,30 @@ export default function AbsensiPage() {
       </div>
 
       <div className="card p-6 space-y-6">
-        {/* NAMA */}
+        {/* KARYAWAN */}
         <div>
           <label className="text-sm font-medium">Nama Karyawan</label>
           <select
             className="form-input mt-1"
             value={karyawan?.karyawan_id || ""}
             onChange={(e) => {
-              const k = karyawanList.find(
-                (x) => x.karyawan_id === e.target.value
+              const found = karyawanList.find(
+                (k) => k.karyawan_id === e.target.value
               );
-              setKaryawan(k || null);
+              setKaryawan(found || null);
             }}
           >
             <option value="">-- pilih nama --</option>
             {karyawanList.map((k) => (
               <option key={k.karyawan_id} value={k.karyawan_id}>
-                {k.nama} ({k.role} - {k.tipe})
+                {k.nama} ({k.role} - {k.type})
               </option>
             ))}
           </select>
 
           {!karyawan && (
             <p className="text-xs text-red-600 mt-1">
-              ⚠️ Nama harus terdaftar di master karyawan
+              ⚠️ Nama harus terdaftar & aktif di master karyawan
             </p>
           )}
         </div>
@@ -144,7 +152,7 @@ export default function AbsensiPage() {
           </select>
         </div>
 
-        {/* BUTTON */}
+        {/* BUTTON UTAMA */}
         <div className="flex gap-3">
           <button
             onClick={() => absen("MASUK")}
@@ -163,6 +171,7 @@ export default function AbsensiPage() {
           </button>
         </div>
 
+        {/* STATUS */}
         <div className="grid grid-cols-3 gap-3">
           {["IZIN", "SAKIT", "CUTI"].map((m) => (
             <button
@@ -176,10 +185,13 @@ export default function AbsensiPage() {
           ))}
         </div>
 
+        {/* MESSAGE */}
         {(message || error) && (
           <div
             className={`text-sm p-3 rounded ${
-              error ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
+              error
+                ? "bg-red-50 text-red-700"
+                : "bg-green-50 text-green-700"
             }`}
           >
             {error || message}
