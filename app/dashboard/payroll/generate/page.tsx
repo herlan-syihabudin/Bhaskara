@@ -2,14 +2,29 @@
 
 import { useState } from "react";
 
+type PreviewRow = {
+  karyawan_id: string;
+  nama: string;
+  role: string;
+  type: string;
+  gaji_bruto: number;
+  potongan_kasbon: number;
+  total: number;
+};
+
 export default function GeneratePayrollPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [projectId, setProjectId] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [result, setResult] = useState<{
+    periode: string;
+    total_karyawan: number;
+    rows: PreviewRow[];
+  } | null>(null);
 
   async function generate() {
     if (!startDate || !endDate) {
@@ -28,16 +43,13 @@ export default function GeneratePayrollPage() {
         body: JSON.stringify({
           startDate,
           endDate,
-          periode: `${startDate} s/d ${endDate}`,
+          periode: `${startDate} s.d ${endDate}`,
           project_id: projectId || "",
         }),
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "Gagal generate payroll");
-      }
+      if (!res.ok) throw new Error(data?.error || "Gagal generate payroll");
 
       setResult(data);
     } catch (e: any) {
@@ -48,13 +60,13 @@ export default function GeneratePayrollPage() {
   }
 
   return (
-    <section className="container-bbm py-12 max-w-3xl space-y-8">
+    <section className="container-bbm py-12 space-y-8">
       {/* HEADER */}
       <div>
         <p className="badge">HR & PAYROLL</p>
-        <h1>Generate Penggajian</h1>
+        <h1>Generate Payroll</h1>
         <p className="text-body mt-1">
-          Hitung gaji otomatis dari absensi + kasbon
+          Payroll massal otomatis + potongan kasbon
         </p>
       </div>
 
@@ -62,7 +74,7 @@ export default function GeneratePayrollPage() {
       <div className="card p-6 space-y-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium">Tanggal Mulai</label>
+            <label className="text-sm">Tanggal Mulai</label>
             <input
               type="date"
               className="form-input mt-1"
@@ -72,7 +84,7 @@ export default function GeneratePayrollPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Tanggal Akhir</label>
+            <label className="text-sm">Tanggal Akhir</label>
             <input
               type="date"
               className="form-input mt-1"
@@ -82,9 +94,7 @@ export default function GeneratePayrollPage() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="text-sm font-medium">
-              Project ID (opsional)
-            </label>
+            <label className="text-sm">Project ID (opsional)</label>
             <input
               className="form-input mt-1"
               placeholder="PRJ-001"
@@ -102,32 +112,57 @@ export default function GeneratePayrollPage() {
           {loading ? "⏳ Menghitung Payroll..." : "💰 Generate Payroll"}
         </button>
 
-        {/* ERROR */}
         {error && (
-          <div className="text-sm bg-red-50 text-red-700 p-3 rounded">
+          <div className="bg-red-50 text-red-700 p-3 rounded text-sm">
             ❌ {error}
           </div>
         )}
+      </div>
 
-        {/* RESULT */}
-        {result && (
-          <div className="text-sm bg-green-50 text-green-800 p-4 rounded space-y-2">
-            <p className="font-medium">✅ Payroll berhasil digenerate</p>
-            <p>Periode: {result.periode}</p>
-            <p>Total Karyawan: {result.total_karyawan}</p>
+      {/* PREVIEW RESULT */}
+      {result && (
+        <div className="card p-6 space-y-4">
+          <h2 className="font-semibold">
+            Preview Payroll – {result.periode}
+          </h2>
+
+          <table className="w-full text-sm">
+            <thead className="border-b text-gray-500">
+              <tr>
+                <th>Nama</th>
+                <th>Role</th>
+                <th>Tipe</th>
+                <th className="text-right">Gaji Bruto</th>
+                <th className="text-right">Kasbon</th>
+                <th className="text-right">Total Dibayar</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {result.rows.map((r, i) => (
+                <tr key={i} className="border-b">
+                  <td>{r.nama}</td>
+                  <td>{r.role}</td>
+                  <td>{r.type}</td>
+                  <td className="text-right">
+                    Rp {r.gaji_bruto.toLocaleString("id-ID")}
+                  </td>
+                  <td className="text-right text-red-600">
+                    - Rp {r.potongan_kasbon.toLocaleString("id-ID")}
+                  </td>
+                  <td className="text-right font-semibold">
+                    Rp {r.total.toLocaleString("id-ID")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="text-xs text-gray-500">
+            💡 Kasbon otomatis dipotong dan dicatat ke payroll
           </div>
-        )}
-      </div>
-
-      {/* NOTE */}
-      <div className="text-xs text-gray-500">
-        💡 Catatan:
-        <ul className="list-disc ml-4 mt-1">
-          <li>Kasbon otomatis dipotong</li>
-          <li>Status payroll default <b>UNPAID</b></li>
-          <li>Data tersimpan di Google Sheet PAYROLL</li>
-        </ul>
-      </div>
+        </div>
+      )}
     </section>
   );
 }
