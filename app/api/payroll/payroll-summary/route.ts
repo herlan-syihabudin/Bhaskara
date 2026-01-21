@@ -18,6 +18,17 @@ async function getSheets() {
   return google.sheets({ version: "v4", auth });
 }
 
+const SHEET_ID = process.env.GS_SHEET_ID!;
+const RANGE_PAYROLL = "PAYROLL!A:T";
+
+/* =====================
+   HELPERS
+===================== */
+const num = (v: any) =>
+  Number(String(v || "").replace(/[^\d.-]/g, "")) || 0;
+
+const upper = (v: any) => String(v || "").trim().toUpperCase();
+
 /* =====================
    GET PAYROLL SUMMARY
 ===================== */
@@ -26,8 +37,8 @@ export async function GET() {
     const sheets = await getSheets();
 
     const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GS_SHEET_ID!,
-      range: "PAYROLL!A:T", // FULL RANGE
+      spreadsheetId: SHEET_ID,
+      range: RANGE_PAYROLL,
     });
 
     const [, ...rows] = res.data.values ?? [];
@@ -36,33 +47,46 @@ export async function GET() {
 
     let totalGaji = 0;
     let belumDibayar = 0;
-    let totalHarianMasuk = 0;
+    let totalHariKerjaHarian = 0;
 
-    rows.forEach((r) => {
-      const nama = r[5];
-      const type = r[7];
-      const qtyHari = Number(r[8] || 0);
-      const total = Number(r[16] || 0); // TOTAL GAJI
-      const status = r[17];             // STATUS
+    for (const r of rows) {
+      /*
+        INDEX PAYROLL (konsisten dengan sistem lu):
+        4  karyawan_id
+        7  type
+        8  qty_hari
+        13 total (atau 16 kalau versi lama)
+        14 status (atau 17 versi lama)
+      */
 
-      if (nama) uniqKaryawan.add(nama);
+      const karyawanId = r[4];
+      const type = upper(r[7]);
+      const qtyHari = num(r[8]);
 
-      // hitung kehadiran khusus tukang harian
+      // support 2 versi kolom total
+      const total =
+        r[16] !== undefined ? num(r[16]) : num(r[13]);
+
+      const status =
+        r[17] !== undefined ? upper(r[17]) : upper(r[14]);
+
+      if (karyawanId) uniqKaryawan.add(karyawanId);
+
       if (type === "HARIAN") {
-        totalHarianMasuk += qtyHari;
+        totalHariKerjaHarian += qtyHari;
       }
 
       totalGaji += total;
 
-      if (status === "DRAFT") {
+      if (status === "DRAFT" || status === "UNPAID") {
         belumDibayar += total;
       }
-    });
+    }
 
     return NextResponse.json({
       kpi: {
         totalKaryawan: uniqKaryawan.size,
-        totalHariKerja: totalHarianMasuk,
+        totalHariKerjaHarian,
         totalGaji,
         belumDibayar,
       },
