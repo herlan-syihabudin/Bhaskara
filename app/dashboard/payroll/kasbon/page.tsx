@@ -22,6 +22,7 @@ type Kasbon = {
 type Karyawan = {
   karyawan_id: string;
   nama: string;
+  role?: string;
 };
 
 /* =====================
@@ -33,8 +34,10 @@ export default function KasbonPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
+  // FILTER
   const [statusFilter, setStatusFilter] =
     useState<"ALL" | "AKTIF" | "SELESAI">("ALL");
+  const [searchText, setSearchText] = useState("");
 
   /* =====================
      LOAD DATA
@@ -42,13 +45,13 @@ export default function KasbonPage() {
   async function loadAll() {
     try {
       setLoading(true);
-      const [kRes, eRes] = await Promise.all([
+      const [kasbonRes, karyawanRes] = await Promise.all([
         fetch("/api/kasbon", { cache: "no-store" }),
         fetch("/api/karyawan", { cache: "no-store" }),
       ]);
 
-      setKasbon(await kRes.json());
-      setKaryawan(await eRes.json());
+      setKasbon(await kasbonRes.json());
+      setKaryawan(await karyawanRes.json());
     } catch (e) {
       console.error(e);
       setKasbon([]);
@@ -63,41 +66,55 @@ export default function KasbonPage() {
   }, []);
 
   /* =====================
-     MAP NAMA
+     MAP KARYAWAN
   ====================== */
   const karyawanMap = useMemo(() => {
-    const m = new Map<string, string>();
-    karyawan.forEach((k) => m.set(k.karyawan_id, k.nama));
+    const m = new Map<string, Karyawan>();
+    karyawan.forEach((k) => m.set(k.karyawan_id, k));
     return m;
   }, [karyawan]);
 
   /* =====================
-     FILTER
+     FILTERED DATA
   ====================== */
-  const rows = useMemo(() => {
-    let r = [...kasbon];
+  const filteredKasbon = useMemo(() => {
+    let rows = [...kasbon];
+
     if (statusFilter !== "ALL") {
-      r = r.filter((x) => x.status === statusFilter);
+      rows = rows.filter((r) => r.status === statusFilter);
     }
-    return r.sort((a, b) => (a.tanggal < b.tanggal ? 1 : -1));
-  }, [kasbon, statusFilter]);
+
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      rows = rows.filter((r) => {
+        const nama = karyawanMap.get(r.karyawan_id)?.nama || "";
+        return (
+          r.karyawan_id.toLowerCase().includes(q) ||
+          nama.toLowerCase().includes(q) ||
+          (r.keterangan || "").toLowerCase().includes(q)
+        );
+      });
+    }
+
+    return rows.sort((a, b) => (a.tanggal < b.tanggal ? 1 : -1));
+  }, [kasbon, statusFilter, searchText, karyawanMap]);
 
   /* =====================
      KPI
   ====================== */
-  const totalSisa = useMemo(
-    () => rows.reduce((s, r) => s + Number(r.sisa_kasbon || 0), 0),
-    [rows]
+  const totalSisaKasbon = useMemo(
+    () => filteredKasbon.reduce((s, r) => s + Number(r.sisa_kasbon || 0), 0),
+    [filteredKasbon]
   );
 
   /* =====================
-     CICIL MANUAL (STEP 1)
+     ACTION: POTONG CICILAN
   ====================== */
-  async function potongSekali(row: Kasbon) {
+  async function potongCicilan(row: Kasbon) {
     if (updating) return;
 
     const ok = confirm(
-      `Potong kasbon ${row.kasbon_id}\n\nSisa saat ini: Rp ${row.sisa_kasbon.toLocaleString(
+      `Potong kasbon ${row.kasbon_id}\n\nSisa: Rp ${row.sisa_kasbon.toLocaleString(
         "id-ID"
       )}\nPotong: Rp ${row.potong_per_payroll.toLocaleString("id-ID")}`
     );
@@ -105,7 +122,6 @@ export default function KasbonPage() {
 
     try {
       setUpdating(true);
-
       await fetch("/api/kasbon", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -116,6 +132,8 @@ export default function KasbonPage() {
       });
 
       await loadAll();
+    } catch (e) {
+      alert("Gagal memotong kasbon");
     } finally {
       setUpdating(false);
     }
@@ -132,7 +150,7 @@ export default function KasbonPage() {
           <p className="badge">HR & PAYROLL</p>
           <h1>Kasbon Karyawan (Cicilan)</h1>
           <p className="text-body mt-1">
-            Kasbon dipotong bertahap otomatis saat payroll
+            Kasbon dipotong bertahap otomatis melalui payroll
           </p>
         </div>
 
@@ -142,24 +160,39 @@ export default function KasbonPage() {
       </div>
 
       {/* KPI */}
-      <div className="card p-5">
-        <p className="text-xs text-gray-500">Total Sisa Kasbon Aktif</p>
-        <p className="text-2xl font-semibold">
-          Rp {totalSisa.toLocaleString("id-ID")}
-        </p>
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="card p-5">
+          <p className="text-xs text-gray-500">Total Sisa Kasbon</p>
+          <p className="text-2xl font-semibold">
+            Rp {totalSisaKasbon.toLocaleString("id-ID")}
+          </p>
+        </div>
+        <div className="card p-5">
+          <p className="text-xs text-gray-500">Jumlah Transaksi</p>
+          <p className="text-2xl font-semibold">
+            {filteredKasbon.length}
+          </p>
+        </div>
       </div>
 
       {/* FILTER */}
-      <div className="flex gap-3">
+      <div className="card p-4 flex flex-col md:flex-row gap-4">
         <select
-          className="form-input w-48"
+          className="form-input md:w-48"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as any)}
         >
-          <option value="ALL">Semua</option>
+          <option value="ALL">Semua Status</option>
           <option value="AKTIF">Aktif</option>
           <option value="SELESAI">Selesai</option>
         </select>
+
+        <input
+          className="form-input flex-1"
+          placeholder="Cari nama / ID / keterangan..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
 
         <button onClick={loadAll} className="btn-outline">
           🔄 Refresh
@@ -191,45 +224,48 @@ export default function KasbonPage() {
             )}
 
             {!loading &&
-              rows.map((r) => (
-                <tr key={r.kasbon_id} className="border-b">
-                  <td>{r.tanggal}</td>
-                  <td className="font-medium">
-                    {karyawanMap.get(r.karyawan_id)} ({r.karyawan_id})
-                  </td>
-                  <td>
-                    Rp {r.total_kasbon.toLocaleString("id-ID")}
-                  </td>
-                  <td className="font-semibold">
-                    Rp {r.sisa_kasbon.toLocaleString("id-ID")}
-                  </td>
-                  <td>
-                    Rp {r.potong_per_payroll.toLocaleString("id-ID")}
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        r.status === "AKTIF"
-                          ? "badge-warning"
-                          : "badge-success"
-                      }`}
-                    >
-                      {r.status}
-                    </span>
-                  </td>
-                  <td>
-                    {r.status === "AKTIF" && (
-                      <button
-                        className="text-xs underline text-green-700"
-                        onClick={() => potongSekali(r)}
-                        disabled={updating}
+              filteredKasbon.map((k) => {
+                const emp = karyawanMap.get(k.karyawan_id);
+                return (
+                  <tr key={k.kasbon_id} className="border-b">
+                    <td>{k.tanggal}</td>
+                    <td className="font-medium">
+                      {emp?.nama} ({k.karyawan_id})
+                    </td>
+                    <td>
+                      Rp {k.total_kasbon.toLocaleString("id-ID")}
+                    </td>
+                    <td className="font-semibold">
+                      Rp {k.sisa_kasbon.toLocaleString("id-ID")}
+                    </td>
+                    <td>
+                      Rp {k.potong_per_payroll.toLocaleString("id-ID")}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          k.status === "AKTIF"
+                            ? "badge-warning"
+                            : "badge-success"
+                        }`}
                       >
-                        Potong 1x
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                        {k.status}
+                      </span>
+                    </td>
+                    <td>
+                      {k.status === "AKTIF" && (
+                        <button
+                          className="text-xs underline text-green-700"
+                          onClick={() => potongCicilan(k)}
+                          disabled={updating}
+                        >
+                          Potong 1x
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
