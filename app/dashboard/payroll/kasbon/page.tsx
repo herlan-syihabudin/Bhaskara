@@ -4,24 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 /* =====================
-   TYPES (SUPPORT LAMA + CICILAN)
+   TYPES
 ===================== */
 type Kasbon = {
   kasbon_id: string;
   karyawan_id: string;
   tanggal: string;
 
-  // MODE LAMA
-  jumlah?: number;
-
-  // MODE CICILAN
   total_kasbon?: number;
   sisa_kasbon?: number;
   potong_per_payroll?: number;
 
+  jumlah?: number; // legacy
   keterangan?: string;
   status: "BELUM_DIPOTONG" | "DIPOTONG" | string;
-  payroll_id?: string;
 };
 
 type Karyawan = {
@@ -88,7 +84,8 @@ export default function KasbonPage() {
   const isCicilan = (k: Kasbon) =>
     k.total_kasbon !== undefined &&
     k.sisa_kasbon !== undefined &&
-    k.potong_per_payroll !== undefined;
+    k.potong_per_payroll !== undefined &&
+    k.potong_per_payroll > 0;
 
   /* =====================
      FILTER
@@ -120,66 +117,10 @@ export default function KasbonPage() {
   }, [kasbon, statusFilter, searchText, karyawanMap]);
 
   /* =====================
-     KPI
-  ====================== */
-  const totalSisa = useMemo(
-    () => filteredKasbon.reduce((s, k) => s + getSisa(k), 0),
-    [filteredKasbon]
-  );
-
-  const totalAktif = useMemo(
-    () => filteredKasbon.filter((k) => isAktif(k.status)).length,
-    [filteredKasbon]
-  );
-
-  /* =====================
-     CSV EXPORT
-  ====================== */
-  function exportCSV() {
-    const headers = [
-      "Tanggal",
-      "Kasbon ID",
-      "Karyawan",
-      "Total",
-      "Sisa",
-      "Cicilan / Payroll",
-      "Status",
-      "Keterangan",
-    ];
-
-    const rows = filteredKasbon.map((k) => {
-      const emp = karyawanMap.get(k.karyawan_id);
-      return [
-        k.tanggal,
-        k.kasbon_id,
-        emp?.nama || k.karyawan_id,
-        getTotal(k),
-        getSisa(k),
-        k.potong_per_payroll ?? "-",
-        uiStatus(k.status),
-        k.keterangan || "",
-      ];
-    });
-
-    const csv =
-      [headers, ...rows]
-        .map((r) => r.map((v) => `"${String(v)}"`).join(","))
-        .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `kasbon_${Date.now()}.csv`;
-    a.click();
-  }
-
-  /* =====================
      POTONG CICILAN
   ====================== */
   async function potongCicilan(k: Kasbon) {
-    if (updating) return;
-    if (!isCicilan(k)) return;
+    if (updating || !isCicilan(k)) return;
 
     const ok = confirm(
       `Potong kasbon ${k.kasbon_id}\n\nSisa: Rp ${getSisa(k).toLocaleString(
@@ -193,10 +134,7 @@ export default function KasbonPage() {
       await fetch("/api/kasbon", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kasbon_id: k.kasbon_id,
-          action: "CICIL",
-        }),
+        body: JSON.stringify({ kasbon_id: k.kasbon_id }),
       });
       await loadAll();
     } finally {
@@ -215,31 +153,22 @@ export default function KasbonPage() {
           <p className="badge">HR & PAYROLL</p>
           <h1>Kasbon Karyawan</h1>
           <p className="text-body mt-1">
-            Mendukung kasbon sekali & cicilan payroll
+            Kasbon sekali & cicilan payroll
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={exportCSV} className="btn-outline">
-            ⬇ Export CSV
-          </button>
-          <Link href="/dashboard/payroll/kasbon/tambah" className="btn-primary">
-            ➕ Tambah Kasbon
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <Kpi title="Total Sisa Kasbon" value={totalSisa} />
-        <Kpi title="Kasbon Aktif" value={totalAktif} type="count" />
-        <Kpi title="Total Transaksi" value={filteredKasbon.length} type="count" />
+        <Link
+          href="/dashboard/payroll/kasbon/tambah"
+          className="btn-primary"
+        >
+          ➕ Tambah Kasbon
+        </Link>
       </div>
 
       {/* FILTER */}
       <div className="card p-4 flex gap-4">
         <select
-          className="form-input md:w-48"
+          className="form-input w-48"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as any)}
         >
@@ -285,8 +214,8 @@ export default function KasbonPage() {
                 const emp = karyawanMap.get(k.karyawan_id);
                 const total = getTotal(k);
                 const sisa = getSisa(k);
-                const paid = total - sisa;
-                const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+                const pct =
+                  total > 0 ? Math.round(((total - sisa) / total) * 100) : 0;
 
                 return (
                   <tr key={k.kasbon_id} className="border-b">
@@ -325,7 +254,16 @@ export default function KasbonPage() {
                       </span>
                     </td>
 
-                    <td>
+                    <td className="space-x-2">
+                      {isAktif(k.status) && (
+                        <Link
+                          href={`/dashboard/payroll/kasbon/edit/${k.kasbon_id}`}
+                          className="text-xs underline text-blue-600"
+                        >
+                          Edit
+                        </Link>
+                      )}
+
                       {isAktif(k.status) && isCicilan(k) && (
                         <button
                           className="text-xs underline text-green-700"
@@ -335,12 +273,6 @@ export default function KasbonPage() {
                           Potong 1x
                         </button>
                       )}
-
-                      {isAktif(k.status) && !isCicilan(k) && (
-                        <span className="text-xs text-gray-400">
-                          Sekali Potong
-                        </span>
-                      )}
                     </td>
                   </tr>
                 );
@@ -349,29 +281,5 @@ export default function KasbonPage() {
         </table>
       </div>
     </section>
-  );
-}
-
-/* =====================
-   KPI
-===================== */
-function Kpi({
-  title,
-  value,
-  type = "money",
-}: {
-  title: string;
-  value: number;
-  type?: "money" | "count";
-}) {
-  return (
-    <div className="card p-5">
-      <p className="text-xs text-gray-500">{title}</p>
-      <p className="text-2xl font-semibold mt-1">
-        {type === "money"
-          ? `Rp ${value.toLocaleString("id-ID")}`
-          : value}
-      </p>
-    </div>
   );
 }
