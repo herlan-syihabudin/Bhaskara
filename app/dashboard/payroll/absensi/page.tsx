@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-type Mode = "MASUK" | "KELUAR" | "IZIN" | "SAKIT" | "CUTI";
+type Mode = "MASUK" | "KELUAR" | "IZIN" | "SAKIT" | "CUTI" | "ALFA";
 
 type Karyawan = {
   karyawan_id: string;
   nama: string;
   role: string;
-  type: string;
+  tipe: string;
   status: string;
 };
 
@@ -35,28 +35,25 @@ export default function AbsensiPage() {
   useEffect(() => {
     fetch("/api/karyawan")
       .then((r) => r.json())
-      .then((data) => {
+      .then((data) =>
         setKaryawanList(
           (data || []).filter(
             (k: any) => String(k.status).toUpperCase() === "AKTIF"
           )
-        );
-      });
+        )
+      );
 
     fetch("/api/proyek")
       .then((r) => r.json())
-      .then((data) => {
+      .then((data) =>
         setProyekList(
           (data || []).filter(
             (p: any) => String(p.status).toUpperCase() === "RUNNING"
           )
-        );
-      });
+        )
+      );
   }, []);
 
-  /* =====================
-     ABSEN
-  ===================== */
   async function absen(mode: Mode) {
     if (!karyawan || !projectId) return;
 
@@ -96,11 +93,13 @@ export default function AbsensiPage() {
       <div>
         <p className="badge">HR & PAYROLL</p>
         <h1>Absensi Karyawan</h1>
-        <p className="text-body mt-1">Absensi harian (WIB)</p>
+        <p className="text-body mt-1">
+          Nama & proyek wajib sesuai master
+        </p>
       </div>
 
       <div className="card p-6 space-y-6">
-        {/* PILIH KARYAWAN */}
+        {/* NAMA */}
         <div>
           <label className="text-sm font-medium">Nama Karyawan</label>
           <select
@@ -116,7 +115,7 @@ export default function AbsensiPage() {
             <option value="">-- pilih nama --</option>
             {karyawanList.map((k) => (
               <option key={k.karyawan_id} value={k.karyawan_id}>
-                {k.nama} ({k.role} - {k.type})
+                {k.nama} ({k.role} - {k.tipe})
               </option>
             ))}
           </select>
@@ -128,7 +127,7 @@ export default function AbsensiPage() {
           )}
         </div>
 
-        {/* PILIH PROYEK */}
+        {/* PROYEK */}
         <div>
           <label className="text-sm font-medium">Lokasi Proyek</label>
           <select
@@ -165,27 +164,16 @@ export default function AbsensiPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <button
-            onClick={() => absen("IZIN")}
-            disabled={!canAbsen}
-            className="btn-outline"
-          >
-            📄 Izin
-          </button>
-          <button
-            onClick={() => absen("SAKIT")}
-            disabled={!canAbsen}
-            className="btn-outline"
-          >
-            🤒 Sakit
-          </button>
-          <button
-            onClick={() => absen("CUTI")}
-            disabled={!canAbsen}
-            className="btn-outline"
-          >
-            🏖️ Cuti
-          </button>
+          {["IZIN", "SAKIT", "CUTI"].map((m) => (
+            <button
+              key={m}
+              onClick={() => absen(m as Mode)}
+              disabled={!canAbsen}
+              className="btn-outline"
+            >
+              {m}
+            </button>
+          ))}
         </div>
 
         {(message || error) && (
