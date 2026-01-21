@@ -26,12 +26,15 @@ async function getKasbonSummary() {
     cache: "no-store",
   });
 
-  if (!res.ok) return { totalKasbon: 0, totalOrang: 0 };
+  if (!res.ok) {
+    return { totalKasbon: 0, totalOrang: 0 };
+  }
 
   const data = await res.json();
 
   const totalKasbon = data.reduce(
-    (acc: number, k: any) => acc + Number(k.jumlah || 0),
+    (acc: number, k: any) =>
+      acc + Number(k.sisa_kasbon ?? k.jumlah ?? 0),
     0
   );
 
@@ -55,6 +58,9 @@ export default async function PayrollPage() {
 
   const { kpi } = payroll;
 
+  /* =====================
+     NORMALIZE KARYAWAN
+  ====================== */
   const aktif = karyawan.filter(
     (k: any) => (k.status_kerja || "").toUpperCase() === "AKTIF"
   );
@@ -72,6 +78,9 @@ export default async function PayrollPage() {
   const totalKontrak = aktif.filter((k: any) => normalizeType(k.type) === "KONTRAK").length;
   const totalTetap = aktif.filter((k: any) => normalizeType(k.type) === "TETAP").length;
 
+  /* =====================
+     RENDER
+  ====================== */
   return (
     <section className="space-y-10">
       {/* HEADER */}
@@ -83,9 +92,19 @@ export default async function PayrollPage() {
           Payroll Management
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Kelola tenaga kerja, absensi, kasbon, dan penggajian
+          Kelola karyawan, absensi, kasbon, dan penggajian
         </p>
       </div>
+
+      {/* ALERT KASBON */}
+      {kasbon.totalKasbon > 0 && (
+        <div className="card border-l-4 border-yellow-500 bg-yellow-50 p-4 text-sm">
+          ⚠️ Terdapat <b>{kasbon.totalOrang}</b> karyawan dengan kasbon aktif
+          sebesar{" "}
+          <b>Rp {kasbon.totalKasbon.toLocaleString("id-ID")}</b>.  
+          Kasbon akan otomatis dipotong saat proses payroll.
+        </div>
+      )}
 
       {/* KPI SDM */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -97,8 +116,16 @@ export default async function PayrollPage() {
 
       {/* KPI PAYROLL */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KpiCard title="Total Gaji Periode Ini" value={kpi.totalGaji} type="money" />
-        <KpiCard title="Belum Dibayar" value={kpi.belumDibayar} type="money" />
+        <KpiCard
+          title="Total Gaji Periode Ini"
+          value={kpi.totalGaji}
+          type="money"
+        />
+        <KpiCard
+          title="Belum Dibayar"
+          value={kpi.belumDibayar}
+          type="money"
+        />
         <KpiCard
           title="Kasbon Aktif"
           value={kasbon.totalKasbon}
@@ -107,17 +134,26 @@ export default async function PayrollPage() {
         />
       </div>
 
-      {/* ACTION */}
+      {/* QUICK ACTION */}
       <div className="grid md:grid-cols-4 gap-6">
-        <Link href="/dashboard/payroll/karyawan" className="card p-6 hover:border-black transition">
+        <Link
+          href="/dashboard/payroll/karyawan"
+          className="card p-6 hover:border-black transition"
+        >
           👷 Data Karyawan
         </Link>
 
-        <Link href="/dashboard/payroll/absensi" className="card p-6 hover:border-black transition">
+        <Link
+          href="/dashboard/payroll/absensi"
+          className="card p-6 hover:border-black transition"
+        >
           🗓️ Absensi
         </Link>
 
-        <Link href="/dashboard/payroll/kasbon" className="card p-6 hover:border-black transition">
+        <Link
+          href="/dashboard/payroll/kasbon"
+          className="card p-6 hover:border-black transition"
+        >
           💸 Kasbon
         </Link>
 
@@ -127,6 +163,25 @@ export default async function PayrollPage() {
         >
           💰 Penggajian
         </Link>
+      </div>
+
+      {/* QUICK PAYROLL */}
+      <div className="card p-6 space-y-4">
+        <h3 className="font-semibold text-lg">Quick Payroll Action</h3>
+
+        <div className="flex flex-wrap gap-3">
+          <Link href="/dashboard/payroll/gaji/process" className="btn-primary">
+            ▶ Proses Payroll
+          </Link>
+
+          <Link href="/dashboard/payroll/gaji" className="btn-outline">
+            📄 Rekap Payroll
+          </Link>
+
+          <Link href="/dashboard/payroll/gaji/export" className="btn-outline">
+            📤 Export Payroll CSV
+          </Link>
+        </div>
       </div>
     </section>
   );
