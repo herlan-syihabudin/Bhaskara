@@ -14,6 +14,7 @@ async function getSheets() {
     },
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
+
   return google.sheets({ version: "v4", auth });
 }
 
@@ -61,7 +62,7 @@ export async function GET(req: Request) {
       sisa_kasbon: Number(r[4] || 0),
       potong_per_payroll: Number(r[5] || 0),
       keterangan: r[6] || "",
-      status: r[7] || "",
+      status: r[7] || "", // BELUM_DIPOTONG | DIPOTONG
       payroll_id: r[8] || "",
       created_at: r[9] || "",
     }));
@@ -85,18 +86,20 @@ export async function GET(req: Request) {
 }
 
 /* =====================
-   POST KASBON BARU (CICIL)
+   POST KASBON
+   - SUPPORT: SEKALI POTONG
+   - SUPPORT: CICILAN
 ===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const total = Number(body.total_kasbon || body.jumlah);
+    const total = Number(body.total_kasbon || body.jumlah || 0);
     const potong = Number(body.potong_per_payroll || 0);
 
-    if (!body.karyawan_id || total <= 0 || potong <= 0) {
+    if (!body.karyawan_id || total <= 0) {
       return NextResponse.json(
-        { error: "karyawan_id, total_kasbon & potong_per_payroll wajib" },
+        { error: "karyawan_id & jumlah wajib" },
         { status: 400 }
       );
     }
@@ -104,16 +107,16 @@ export async function POST(req: Request) {
     const sheets = await getSheets();
 
     const row = [
-      `KSB-${Date.now()}`,      // kasbon_id
-      body.karyawan_id,         // karyawan_id
-      body.tanggal || todayISO(),
-      total,                    // total_kasbon
-      total,                    // sisa_kasbon
-      potong,                   // potong_per_payroll
-      body.keterangan || "",
-      "AKTIF",                  // status
-      "",                       // payroll_id
-      nowTimestamp(),           // created_at
+      `KSB-${Date.now()}`,          // kasbon_id
+      body.karyawan_id,             // karyawan_id
+      body.tanggal || todayISO(),   // tanggal
+      total,                        // total_kasbon
+      total,                        // sisa_kasbon
+      potong > 0 ? potong : "",     // potong_per_payroll
+      body.keterangan || "",        // keterangan
+      "BELUM_DIPOTONG",             // ✅ STATUS FINAL
+      "",                           // payroll_id
+      nowTimestamp(),               // created_at
     ];
 
     await sheets.spreadsheets.values.append({
@@ -135,12 +138,19 @@ export async function POST(req: Request) {
 
 /* =====================
    PUT KASBON
-   - CICIL / PAYROLL
+   - CICILAN / PAYROLL
 ===================== */
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
     const sheets = await getSheets();
+
+    if (!body.kasbon_id) {
+      return NextResponse.json(
+        { error: "kasbon_id wajib" },
+        { status: 400 }
+      );
+    }
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
@@ -148,8 +158,8 @@ export async function PUT(req: Request) {
     });
 
     const rows = res.data.values ?? [];
-
     const idx = rows.findIndex((r) => r[0] === body.kasbon_id);
+
     if (idx === -1) {
       return NextResponse.json(
         { error: "Kasbon tidak ditemukan" },
@@ -161,12 +171,19 @@ export async function PUT(req: Request) {
     const sisa = Number(row[4] || 0);
     const potong = Number(row[5] || 0);
 
+    if (potong <= 0) {
+      return NextResponse.json(
+        { error: "Kasbon ini bukan cicilan" },
+        { status: 400 }
+      );
+    }
+
     let newSisa = sisa - potong;
-    let status = "AKTIF";
+    let status = "BELUM_DIPOTONG";
 
     if (newSisa <= 0) {
       newSisa = 0;
-      status = "SELESAI";
+      status = "DIPOTONG";
     }
 
     const rowNumber = idx + 1;
@@ -177,10 +194,10 @@ export async function PUT(req: Request) {
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [[
-          newSisa,                       // sisa_kasbon
-          potong,                        // potong_per_payroll (keep)
-          row[6] || "",                  // keterangan
-          status,                        // status
+          newSisa,                     // sisa_kasbon
+          potong,                      // potong_per_payroll
+          row[6] || "",                // keterangan
+          status,                      // ✅ STATUS FINAL
           body.payroll_id || row[8] || "",
         ]],
       },
