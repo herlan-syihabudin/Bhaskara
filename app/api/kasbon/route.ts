@@ -58,9 +58,9 @@ export async function GET(req: Request) {
       kasbon_id: r[0],
       karyawan_id: r[1],
       tanggal: r[2],
-      total_kasbon: Number(r[3] || 0),
-      sisa_kasbon: Number(r[4] || 0),
-      potong_per_payroll: Number(r[5] || 0),
+      total_kasbon: parseInt(String(r[3] || "0"), 10),
+      sisa_kasbon: parseInt(String(r[4] || "0"), 10),
+      potong_per_payroll: parseInt(String(r[5] || "0"), 10),
       keterangan: r[6] || "",
       status: r[7] || "", // BELUM_DIPOTONG | DIPOTONG
       payroll_id: r[8] || "",
@@ -87,15 +87,15 @@ export async function GET(req: Request) {
 
 /* =====================
    POST KASBON
-   - SUPPORT: SEKALI POTONG
-   - SUPPORT: CICILAN
+   - SEKALI POTONG
+   - CICILAN
 ===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const total = Number(body.total_kasbon || body.jumlah || 0);
-    const potong = Number(body.potong_per_payroll || 0);
+    const total = parseInt(String(body.total_kasbon || body.jumlah || "0"), 10);
+    const potong = parseInt(String(body.potong_per_payroll || "0"), 10);
 
     if (!body.karyawan_id || total <= 0) {
       return NextResponse.json(
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
       total,                        // sisa_kasbon
       potong > 0 ? potong : "",     // potong_per_payroll
       body.keterangan || "",        // keterangan
-      "BELUM_DIPOTONG",             // ✅ STATUS FINAL
+      "BELUM_DIPOTONG",             // status
       "",                           // payroll_id
       nowTimestamp(),               // created_at
     ];
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: RANGE,
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: "RAW", // 🔒 PENTING: ANTI ROUNDING
       requestBody: { values: [row] },
     });
 
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
 
 /* =====================
    PUT KASBON
-   - CICILAN / PAYROLL
+   - POTONG CICILAN (PAYROLL)
 ===================== */
 export async function PUT(req: Request) {
   try {
@@ -168,8 +168,9 @@ export async function PUT(req: Request) {
     }
 
     const row = rows[idx];
-    const sisa = Number(row[4] || 0);
-    const potong = Number(row[5] || 0);
+
+    const sisa = parseInt(String(row[4] || "0"), 10);
+    const potong = parseInt(String(row[5] || "0"), 10);
 
     if (potong <= 0) {
       return NextResponse.json(
@@ -179,26 +180,24 @@ export async function PUT(req: Request) {
     }
 
     let newSisa = sisa - potong;
-    let status = "BELUM_DIPOTONG";
 
-    if (newSisa <= 0) {
-      newSisa = 0;
-      status = "DIPOTONG";
-    }
+    // 🔒 PENGAMAN FINAL
+    newSisa = Math.max(0, Math.trunc(newSisa));
 
+    const status = newSisa === 0 ? "DIPOTONG" : "BELUM_DIPOTONG";
     const rowNumber = idx + 1;
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
       range: `KASBON!E${rowNumber}:I${rowNumber}`,
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: "RAW", // 🔒 ANTI AUTO FORMAT
       requestBody: {
         values: [[
-          newSisa,                     // sisa_kasbon
-          potong,                      // potong_per_payroll
-          row[6] || "",                // keterangan
-          status,                      // ✅ STATUS FINAL
-          body.payroll_id || row[8] || "",
+          newSisa,                         // sisa_kasbon
+          potong,                          // potong_per_payroll
+          row[6] || "",                    // keterangan
+          status,                          // status
+          body.payroll_id || row[8] || "", // payroll_id
         ]],
       },
     });
