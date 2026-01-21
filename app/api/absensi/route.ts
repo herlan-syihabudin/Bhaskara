@@ -40,8 +40,10 @@ function nowTime() {
   });
 }
 
-function isLate(jam: string) {
-  return jam > "08:30:00";
+function masukStatus(jam: string) {
+  if (jam <= "08:00:00") return jam;
+  if (jam <= "08:30:00") return `TELAT_RINGAN_${jam}`;
+  return `TELAT_BERAT_${jam}`;
 }
 
 /* =====================
@@ -56,7 +58,6 @@ async function getKaryawanById(karyawan_id: string) {
 
   const [, ...rows] = res.data.values ?? [];
   const row = rows.find((r) => r[0] === karyawan_id);
-
   if (!row) return null;
 
   return {
@@ -75,23 +76,23 @@ async function getKaryawanById(karyawan_id: string) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { karyawan_id, mode, project_id, catatan } = body;
+    const { karyawan_id, mode, project_id } = body;
 
-    if (!karyawan_id || !mode) {
+    if (!karyawan_id || !mode || !project_id) {
       return NextResponse.json(
-        { error: "Data tidak lengkap" },
+        { error: "Data absensi tidak lengkap" },
         { status: 400 }
       );
     }
 
     const sheets = await getSheets();
 
-    // 🔒 AMBIL DATA DARI MASTER (WAJIB)
+    // 🔒 VALIDASI MASTER KARYAWAN
     const karyawan = await getKaryawanById(karyawan_id);
     if (!karyawan || karyawan.status !== "AKTIF") {
       return NextResponse.json(
-        { error: "Karyawan tidak valid / nonaktif" },
-        { status: 400 }
+        { error: "Karyawan tidak terdaftar / nonaktif" },
+        { status: 403 }
       );
     }
 
@@ -117,9 +118,7 @@ export async function POST(req: Request) {
         );
       }
 
-      const statusMasuk = isLate(waktu)
-        ? `TELAT_${waktu}`
-        : waktu;
+      const jamMasuk = masukStatus(waktu);
 
       await sheets.spreadsheets.values.append({
         spreadsheetId: SHEET_ID,
@@ -133,14 +132,14 @@ export async function POST(req: Request) {
             karyawan.nama,
             karyawan.role,
             karyawan.tipe,
-            project_id || "",
-            statusMasuk,
+            project_id,
+            jamMasuk,
             "",
           ]],
         },
       });
 
-      return NextResponse.json({ success: true, status: statusMasuk });
+      return NextResponse.json({ success: true, jam_masuk: jamMasuk });
     }
 
     /* ===== KELUAR ===== */
@@ -173,7 +172,7 @@ export async function POST(req: Request) {
     if (["IZIN", "SAKIT", "CUTI", "ALFA"].includes(mode)) {
       if (existingIndex !== -1) {
         return NextResponse.json(
-          { error: "Absensi sudah ada" },
+          { error: "Absensi sudah ada hari ini" },
           { status: 400 }
         );
       }
@@ -190,7 +189,7 @@ export async function POST(req: Request) {
             karyawan.nama,
             karyawan.role,
             karyawan.tipe,
-            project_id || "",
+            project_id,
             mode,
             "",
           ]],
@@ -200,7 +199,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, status: mode });
     }
 
-    return NextResponse.json({ error: "Mode tidak valid" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Mode tidak valid" },
+      { status: 400 }
+    );
   } catch (e) {
     console.error("ABSENSI ERROR", e);
     return NextResponse.json(
