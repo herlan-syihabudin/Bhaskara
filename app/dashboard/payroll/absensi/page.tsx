@@ -33,6 +33,7 @@ export default function AbsensiPage() {
      LOAD MASTER DATA
   ===================== */
   useEffect(() => {
+    // KARYAWAN AKTIF
     fetch("/api/karyawan")
       .then((r) => r.json())
       .then((data) => {
@@ -44,12 +45,18 @@ export default function AbsensiPage() {
       })
       .catch(() => setKaryawanList([]));
 
-    const running = (data || []).filter(
-  (p: any) =>
-    String(p.status || "")
-      .trim()
-      .toUpperCase() === "RUNNING"
-);
+    // PROYEK RUNNING (TERMASUK HO)
+    fetch("/api/proyek")
+      .then((r) => r.json())
+      .then((data) => {
+        const running = (data || []).filter(
+          (p: any) =>
+            String(p.status || "")
+              .trim()                // buang spasi dari Google Sheet
+              .toUpperCase() === "RUNNING"
+        );
+        setProyekList(running);
+      })
       .catch(() => setProyekList([]));
   }, []);
 
@@ -120,8 +127,8 @@ export default function AbsensiPage() {
             <option value="">-- pilih nama --</option>
             {karyawanList.map((k) => (
               <option key={k.karyawan_id} value={k.karyawan_id}>
-  {k.nama}
-</option>
+                {k.nama}
+              </option>
             ))}
           </select>
 
@@ -168,7 +175,7 @@ export default function AbsensiPage() {
           </button>
         </div>
 
-        {/* STATUS */}
+        {/* STATUS IZIN/SAKIT/CUTI */}
         <div className="grid grid-cols-3 gap-3">
           {["IZIN", "SAKIT", "CUTI"].map((m) => (
             <button
