@@ -19,6 +19,7 @@ async function getSheets() {
 
 const SHEET_ID = process.env.GS_SHEET_ID!;
 const RANGE_ABSENSI = "ABSENSI!A:I";
+const RANGE_KARYAWAN = "MASTER_KARYAWAN!A:H";
 
 /* =====================
    TIME (WIB)
@@ -26,9 +27,7 @@ const RANGE_ABSENSI = "ABSENSI!A:I";
 function todayISO() {
   return new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-  )
-    .toISOString()
-    .slice(0, 10);
+  ).toISOString().slice(0, 10);
 }
 
 function nowTime() {
@@ -41,72 +40,62 @@ function nowTime() {
   });
 }
 
-/* =====================
-   JAM MASUK STATUS
-===================== */
-function masukStatus(jam: string) {
-  if (jam <= "08:00:00") return jam;
-  if (jam <= "08:30:00") return `TELAT_RINGAN_${jam}`;
-  return `TELAT_BERAT_${jam}`;
+function isLate(jam: string) {
+  return jam > "08:30:00";
 }
 
 /* =====================
-   GET ABSENSI
+   GET MASTER KARYAWAN
 ===================== */
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const month = searchParams.get("month");
+async function getKaryawanById(karyawan_id: string) {
+  const sheets = await getSheets();
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SHEET_ID,
+    range: RANGE_KARYAWAN,
+  });
 
-    const sheets = await getSheets();
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: RANGE_ABSENSI,
-    });
+  const [, ...rows] = res.data.values ?? [];
+  const row = rows.find((r) => r[0] === karyawan_id);
 
-    const [, ...rows] = res.data.values ?? [];
+  if (!row) return null;
 
-    let data = rows.map((r, i) => ({
-      rowIndex: i + 2,
-      absensi_id: r[0],
-      tanggal: r[1],
-      karyawan_id: r[2],
-      nama: r[3],
-      role: r[4],
-      tipe: r[5],
-      project_id: r[6],
-      jam_masuk: r[7],
-      jam_keluar: r[8],
-    }));
-
-    if (month) {
-      data = data.filter((x) =>
-        (x.tanggal || "").startsWith(month)
-      );
-    }
-
-    return NextResponse.json(data);
-  } catch (e) {
-    return NextResponse.json(
-      { error: "Gagal load absensi" },
-      { status: 500 }
-    );
-  }
+  return {
+    karyawan_id: row[0],
+    nama: row[1],
+    role: row[2],
+    tipe: row[3],
+    rate: Number(row[4] || 0),
+    status: String(row[5] || "").toUpperCase(),
+  };
 }
 
 /* =====================
    POST ABSENSI
-   mode:
-   - MASUK
-   - KELUAR
-   - IZIN | SAKIT | CUTI
 ===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { karyawan_id, mode, project_id, catatan } = body;
+
+    if (!karyawan_id || !mode) {
+      return NextResponse.json(
+        { error: "Data tidak lengkap" },
+        { status: 400 }
+      );
+    }
+
     const sheets = await getSheets();
 
-    const tanggal = body.tanggal || todayISO();
+    // 🔒 AMBIL DATA DARI MASTER (WAJIB)
+    const karyawan = await getKaryawanById(karyawan_id);
+    if (!karyawan || karyawan.status !== "AKTIF") {
+      return NextResponse.json(
+        { error: "Karyawan tidak valid / nonaktif" },
+        { status: 400 }
+      );
+    }
+
+    const tanggal = todayISO();
     const waktu = nowTime();
 
     const res = await sheets.spreadsheets.values.get({
@@ -115,18 +104,12 @@ export async function POST(req: Request) {
     });
 
     const rows = res.data.values ?? [];
-
     const existingIndex = rows.findIndex(
-      (r, i) =>
-        i > 0 &&
-        r[1] === tanggal &&
-        r[2] === body.karyawan_id
+      (r, i) => i > 0 && r[1] === tanggal && r[2] === karyawan_id
     );
 
-    /* =====================
-       MASUK
-    ===================== */
-    if (body.mode === "MASUK") {
+    /* ===== MASUK ===== */
+    if (mode === "MASUK") {
       if (existingIndex !== -1) {
         return NextResponse.json(
           { error: "Sudah absen hari ini" },
@@ -134,7 +117,9 @@ export async function POST(req: Request) {
         );
       }
 
-      const jamMasuk = masukStatus(waktu);
+      const statusMasuk = isLate(waktu)
+        ? `TELAT_${waktu}`
+        : waktu;
 
       await sheets.spreadsheets.values.append({
         spreadsheetId: SHEET_ID,
@@ -144,27 +129,22 @@ export async function POST(req: Request) {
           values: [[
             `ABS-${Date.now()}`,
             tanggal,
-            body.karyawan_id,
-            body.nama,
-            body.role,
-            body.tipe,
-            body.project_id || "",
-            jamMasuk,
+            karyawan.karyawan_id,
+            karyawan.nama,
+            karyawan.role,
+            karyawan.tipe,
+            project_id || "",
+            statusMasuk,
             "",
           ]],
         },
       });
 
-      return NextResponse.json({
-        success: true,
-        jam_masuk: jamMasuk,
-      });
+      return NextResponse.json({ success: true, status: statusMasuk });
     }
 
-    /* =====================
-       KELUAR
-    ===================== */
-    if (body.mode === "KELUAR") {
+    /* ===== KELUAR ===== */
+    if (mode === "KELUAR") {
       if (existingIndex === -1) {
         return NextResponse.json(
           { error: "Belum absen masuk" },
@@ -189,10 +169,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
-    /* =====================
-       IZIN / SAKIT / CUTI
-    ===================== */
-    if (["IZIN", "SAKIT", "CUTI"].includes(body.mode)) {
+    /* ===== IZIN / SAKIT / CUTI / ALFA ===== */
+    if (["IZIN", "SAKIT", "CUTI", "ALFA"].includes(mode)) {
       if (existingIndex !== -1) {
         return NextResponse.json(
           { error: "Absensi sudah ada" },
@@ -208,27 +186,21 @@ export async function POST(req: Request) {
           values: [[
             `ABS-${Date.now()}`,
             tanggal,
-            body.karyawan_id,
-            body.nama,
-            body.role,
-            body.tipe,
-            body.project_id || "",
-            body.mode,
+            karyawan.karyawan_id,
+            karyawan.nama,
+            karyawan.role,
+            karyawan.tipe,
+            project_id || "",
+            mode,
             "",
           ]],
         },
       });
 
-      return NextResponse.json({
-        success: true,
-        status: body.mode,
-      });
+      return NextResponse.json({ success: true, status: mode });
     }
 
-    return NextResponse.json(
-      { error: "Mode tidak valid" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Mode tidak valid" }, { status: 400 });
   } catch (e) {
     console.error("ABSENSI ERROR", e);
     return NextResponse.json(
