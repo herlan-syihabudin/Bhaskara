@@ -26,7 +26,9 @@ const RANGE_ABSENSI = "ABSENSI!A:I";
 function todayISO() {
   return new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-  ).toISOString().slice(0, 10);
+  )
+    .toISOString()
+    .slice(0, 10);
 }
 
 function nowTime() {
@@ -39,8 +41,13 @@ function nowTime() {
   });
 }
 
-function isLate(jamMasuk: string) {
-  return jamMasuk > "08:30:00";
+/* =====================
+   JAM MASUK STATUS
+===================== */
+function masukStatus(jam: string) {
+  if (jam <= "08:00:00") return jam;
+  if (jam <= "08:30:00") return `TELAT_RINGAN_${jam}`;
+  return `TELAT_BERAT_${jam}`;
 }
 
 /* =====================
@@ -68,18 +75,18 @@ export async function GET(req: Request) {
       role: r[4],
       tipe: r[5],
       project_id: r[6],
-      status: r[7],
+      jam_masuk: r[7],
       jam_keluar: r[8],
     }));
 
     if (month) {
       data = data.filter((x) =>
-        String(x.tanggal || "").startsWith(month)
+        (x.tanggal || "").startsWith(month)
       );
     }
 
     return NextResponse.json(data);
-  } catch {
+  } catch (e) {
     return NextResponse.json(
       { error: "Gagal load absensi" },
       { status: 500 }
@@ -88,7 +95,11 @@ export async function GET(req: Request) {
 }
 
 /* =====================
-   POST ABSENSI (FINAL)
+   POST ABSENSI
+   mode:
+   - MASUK
+   - KELUAR
+   - IZIN | SAKIT | CUTI
 ===================== */
 export async function POST(req: Request) {
   try {
@@ -98,16 +109,6 @@ export async function POST(req: Request) {
     const tanggal = body.tanggal || todayISO();
     const waktu = nowTime();
 
-    /* =====================
-       SECURITY RULES
-    ===================== */
-    if (body.mode === "ALFA") {
-      return NextResponse.json(
-        { error: "ALFA tidak boleh diinput manual" },
-        { status: 403 }
-      );
-    }
-
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: RANGE_ABSENSI,
@@ -116,11 +117,14 @@ export async function POST(req: Request) {
     const rows = res.data.values ?? [];
 
     const existingIndex = rows.findIndex(
-      (r, i) => i > 0 && r[1] === tanggal && r[2] === body.karyawan_id
+      (r, i) =>
+        i > 0 &&
+        r[1] === tanggal &&
+        r[2] === body.karyawan_id
     );
 
     /* =====================
-       MASUK (USER)
+       MASUK
     ===================== */
     if (body.mode === "MASUK") {
       if (existingIndex !== -1) {
@@ -130,9 +134,7 @@ export async function POST(req: Request) {
         );
       }
 
-      const statusMasuk = isLate(waktu)
-        ? `TELAT_${waktu}`
-        : waktu;
+      const jamMasuk = masukStatus(waktu);
 
       await sheets.spreadsheets.values.append({
         spreadsheetId: SHEET_ID,
@@ -147,17 +149,20 @@ export async function POST(req: Request) {
             body.role,
             body.tipe,
             body.project_id || "",
-            statusMasuk,
+            jamMasuk,
             "",
           ]],
         },
       });
 
-      return NextResponse.json({ success: true, status: statusMasuk });
+      return NextResponse.json({
+        success: true,
+        jam_masuk: jamMasuk,
+      });
     }
 
     /* =====================
-       KELUAR (USER)
+       KELUAR
     ===================== */
     if (body.mode === "KELUAR") {
       if (existingIndex === -1) {
@@ -185,12 +190,12 @@ export async function POST(req: Request) {
     }
 
     /* =====================
-       IZIN / SAKIT / CUTI (ADMIN ONLY)
+       IZIN / SAKIT / CUTI
     ===================== */
     if (["IZIN", "SAKIT", "CUTI"].includes(body.mode)) {
       if (existingIndex !== -1) {
         return NextResponse.json(
-          { error: "Absensi sudah ada di tanggal ini" },
+          { error: "Absensi sudah ada" },
           { status: 400 }
         );
       }
@@ -214,7 +219,10 @@ export async function POST(req: Request) {
         },
       });
 
-      return NextResponse.json({ success: true, status: body.mode });
+      return NextResponse.json({
+        success: true,
+        status: body.mode,
+      });
     }
 
     return NextResponse.json(
