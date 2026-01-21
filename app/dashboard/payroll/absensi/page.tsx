@@ -44,15 +44,12 @@ export default function AbsensiPage() {
       })
       .catch(() => setKaryawanList([]));
 
-    fetch("/api/proyek")
-      .then((r) => r.json())
-      .then((data) => {
-        const running = (data || []).filter(
-          (p: any) =>
-            String(p.status || "").toUpperCase() === "RUNNING"
-        );
-        setProyekList(running);
-      })
+    const running = (data || []).filter(
+  (p: any) =>
+    String(p.status || "")
+      .trim()
+      .toUpperCase() === "RUNNING"
+);
       .catch(() => setProyekList([]));
   }, []);
 
