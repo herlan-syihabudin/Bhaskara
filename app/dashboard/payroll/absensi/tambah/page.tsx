@@ -3,17 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* =====================
-   TYPES
-===================== */
 type Mode = "IZIN" | "SAKIT" | "CUTI";
 
 function todayISO() {
   const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  return d.toISOString().slice(0, 10);
 }
 
 export default function TambahAbsensiPage() {
@@ -35,14 +29,12 @@ export default function TambahAbsensiPage() {
   });
 
   /* =====================
-     LOAD KARYAWAN AKTIF
-     (ADMIN ONLY)
+     LOAD KARYAWAN AKTIF (ADMIN)
   ===================== */
   useEffect(() => {
     (async () => {
       const res = await fetch("/api/karyawan", { cache: "no-store" });
       const data = await res.json();
-
       setKaryawanList(
         (data || []).filter(
           (k: any) => String(k.status || "").toUpperCase() === "AKTIF"
@@ -66,8 +58,15 @@ export default function TambahAbsensiPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    // 🔒 VALIDASI TAMBAHAN
+    if (form.mode === "SAKIT" && !form.catatan) {
+      setError("Catatan wajib diisi untuk SAKIT (surat dokter / keterangan)");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch("/api/absensi", {
@@ -75,7 +74,6 @@ export default function TambahAbsensiPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          // proteksi server juga wajib (di API)
           source: "ADMIN_MANUAL",
         }),
       });
@@ -97,18 +95,16 @@ export default function TambahAbsensiPage() {
 
   return (
     <section className="container-bbm py-12 space-y-8 max-w-3xl">
-      {/* HEADER */}
       <div>
         <p className="badge">HR & PAYROLL</p>
         <h1>Input Absensi Manual (Admin)</h1>
         <p className="text-body mt-1">
-          Khusus izin, sakit, atau cuti — bukan absensi harian
+          Untuk IZIN, SAKIT, atau CUTI — bukan absen masuk/pulang
         </p>
       </div>
 
       <form onSubmit={submit} className="card p-8 space-y-6">
         <div className="grid md:grid-cols-2 gap-6">
-          {/* TANGGAL */}
           <div>
             <label className="text-sm font-medium">Tanggal</label>
             <input
@@ -120,12 +116,8 @@ export default function TambahAbsensiPage() {
               }
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              ⚠️ Jangan input jika karyawan sudah absen masuk
-            </p>
           </div>
 
-          {/* PROJECT */}
           <div>
             <label className="text-sm font-medium">Project ID</label>
             <input
@@ -138,11 +130,8 @@ export default function TambahAbsensiPage() {
             />
           </div>
 
-          {/* KARYAWAN */}
           <div className="md:col-span-2">
-            <label className="text-sm font-medium">
-              Pilih Karyawan Aktif
-            </label>
+            <label className="text-sm font-medium">Karyawan Aktif</label>
             <select
               className="form-input mt-1"
               value={form.karyawan_id}
@@ -152,15 +141,14 @@ export default function TambahAbsensiPage() {
               <option value="">-- pilih --</option>
               {karyawanList.map((k) => (
                 <option key={k.karyawan_id} value={k.karyawan_id}>
-                  {k.nama} ({k.role} - {k.type})
+                  {k.nama} ({k.role})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* MODE */}
           <div>
-            <label className="text-sm font-medium">Status Absensi</label>
+            <label className="text-sm font-medium">Status</label>
             <select
               className="form-input mt-1"
               value={form.mode}
@@ -174,7 +162,6 @@ export default function TambahAbsensiPage() {
             </select>
           </div>
 
-          {/* CATATAN */}
           <div>
             <label className="text-sm font-medium">Catatan</label>
             <input
@@ -183,7 +170,7 @@ export default function TambahAbsensiPage() {
               onChange={(e) =>
                 setForm({ ...form, catatan: e.target.value })
               }
-              placeholder="Contoh: surat dokter / izin mandor"
+              placeholder="Surat dokter / izin mandor"
             />
           </div>
         </div>
@@ -196,7 +183,7 @@ export default function TambahAbsensiPage() {
 
         <div className="flex gap-3 pt-4">
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Menyimpan..." : "Simpan Absensi"}
+            {loading ? "Menyimpan..." : "Simpan"}
           </button>
           <button
             type="button"
