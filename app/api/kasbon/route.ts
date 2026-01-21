@@ -18,7 +18,7 @@ async function getSheets() {
 }
 
 const SHEET_ID = process.env.GS_SHEET_ID!;
-const RANGE_KASBON = "KASBON!A:H";
+const RANGE = "KASBON!A:J";
 
 /* =====================
    TIME HELPERS (WIB)
@@ -38,9 +38,6 @@ function nowTimestamp() {
 
 /* =====================
    GET KASBON
-   /api/kasbon
-   /api/kasbon?karyawan_id=EMP-001
-   /api/kasbon?status=BELUM_DIPOTONG
 ===================== */
 export async function GET(req: Request) {
   try {
@@ -51,7 +48,7 @@ export async function GET(req: Request) {
     const sheets = await getSheets();
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: RANGE_KASBON,
+      range: RANGE,
     });
 
     const [, ...rows] = res.data.values ?? [];
@@ -60,11 +57,13 @@ export async function GET(req: Request) {
       kasbon_id: r[0],
       karyawan_id: r[1],
       tanggal: r[2],
-      jumlah: Number(r[3] || 0),
-      keterangan: r[4] || "",
-      status: r[5] || "",
-      payroll_id: r[6] || "",
-      created_at: r[7] || "",
+      total_kasbon: Number(r[3] || 0),
+      sisa_kasbon: Number(r[4] || 0),
+      potong_per_payroll: Number(r[5] || 0),
+      keterangan: r[6] || "",
+      status: r[7] || "",
+      payroll_id: r[8] || "",
+      created_at: r[9] || "",
     }));
 
     if (karyawan_id) {
@@ -86,15 +85,18 @@ export async function GET(req: Request) {
 }
 
 /* =====================
-   POST KASBON BARU
+   POST KASBON BARU (CICIL)
 ===================== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    if (!body.karyawan_id || !body.jumlah || Number(body.jumlah) <= 0) {
+    const total = Number(body.total_kasbon || body.jumlah);
+    const potong = Number(body.potong_per_payroll || 0);
+
+    if (!body.karyawan_id || total <= 0 || potong <= 0) {
       return NextResponse.json(
-        { error: "karyawan_id & jumlah wajib dan harus > 0" },
+        { error: "karyawan_id, total_kasbon & potong_per_payroll wajib" },
         { status: 400 }
       );
     }
@@ -102,19 +104,21 @@ export async function POST(req: Request) {
     const sheets = await getSheets();
 
     const row = [
-      `KSB-${Date.now()}`,            // kasbon_id
-      body.karyawan_id,               // karyawan_id
-      body.tanggal || todayISO(),     // tanggal
-      Number(body.jumlah),             // jumlah
-      body.keterangan || "",           // keterangan
-      "BELUM_DIPOTONG",                // status
-      "",                              // payroll_id
-      nowTimestamp(),                  // created_at
+      `KSB-${Date.now()}`,      // kasbon_id
+      body.karyawan_id,         // karyawan_id
+      body.tanggal || todayISO(),
+      total,                    // total_kasbon
+      total,                    // sisa_kasbon
+      potong,                   // potong_per_payroll
+      body.keterangan || "",
+      "AKTIF",                  // status
+      "",                       // payroll_id
+      nowTimestamp(),           // created_at
     ];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: RANGE_KASBON,
+      range: RANGE,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [row] },
     });
@@ -131,62 +135,64 @@ export async function POST(req: Request) {
 
 /* =====================
    PUT KASBON
-   - dipakai payroll
-   - support SINGLE & BATCH
+   - CICIL / PAYROLL
 ===================== */
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const updates = Array.isArray(body) ? body : [body];
-
     const sheets = await getSheets();
+
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: RANGE_KASBON,
+      range: RANGE,
     });
 
     const rows = res.data.values ?? [];
 
-    const requests: any[] = [];
-
-    for (const item of updates) {
-      if (!item.kasbon_id || !item.status) continue;
-
-      const rowIndex = rows.findIndex((r) => r[0] === item.kasbon_id);
-      if (rowIndex === -1) continue;
-
-      const rowNumber = rowIndex + 1;
-
-      requests.push({
-        range: `KASBON!F${rowNumber}:G${rowNumber}`,
-        values: [[
-          item.status,                 // DIPOTONG
-          item.payroll_id || "",       // payroll_id
-        ]],
-      });
-    }
-
-    if (requests.length === 0) {
+    const idx = rows.findIndex((r) => r[0] === body.kasbon_id);
+    if (idx === -1) {
       return NextResponse.json(
-        { error: "Tidak ada kasbon valid untuk diupdate" },
-        { status: 400 }
+        { error: "Kasbon tidak ditemukan" },
+        { status: 404 }
       );
     }
 
-    await sheets.spreadsheets.values.batchUpdate({
+    const row = rows[idx];
+    const sisa = Number(row[4] || 0);
+    const potong = Number(row[5] || 0);
+
+    let newSisa = sisa - potong;
+    let status = "AKTIF";
+
+    if (newSisa <= 0) {
+      newSisa = 0;
+      status = "SELESAI";
+    }
+
+    const rowNumber = idx + 1;
+
+    await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
+      range: `KASBON!E${rowNumber}:I${rowNumber}`,
+      valueInputOption: "USER_ENTERED",
       requestBody: {
-        valueInputOption: "USER_ENTERED",
-        data: requests,
+        values: [[
+          newSisa,                       // sisa_kasbon
+          potong,                        // potong_per_payroll (keep)
+          row[6] || "",                  // keterangan
+          status,                        // status
+          body.payroll_id || row[8] || "",
+        ]],
       },
     });
 
     return NextResponse.json({
       success: true,
-      updated: requests.length,
+      sisa_kasbon: newSisa,
+      status,
     });
   } catch (e) {
-    console.error("UPDATE KASBON ERROR:", e);
+    console.error("PUT KASBON ERROR:", e);
     return NextResponse.json(
       { error: "Gagal update kasbon" },
       { status: 500 }
