@@ -68,26 +68,27 @@ export async function GET(req: Request) {
       role: r[4],
       tipe: r[5],
       project_id: r[6],
-      status: r[7],     // JAM MASUK / IZIN / SAKIT / ALFA / CUTI
+      status: r[7],
       jam_keluar: r[8],
     }));
 
     if (month) {
-      data = data.filter(x => (x.tanggal || "").startsWith(month));
+      data = data.filter((x) =>
+        String(x.tanggal || "").startsWith(month)
+      );
     }
 
     return NextResponse.json(data);
-  } catch (e) {
-    return NextResponse.json({ error: "Gagal load absensi" }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: "Gagal load absensi" },
+      { status: 500 }
+    );
   }
 }
 
 /* =====================
-   POST ABSENSI
-   mode:
-   - MASUK
-   - KELUAR
-   - IZIN | SAKIT | ALFA | CUTI
+   POST ABSENSI (FINAL)
 ===================== */
 export async function POST(req: Request) {
   try {
@@ -96,6 +97,16 @@ export async function POST(req: Request) {
 
     const tanggal = body.tanggal || todayISO();
     const waktu = nowTime();
+
+    /* =====================
+       SECURITY RULES
+    ===================== */
+    if (body.mode === "ALFA") {
+      return NextResponse.json(
+        { error: "ALFA tidak boleh diinput manual" },
+        { status: 403 }
+      );
+    }
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
@@ -109,14 +120,19 @@ export async function POST(req: Request) {
     );
 
     /* =====================
-       MASUK
+       MASUK (USER)
     ===================== */
     if (body.mode === "MASUK") {
       if (existingIndex !== -1) {
-        return NextResponse.json({ error: "Sudah absen hari ini" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Sudah absen hari ini" },
+          { status: 400 }
+        );
       }
 
-      const statusMasuk = isLate(waktu) ? `TELAT_${waktu}` : waktu;
+      const statusMasuk = isLate(waktu)
+        ? `TELAT_${waktu}`
+        : waktu;
 
       await sheets.spreadsheets.values.append({
         spreadsheetId: SHEET_ID,
@@ -133,7 +149,7 @@ export async function POST(req: Request) {
             body.project_id || "",
             statusMasuk,
             "",
-          ]]
+          ]],
         },
       });
 
@@ -141,15 +157,21 @@ export async function POST(req: Request) {
     }
 
     /* =====================
-       KELUAR
+       KELUAR (USER)
     ===================== */
     if (body.mode === "KELUAR") {
       if (existingIndex === -1) {
-        return NextResponse.json({ error: "Belum absen masuk" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Belum absen masuk" },
+          { status: 400 }
+        );
       }
 
       if (rows[existingIndex][8]) {
-        return NextResponse.json({ error: "Sudah absen keluar" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Sudah absen keluar" },
+          { status: 400 }
+        );
       }
 
       await sheets.spreadsheets.values.update({
@@ -163,11 +185,14 @@ export async function POST(req: Request) {
     }
 
     /* =====================
-       IZIN / SAKIT / ALFA / CUTI
+       IZIN / SAKIT / CUTI (ADMIN ONLY)
     ===================== */
-    if (["IZIN", "SAKIT", "ALFA", "CUTI"].includes(body.mode)) {
+    if (["IZIN", "SAKIT", "CUTI"].includes(body.mode)) {
       if (existingIndex !== -1) {
-        return NextResponse.json({ error: "Absensi sudah ada" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Absensi sudah ada di tanggal ini" },
+          { status: 400 }
+        );
       }
 
       await sheets.spreadsheets.values.append({
@@ -185,17 +210,22 @@ export async function POST(req: Request) {
             body.project_id || "",
             body.mode,
             "",
-          ]]
+          ]],
         },
       });
 
       return NextResponse.json({ success: true, status: body.mode });
     }
 
-    return NextResponse.json({ error: "Mode tidak valid" }, { status: 400 });
-
+    return NextResponse.json(
+      { error: "Mode tidak valid" },
+      { status: 400 }
+    );
   } catch (e) {
     console.error("ABSENSI ERROR", e);
-    return NextResponse.json({ error: "Gagal proses absensi" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Gagal proses absensi" },
+      { status: 500 }
+    );
   }
 }
