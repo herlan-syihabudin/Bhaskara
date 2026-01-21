@@ -123,8 +123,8 @@ export default function AbsensiPage() {
             <option value="">-- pilih nama --</option>
             {karyawanList.map((k) => (
               <option key={k.karyawan_id} value={k.karyawan_id}>
-                {k.nama} ({k.role} - {k.type})
-              </option>
+  {k.nama}
+</option>
             ))}
           </select>
 
