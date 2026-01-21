@@ -22,12 +22,19 @@ export async function GET() {
 
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: "'Master project'!A:E",
+      // 🔥 PENTING: NAMA TAB HARUS PERSIS
+      range: "'Master proyek'!A:E",
     });
 
-    const [, ...rows] = res.data.values ?? [];
+    const rows = res.data.values ?? [];
 
-    const data = rows
+    if (rows.length <= 1) {
+      return NextResponse.json([]);
+    }
+
+    const [, ...dataRows] = rows;
+
+    const data = dataRows
       .filter((r) => String(r[4]).toUpperCase() === "RUNNING")
       .map((r) => ({
         project_id: r[0],
@@ -37,7 +44,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("GET PROYEK ERROR:", err);
+    console.error("API PROYEK ERROR:", err);
     return NextResponse.json(
       { error: "Gagal load master proyek" },
       { status: 500 }
